@@ -1,0 +1,14 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://u313nb2pic47"]
+
+[ext_resource type="FontFile" uid="uid://dovit8vou7ea1" path="res://Textures/Lora/static/Lora-Bold.ttf" id="1_4roaw"]
+
+[resource]
+Button/font_sizes/font_size = 24
+Button/fonts/font = ExtResource("1_4roaw")
+Label/fonts/font = ExtResource("1_4roaw")
+MarginContainer/constants/margin_bottom = 5
+MarginContainer/constants/margin_left = 5
+MarginContainer/constants/margin_right = 5
+MarginContainer/constants/margin_top = 5
+TabContainer/font_sizes/font_size = 18
+TabContainer/fonts/font = ExtResource("1_4roaw")

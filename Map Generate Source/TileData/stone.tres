@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TileStats" load_steps=2 format=3 uid="uid://dlmouhyg5rl0h"]
+
+[ext_resource type="Script" uid="uid://pxwifhd4ykxt" path="res://Map Generate Source/TileStat.gd" id="1_6h5ob"]
+
+[resource]
+script = ExtResource("1_6h5ob")
+item_id = "stone"
+display_name = "Stone"
+drop_material = "Stone"
+drop_max = 10
+drop_min = 4
+metadata/_custom_type_script = "uid://pxwifhd4ykxt"

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="TileStats" load_steps=2 format=3 uid="uid://d0i2y1uhcnmlw"]
+
+[ext_resource type="Script" uid="uid://pxwifhd4ykxt" path="res://Map Generate Source/TileStat.gd" id="1_8luo4"]
+
+[resource]
+script = ExtResource("1_8luo4")
+item_id = "iron"
+display_name = "Iron Ore"
+max_health = 150
+drop_material = "Iron"
+drop_max = 6
+drop_min = 10
+metadata/_custom_type_script = "uid://pxwifhd4ykxt"

@@ -1,0 +1,100 @@
+[gd_scene load_steps=3 format=3 uid="uid://b2cgroyl7dlrx"]
+
+[ext_resource type="Script" uid="uid://dyfueehpraktm" path="res://Menus/Save Settings Menu/save_settings.gd" id="1_glnso"]
+[ext_resource type="Theme" uid="uid://by88fv3cr83qy" path="res://Menus/Save Settings Menu/SaveSettings.tres" id="1_i3uur"]
+
+[node name="SaveSettings" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1152.0
+offset_bottom = -648.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_glnso")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="Panel" parent="CanvasLayer"]
+custom_minimum_size = Vector2(500, 300)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -150.0
+offset_right = 250.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Panel"]
+custom_minimum_size = Vector2(450, 250)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -225.0
+offset_top = -125.0
+offset_right = 225.0
+offset_bottom = 125.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SeedContainer" type="HBoxContainer" parent="CanvasLayer/Panel/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="CanvasLayer/Panel/VBoxContainer/SeedContainer"]
+layout_mode = 2
+theme = ExtResource("1_i3uur")
+text = "SEED: "
+
+[node name="LineEdit" type="LineEdit" parent="CanvasLayer/Panel/VBoxContainer/SeedContainer"]
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+placeholder_text = "Enter your seed here."
+
+[node name="PawnContainer" type="HBoxContainer" parent="CanvasLayer/Panel/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="CanvasLayer/Panel/VBoxContainer/PawnContainer"]
+layout_mode = 2
+theme = ExtResource("1_i3uur")
+text = "Pawn Count:"
+
+[node name="SpinBox" type="SpinBox" parent="CanvasLayer/Panel/VBoxContainer/PawnContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+min_value = 1.0
+max_value = 5.0
+value = 1.0
+rounded = true
+
+[node name="AutomataContainer" type="HBoxContainer" parent="CanvasLayer/Panel/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="CanvasLayer/Panel/VBoxContainer/AutomataContainer"]
+layout_mode = 2
+theme = ExtResource("1_i3uur")
+text = "Threshold:"
+
+[node name="SpinBox" type="SpinBox" parent="CanvasLayer/Panel/VBoxContainer/AutomataContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+min_value = 4.0
+max_value = 7.0
+value = 4.0
+rounded = true
+
+[node name="CreateButton" type="Button" parent="CanvasLayer/Panel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 10
+text = "Create Game
+"

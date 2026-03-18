@@ -1,0 +1,51 @@
+[gd_scene load_steps=9 format=3 uid="uid://bmynnjl7kdi7x"]
+
+[ext_resource type="Script" uid="uid://b5i7nwjspphdv" path="res://Pawns/pawn_prot.gd" id="1_rxw6e"]
+[ext_resource type="Script" uid="uid://da1p88vedfj0u" path="res://Pawns/FSM/state_machine.gd" id="1_xghl8"]
+[ext_resource type="Script" uid="uid://xs614cw3bcal" path="res://Pawns/FSM/States/idle_state.gd" id="2_08ytd"]
+[ext_resource type="Script" uid="uid://buxugrfj1kwwf" path="res://Pawns/FSM/States/mine_state.gd" id="3_t7csh"]
+[ext_resource type="FontFile" uid="uid://dovit8vou7ea1" path="res://Textures/Lora/static/Lora-Bold.ttf" id="5_80xj8"]
+[ext_resource type="Script" uid="uid://cq86jjg5ysg53" path="res://Pawns/FSM/States/move_state.gd" id="5_hw5jg"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ci6r4"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_rxw6e"]
+font = ExtResource("5_80xj8")
+font_size = 4
+outline_size = 45
+outline_color = Color(0, 0, 0, 1)
+
+[node name="PawnProt" type="CharacterBody2D"]
+script = ExtResource("1_rxw6e")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_ci6r4")
+disabled = true
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("init_st")]
+script = ExtResource("1_xghl8")
+init_st = NodePath("IdleState")
+metadata/_custom_type_script = "uid://da1p88vedfj0u"
+
+[node name="IdleState" type="Node" parent="StateMachine"]
+script = ExtResource("2_08ytd")
+metadata/_custom_type_script = "uid://xs614cw3bcal"
+
+[node name="MineState" type="Node" parent="StateMachine"]
+script = ExtResource("3_t7csh")
+metadata/_custom_type_script = "uid://buxugrfj1kwwf"
+
+[node name="MoveState" type="Node" parent="StateMachine"]
+script = ExtResource("5_hw5jg")
+metadata/_custom_type_script = "uid://cq86jjg5ysg53"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.1, 0.1)
+
+[node name="Label" type="Label" parent="."]
+offset_left = -15.999999
+offset_top = 17.999998
+offset_right = 17.0
+offset_bottom = 23.249998
+text = "Pawn_Prototype"
+label_settings = SubResource("LabelSettings_rxw6e")

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="TileStats" load_steps=2 format=3 uid="uid://bnhoak85vyvue"]
+
+[ext_resource type="Script" uid="uid://pxwifhd4ykxt" path="res://Map Generate Source/TileStat.gd" id="1_y78gq"]
+
+[resource]
+script = ExtResource("1_y78gq")
+item_id = "gold"
+display_name = "Gold Powder"
+max_health = 120
+drop_material = "Gold"
+drop_max = 2
+drop_min = 10
+metadata/_custom_type_script = "uid://pxwifhd4ykxt"

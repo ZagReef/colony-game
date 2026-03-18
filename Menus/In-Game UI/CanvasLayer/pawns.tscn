@@ -1,0 +1,137 @@
+[gd_scene load_steps=6 format=3 uid="uid://cts7tmoyn3bim"]
+
+[ext_resource type="Script" uid="uid://cbu24nr8ddehu" path="res://Menus/In-Game UI/CanvasLayer/pawns.gd" id="1_gqk24"]
+[ext_resource type="Theme" uid="uid://u313nb2pic47" path="res://Menus/In-Game UI/pawns_menu.tres" id="2_fq6qt"]
+[ext_resource type="Script" uid="uid://b07058um1khj7" path="res://Menus/In-Game UI/PawnPanel/pawn_panel.gd" id="3_fq6qt"]
+[ext_resource type="FontFile" uid="uid://dovit8vou7ea1" path="res://Textures/Lora/static/Lora-Bold.ttf" id="3_goss7"]
+[ext_resource type="Script" uid="uid://b8cyu606e7m75" path="res://Menus/In-Game UI/ActionPanel/action_select_panel.gd" id="5_goss7"]
+
+[node name="CanvasLayer" type="CanvasLayer"]
+script = ExtResource("1_gqk24")
+
+[node name="PawnPanel" type="Panel" parent="."]
+custom_minimum_size = Vector2(70, 400)
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -20.0
+offset_right = 40.0
+offset_bottom = 20.0
+grow_vertical = 2
+theme = ExtResource("2_fq6qt")
+script = ExtResource("3_fq6qt")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PawnPanel"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 70.0
+grow_horizontal = 2
+
+[node name="PawnContainer" type="VBoxContainer" parent="PawnPanel/VBoxContainer"]
+visible = false
+custom_minimum_size = Vector2(50, 40)
+layout_mode = 2
+alignment = 1
+
+[node name="PawnTexture" type="TextureRect" parent="PawnPanel/VBoxContainer/PawnContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PawnName" type="Label" parent="PawnPanel/VBoxContainer/PawnContainer"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+theme_override_fonts/font = ExtResource("3_goss7")
+theme_override_font_sizes/font_size = 12
+clip_text = true
+
+[node name="ActionSelectionPanel" type="Panel" parent="."]
+custom_minimum_size = Vector2(800, 50)
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -576.0
+offset_top = -50.0
+offset_right = 576.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 3
+script = ExtResource("5_goss7")
+
+[node name="TabContainer" type="TabContainer" parent="ActionSelectionPanel"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -81.0
+grow_horizontal = 2
+grow_vertical = 0
+theme = ExtResource("2_fq6qt")
+current_tab = 0
+
+[node name="Orders" type="MarginContainer" parent="ActionSelectionPanel/TabContainer"]
+layout_mode = 2
+mouse_filter = 0
+metadata/_tab_index = 0
+
+[node name="GridContainer" type="GridContainer" parent="ActionSelectionPanel/TabContainer/Orders"]
+layout_mode = 2
+columns = 8
+
+[node name="Mine" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer"]
+layout_mode = 2
+text = "Mine
+"
+
+[node name="CutTree" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer"]
+layout_mode = 2
+text = "Cut Down Trees"
+
+[node name="Dig" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer"]
+layout_mode = 2
+text = "Dig Ground"
+
+[node name="CancelJob" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer"]
+layout_mode = 2
+text = "Cancel Job"
+
+[node name="AllowItem" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer"]
+layout_mode = 2
+text = "Allow Items"
+
+[node name="Building" type="MarginContainer" parent="ActionSelectionPanel/TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="GridContainer" type="GridContainer" parent="ActionSelectionPanel/TabContainer/Building"]
+layout_mode = 2
+size_flags_horizontal = 0
+columns = 8
+
+[node name="StoneWall" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
+layout_mode = 2
+theme = ExtResource("2_fq6qt")
+text = "Stone Wall
+"
+
+[node name="Zones" type="MarginContainer" parent="ActionSelectionPanel/TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="GridContainer" type="GridContainer" parent="ActionSelectionPanel/TabContainer/Zones"]
+layout_mode = 2
+columns = 8
+
+[node name="Stockpile" type="Button" parent="ActionSelectionPanel/TabContainer/Zones/GridContainer"]
+layout_mode = 2
+text = "Create Stockpile"

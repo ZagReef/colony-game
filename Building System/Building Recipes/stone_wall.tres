@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="StructureRecipe" load_steps=2 format=3 uid="uid://cnky0310wnq1h"]
+
+[ext_resource type="Script" uid="uid://cogoc0voavakx" path="res://Building System/structure_recipe.gd" id="1_jfm36"]
+
+[resource]
+script = ExtResource("1_jfm36")
+structure_id = "stone_wall"
+structure_name = "Stone Wall"
+build_time = 5.0
+materials = {
+"Clay": 5,
+"Stone": 15
+}
+metadata/_custom_type_script = "uid://cogoc0voavakx"

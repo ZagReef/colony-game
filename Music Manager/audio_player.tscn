@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://dn3gjqbxj3vrp"]
+
+[ext_resource type="AudioStream" uid="uid://cgxy6u7sht6eo" path="res://Music Manager/Menu Musics/lost_.mp3" id="1_26x2e"]
+
+[node name="AudioPlayer" type="AudioStreamPlayer"]
+stream = ExtResource("1_26x2e")
+volume_db = -20.991
+autoplay = true

@@ -1,0 +1,10 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://by88fv3cr83qy"]
+
+[ext_resource type="FontFile" uid="uid://dovit8vou7ea1" path="res://Textures/Lora/static/Lora-Bold.ttf" id="1_7l13e"]
+
+[resource]
+default_font = ExtResource("1_7l13e")
+default_font_size = 0
+Button/fonts/font = ExtResource("1_7l13e")
+Label/fonts/font = ExtResource("1_7l13e")
+LineEdit/fonts/font = ExtResource("1_7l13e")

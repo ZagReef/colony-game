@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cgxy6u7sht6eo"
+path="res://.godot/imported/lost_.mp3-7396a848ef41f853bc9cbee7cac634bd.mp3str"
+
+[deps]
+
+source_file="res://Music Manager/Menu Musics/lost_.mp3"
+dest_files=["res://.godot/imported/lost_.mp3-7396a848ef41f853bc9cbee7cac634bd.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

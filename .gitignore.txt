@@ -1,0 +1,11 @@
+# Godot 4+ için yoksayılacak dosyalar
+.godot/
+!/.godot/extension_list.cfg
+
+# Çeviri ve dışa aktarma ayarları (Kişisel yollar içerebilir)
+*.translation
+export_presets.cfg
+
+# İşletim sistemi kalıntıları
+.DS_Store
+Thumbs.db
