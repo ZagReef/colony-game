@@ -1,3 +1,14 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# İşletim sistemi kalıntıları
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Çıktı (Export) ayarları ve şifreler
+export_presets.cfg
+
+# Derlenmiş çeviri dosyaları
+*.translation
