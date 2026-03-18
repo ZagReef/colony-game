@@ -40,10 +40,7 @@ func finish_building(coords: Vector2i):
 		
 		if bp.visual_node != null:
 			bp.visual_node.queue_free()
-		var map = Global.current_map
 		active_blueprints.erase(coords)
-		if structure_id == "stone_wall":
-			map.object_layer.set_cell(coords, map.new_tileset_id, Vector2i(2, 12))
 		
 		structure_built.emit(coords, structure_id)
 

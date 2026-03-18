@@ -837,6 +837,11 @@ y_sort_enabled = true
 [node name="TerrainLayer" type="TileMapLayer" parent="Layers"]
 tile_set = SubResource("TileSet_pkm4s")
 
+[node name="RoofLayer" type="TileMapLayer" parent="Layers"]
+self_modulate = Color(1, 1, 1, 0.23529412)
+z_index = 4
+tile_set = SubResource("TileSet_pkm4s")
+
 [node name="IconLayer" type="TileMapLayer" parent="Layers"]
 self_modulate = Color(1, 1, 1, 0.47843137)
 z_index = 5

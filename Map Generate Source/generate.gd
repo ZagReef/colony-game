@@ -1,5 +1,7 @@
 extends Node2D
 
+const MAX_ROOF_SUPPORT_DIST = 5
+
 var current_tool_mode = Global.ToolMode.NONE
 var is_dragging: bool = false
 var is_canceled: bool = false
@@ -16,6 +18,7 @@ var drag_start_pos: Vector2 = Vector2.ZERO
 @onready var icon_layer = $Layers/IconLayer
 @onready var item_layer = $Layers/Ysorted/ItemLayer
 @onready var zone_layer = $Layers/ZoneLayer
+@onready var roof_layer = $Layers/RoofLayer
 
 var tileMap_cell_size = 32
 @export var width = 100
@@ -28,6 +31,8 @@ var new_tileset_id = 3
 
 var ore_types: Array[String] = ["stone", "iron", "gold", "copper"]
 var dirt_res: Array[String] = ["clay"]
+var ground_types: Array[String] = ["grass", "dirt"]
+var structures: Array[String] = ["stone_wall"]
 
 var tile_resources: Dictionary = {
 	"stone": load("res://Map Generate Source/TileData/stone.tres"),
@@ -45,8 +50,9 @@ var wood_atlas = Vector2i(5,0)
 var tiles: Dictionary = {
 	"stone": Vector2i(0, 9),
 	"tree": Vector2i(0, 0),
-	"stone_wall": Vector2i(2, 12),
-	"clay": Vector2i(3, 10)
+	"stone_wall": Vector2i(1, 11),
+	"clay": Vector2i(3, 10),
+	"dirt": Vector2i(0, 3)
 }
 
 
@@ -121,8 +127,14 @@ func initialize_map():
 		for x in width:
 			var is_wall = (rng.randf() < fill_prob or is_border(x,y))
 			
+			var current_ground = "dirt" if is_wall else "grass"
+			var current_top = "stone" if is_wall else "none"
+			var current_roof = "mountain" if is_wall else "none"
+			
 			var cell_info = {
-				"type": "stone" if is_wall else "floor",
+				"ground": current_ground,
+				"top": current_top,
+				"roof": current_roof,
 				"health": tile_resources["stone"].max_health if is_wall else 0,
 				"marked_for_mining": false
 			}
@@ -143,13 +155,18 @@ func smooth_map():
 			elif wall_count <= 2:
 				is_wall = false
 			else:
-				is_wall = (map_data[y][x]["type"] == "stone")
-			
+				is_wall = (map_data[y][x]["top"] == "stone")
+				
+			var current_ground = "dirt" if is_wall else "grass"
+			var current_top = "stone" if is_wall else "none"
+			var current_roof = "mountain" if is_wall else "none"
 			if is_border(x, y):
 				is_wall = true
 			
 			var cell_info = {
-				"type": "stone" if is_wall else "floor",
+				"ground": current_ground,
+				"top": current_top,
+				"roof": current_roof,
 				"health": tile_resources["stone"].max_health if is_wall else 0,
 				"marked_for_mining": false
 			}
@@ -171,7 +188,7 @@ func count_wall(x, y):
 			
 			if nx < 0 or nx >= width or ny < 0 or ny >= height:
 				count += 1
-			elif map_data[ny][nx]["type"] != "floor":
+			elif map_data[ny][nx]["top"] != "none":
 				count += 1
 			
 	return count 
@@ -182,23 +199,29 @@ func print_map():
 		for x in width:
 			var cell = map_data[y][x]
 			var pos = Vector2i(x, y)
-			terrain_layer.set_cell(pos, new_tileset_id, get_weigthed_grass())
-			if cell["type"] == "stone":
+			if cell["ground"] == "dirt":
+				terrain_layer.set_cell(pos, new_tileset_id, tiles["dirt"])
+			else:
+				terrain_layer.set_cell(pos, new_tileset_id, get_weigthed_grass())
+			if cell["top"] == "stone":
 				object_layer.set_cell(pos, new_tileset_id, tiles["stone"])
-			elif cell["type"] == "iron" or cell["type"] == "gold" or cell["type"] == "copper":
-				var ore_name = cell["type"]
+				terrain_layer.set_cell(pos, new_tileset_id, tiles["dirt"])
+			elif cell["top"] in ore_types and cell["top"] != "stone":
+				var ore_name = cell["top"]
 				object_layer.set_cell(pos, new_tileset_id, get_weighted_ore(ore_name))
-			elif cell["type"] == "tree":
+			elif cell["top"] == "tree":
 				plant_layer.set_cell(pos, tree_id, tiles["tree"])
-			elif cell["type"] == "wall":
-				object_layer.set_cell(pos, new_tileset_id, tiles["stone_wall"])
-			elif cell["type"] == "clay":
-				var res_name = cell["type"]
+			elif cell["top"] in structures:
+				object_layer.set_cell(pos, new_tileset_id, tiles[cell["top"]])
+			elif cell["top"] == "clay":
+				var res_name = cell["top"]
 				object_layer.set_cell(pos, new_tileset_id, get_weighted_resource(res_name))
+			if cell["roof"] != "none" and cell["top"] == "none":
+				roof_layer.set_cell(pos, 2, Vector2i(0,0))
 
 func mark_for_mining(map_pos: Vector2i):
 	var cell = map_data[map_pos.y][map_pos.x]
-	if cell["type"] == "stone" or cell["type"] == "tree" or cell["type"] == "iron":
+	if cell["top"] == "stone" or cell["top"] == "tree" or cell["top"] == "iron":
 		cell["marked_for_mining"] = true
 		
 		#print("kazılmak için işaretlendi: ", map_pos)
@@ -308,7 +331,7 @@ func process_selection_area(start_pos: Vector2, end_pos: Vector2):
 				continue
 			
 			var cell = map_data[current_map_pos.y][current_map_pos.x]
-			var cell_type = cell["type"]
+			var cell_type = cell["top"]
 			if current_tool_mode == Global.ToolMode.MINE:
 				if cell_type in ore_types:
 					var cell_world_pos = terrain_layer.map_to_local(current_map_pos)
@@ -318,11 +341,11 @@ func process_selection_area(start_pos: Vector2, end_pos: Vector2):
 					var cell_world_pos = terrain_layer.map_to_local(current_map_pos)
 					assign_job_to_cell(current_map_pos, cell_world_pos, Job.Type.WOOD_CUTTING)
 			elif current_tool_mode == Global.ToolMode.CREATE_ZONE:
-				if cell_type == "floor" and not ZoneManager.cell_in_any_zone(current_map_pos):
+				if cell_type == "none" and not ZoneManager.cell_in_any_zone(current_map_pos):
 					stockpile.append(current_map_pos)
 					zone_layer.set_cell(current_map_pos, grass_id, wood_atlas)
 			elif current_tool_mode == Global.ToolMode.CANCEL_JOB:
-				if cell_type != "floor":
+				if cell_type != "none":
 					var job = JobManager.check_job(current_map_pos)
 					
 					if job:
@@ -339,10 +362,10 @@ func process_selection_area(start_pos: Vector2, end_pos: Vector2):
 					if job:
 						JobManager.abort_job(job)
 			elif current_tool_mode == Global.ToolMode.BUILD_WALL:
-				if cell_type == "floor":
+				if cell_type == "none":
 					BuildManager.create_blueprint(current_map_pos, structure_recipes["stone_wall"])
 			elif current_tool_mode == Global.ToolMode.ALLOW_ITEM:
-				if cell_type == "floor" and ItemManager.get_item_at(current_map_pos) != null:
+				if cell_type == "none" and ItemManager.get_item_at(current_map_pos) != null:
 					var cell_world_pos = terrain_layer.map_to_local(current_map_pos)
 					assign_job_to_cell(current_map_pos, cell_world_pos, Job.Type.HAUL_ITEMS)
 			elif current_tool_mode == Global.ToolMode.DIG:
@@ -364,18 +387,11 @@ func assign_job_to_cell(map_pos: Vector2i, mouse_pos: Vector2, job_type: int):
 func is_within_bounds(x, y) -> bool:
 	return x >= 0 and x < width and y >= 0 and y < height
 
-func handle_cell_click(pos: Vector2i):
-	if map_data[pos.y][pos.x]["type"] == "stone":
-		print("duvar var la")
-		
-	else:
-		print("zemin var la: ", pos)
-
 func get_walk_pos():
 	var val_pos = []
 	for y in range(height):
 		for x in range(width):
-			if map_data[y][x]["type"] == "floor":
+			if map_data[y][x]["top"] == "none":
 				val_pos.append(Vector2i(x, y))
 	return val_pos
 
@@ -388,7 +404,7 @@ func spawn_trees():
 	for i in range(count_tree):
 		var pos = walk_pos.pick_random()
 		#print(pos)
-		map_data[pos.y][pos.x]["type"] = "tree"
+		map_data[pos.y][pos.x]["top"] = "tree"
 		map_data[pos.y][pos.x]["health"] = 50
 
 func damage_tile(coords: Vector2i, amount: int):
@@ -400,23 +416,29 @@ func damage_tile(coords: Vector2i, amount: int):
 	
 	var cell = map_data[y][x]
 	
-	if cell["type"] != "floor":
+	if cell["top"] != "none":
 		cell["health"] -= amount
 		#print("Duvar canı: ", cell.health)
 		
 		if cell["health"] <= 0:
-			var prev_type = cell["type"]
-			cell["type"] = "floor"
+			var prev_type = cell["top"]
+			cell["top"] = "none"
 			cell["marked_for_mining"] = false
 			spawn_loot(coords, prev_type)
 			if prev_type in ore_types or prev_type in dirt_res:
 				object_layer.erase_cell(coords)
+			if prev_type in ore_types:
+				roof_layer.set_cell(coords, 2, Vector2i(0 ,0))
+				cell["roof"] = "default_roof"
 			elif prev_type == "tree":
 				plant_layer.erase_cell(coords)
 			
 			icon_layer.erase_cell(coords)
 			astar_grid.set_point_solid(coords, false)
 			JobManager.wake_up_jobs()
+			
+			if prev_type in ore_types or prev_type in structures:
+				update_roofs_after_mining(coords)
 			return true
 	
 	return false
@@ -521,14 +543,14 @@ func generate_veins(ore_name: String, vein_count: int, vein_size: int):
 		
 		var attempts = 0
 		
-		while map_data[current_y][current_x]["type"] != "stone" and attempts < 100:
+		while map_data[current_y][current_x]["top"] != "stone" and attempts < 100:
 			current_x = rng.randi_range(1, width - 2)
 			current_y = rng.randi_range(1, height - 2)
 			attempts += 1
 		
-		if map_data[current_y][current_x]["type"] == "stone":
+		if map_data[current_y][current_x]["top"] == "stone":
 			for s in range(vein_size):
-				map_data[current_y][current_x]["type"] = ore_name
+				map_data[current_y][current_x]["top"] = ore_name
 				map_data[current_y][current_x]["health"] = health
 				
 				var dirs = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
@@ -538,7 +560,7 @@ func generate_veins(ore_name: String, vein_count: int, vein_size: int):
 				var next_y = current_y + dir.y
 				
 				if not is_border(next_x, next_y):
-					var next_type = map_data[next_y][next_x]["type"]
+					var next_type = map_data[next_y][next_x]["top"]
 					if next_type == "stone" or next_type == ore_name:
 						current_x = next_x
 						current_y = next_y
@@ -553,14 +575,14 @@ func generate_floor_res(item_name: String, group_count: int, group_size: int):
 		
 		var attempts = 0
 		
-		while map_data[current_y][current_x]["type"] != "floor" and attempts < 100:
+		while map_data[current_y][current_x]["top"] != "none" and attempts < 100:
 			current_x = rng.randi_range(1, width - 2)
 			current_y = rng.randi_range(1, height - 2)
 			attempts += 1
 		
-		if map_data[current_y][current_x]["type"] == "floor":
+		if map_data[current_y][current_x]["top"] == "none":
 			for s in range(group_size):
-				map_data[current_y][current_x]["type"] = item_name
+				map_data[current_y][current_x]["top"] = item_name
 				map_data[current_y][current_x]["health"] = health
 				
 				var dirs = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
@@ -569,17 +591,18 @@ func generate_floor_res(item_name: String, group_count: int, group_size: int):
 				var next_x = current_x + dir.x
 				var next_y = current_y + dir.y
 				
-				var next_type = map_data[next_y][next_x]["type"]
+				var next_type = map_data[next_y][next_x]["top"]
 				
-				if next_type == "floor" or next_type == item_name:
+				if next_type == "none" or next_type == item_name:
 					current_x = next_x
 					current_y = next_y
 
 func _on_structure_built(coords: Vector2i, structure_id: String):
 	match structure_id:
 		"stone_wall":
-			map_data[coords.y][coords.x]["type"] = "wall"
+			map_data[coords.y][coords.x]["top"] = structure_id
 			map_data[coords.y][coords.x]["health"] = 300
+			object_layer.set_cell(coords, new_tileset_id, tiles[structure_id])
 
 func get_save_data() -> Array:
 	var map_save_array = []
@@ -622,3 +645,47 @@ func set_tool_mode(tool_mode: Global.ToolMode):
 func _on_clear_bp(coords: Vector2i):
 	icon_layer.erase_cell(coords)
 	astar_grid.set_point_solid(coords, false)
+
+func has_roof_support(coords: Vector2i) -> bool:
+	var queue = [coords]
+	var visited = {coords: true}
+	
+	while queue.size() > 0:
+		var current_pos = queue.pop_front()
+		
+		if coords.distance_to(Vector2(current_pos)) > MAX_ROOF_SUPPORT_DIST:
+			continue
+		
+		var cell = map_data[current_pos.y][current_pos.x]
+		var top_obj = cell["top"]
+		
+		if top_obj in structures or top_obj in ore_types:
+			return true
+		
+		if cell["roof"] != "none" or current_pos == coords:
+			var neighbors = [Vector2i(0, -1), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(1, 0),
+			Vector2i(-1, -1), Vector2i(1, -1), Vector2i(-1, 1),Vector2i(1, 1)]
+			
+			for offset in neighbors:
+				var neighbor_pos = current_pos + offset
+				
+				if is_within_bounds(neighbor_pos.x, neighbor_pos.y):
+					if not visited.has(neighbor_pos):
+						visited[neighbor_pos] = true
+						queue.append(neighbor_pos)
+	return false
+
+func update_roofs_after_mining(coords: Vector2i):
+	for y in range(-MAX_ROOF_SUPPORT_DIST, MAX_ROOF_SUPPORT_DIST + 1):
+		for x in range(-MAX_ROOF_SUPPORT_DIST, MAX_ROOF_SUPPORT_DIST + 1):
+			var neighbor = coords + Vector2i(x, y)
+			
+			if is_within_bounds(neighbor.x, neighbor.y):
+				if map_data[neighbor.y][neighbor.x]["roof"] != "none":
+					if not has_roof_support(neighbor):
+						collapse_roof(neighbor)
+
+func collapse_roof(coords: Vector2i):
+	map_data[coords.y][coords.x]["roof"] == "none"
+	roof_layer.erase_cell(coords)
+	print("çatı yıkıldı")
