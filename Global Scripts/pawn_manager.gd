@@ -6,6 +6,7 @@ var curr_map: Node2D
 const NPC: PackedScene = preload("res://Pawns/pawn_prot.tscn")
 
 signal pawn_spawned(pawn: CharacterBody2D)
+signal pawn_focus_requested(target_pawn: CharacterBody2D)
 
 var char_textures: Array[Texture] = [
 	load("res://Textures/Character Textures/rimworld_demongirl.png"),

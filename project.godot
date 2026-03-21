@@ -30,6 +30,11 @@ PawnsUI="*res://Menus/In-Game UI/CanvasLayer/pawns.tscn"
 AudioPlayer="*res://Music Manager/audio_player.tscn"
 InfoMenu="*res://Menus/In-Game UI/InfoMenu/info_menu.tscn"
 
+[debug]
+
+gdscript/warnings/unused_variable=0
+gdscript/warnings/unused_signal=0
+
 [display]
 
 window/size/mode=3

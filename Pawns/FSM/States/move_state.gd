@@ -5,9 +5,10 @@ class_name MoveState
 var current_path: PackedVector2Array
 var current_path_index: int = 0
 
-@export var move_speed: int = 150
+@export var default_move_speed: int = 150
+var current_move_speed = default_move_speed
 
-var character: CharacterBody2D
+var character: PawnPrototype
 
 func enter(_msg: Dictionary = {}):
 	#print("Move state aktif")
@@ -60,13 +61,8 @@ func enter(_msg: Dictionary = {}):
 		return
 
 func physics_update(_delta: float):
-	if current_path.is_empty():
-		character.current_job.is_taken = false
-		character.current_job = null
-		return
-	if current_path_index >= current_path.size():
+	if current_path.is_empty() or current_path_index >= current_path.size():
 		character.velocity = Vector2.ZERO
-		
 		#print(current_path.size())
 		
 		if character.next_state_after_move != "":
@@ -79,8 +75,15 @@ func physics_update(_delta: float):
 	
 	if character.global_position.distance_to(target_point) < 5.0:
 		current_path_index += 1
+		
+		if current_path_index < current_path.size():
+			var next_point = current_path[current_path_index]
+			var target_coords =  Global.current_map.terrain_layer.local_to_map(Global.current_map.terrain_layer.to_local(next_point))
+			if Global.current_map.is_within_bounds(target_coords.x, target_coords.y):
+				var target_cell = Global.current_map.map_data[target_coords.y][target_coords.x] 
+				current_move_speed = target_cell["speed_multiplier"] * default_move_speed
 	else:
-		character.velocity = character.global_position.direction_to(target_point) * move_speed
+		character.velocity = character.global_position.direction_to(target_point) * current_move_speed
 		character.move_and_slide()
 
 func exit():

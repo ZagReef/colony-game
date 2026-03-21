@@ -2,7 +2,7 @@ extends State
 
 class_name MineState
 
-var character: CharacterBody2D
+var character: PawnPrototype
 var current_job: Job
 var mining_timer: float = 0.0
 
@@ -12,7 +12,7 @@ var mining_timer: float = 0.0
 var is_performing_work: bool = false
 
 func enter(_msg: Dictionary = {}):
-	character = state_machine.get_parent()
+	character = state_machine.get_parent() as PawnPrototype
 	is_performing_work = false
 	
 	current_job = character.current_job

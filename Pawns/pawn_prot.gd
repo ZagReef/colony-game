@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+class_name PawnPrototype
+
 @export var char_body_texture: Texture2D 
 
 @onready var char_body: Sprite2D = $Sprite2D
@@ -11,11 +13,12 @@ var next_state_after_move: String = ""
 
 var character_inventory: PawnInventory
 
-var memory: Dictionary = {
-	"reserved_amount": 0,
-	"item_pickup_pos": Vector2i.ZERO,
-	"target_material": ""
-}
+class PawnMemory:
+	var reserved_amount: int = 0
+	var item_pickup_pos: Vector2i = Vector2i.ZERO
+	var target_material: String = ""
+
+var memory: PawnMemory = PawnMemory.new()
 
 @onready var state_machine = $StateMachine
 

@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://cts7tmoyn3bim"]
+[gd_scene load_steps=7 format=3 uid="uid://cts7tmoyn3bim"]
 
 [ext_resource type="Script" uid="uid://cbu24nr8ddehu" path="res://Menus/In-Game UI/CanvasLayer/pawns.gd" id="1_gqk24"]
 [ext_resource type="Theme" uid="uid://u313nb2pic47" path="res://Menus/In-Game UI/pawns_menu.tres" id="2_fq6qt"]
 [ext_resource type="Script" uid="uid://b07058um1khj7" path="res://Menus/In-Game UI/PawnPanel/pawn_panel.gd" id="3_fq6qt"]
 [ext_resource type="FontFile" uid="uid://dovit8vou7ea1" path="res://Textures/Lora/static/Lora-Bold.ttf" id="3_goss7"]
 [ext_resource type="Script" uid="uid://b8cyu606e7m75" path="res://Menus/In-Game UI/ActionPanel/action_select_panel.gd" id="5_goss7"]
+[ext_resource type="Script" uid="uid://bmhs0dvuixjl3" path="res://Menus/In-Game UI/Tile and Pawn Info Menu/info_panel.gd" id="6_7j0e1"]
 
 [node name="CanvasLayer" type="CanvasLayer"]
 script = ExtResource("1_gqk24")
@@ -37,6 +38,7 @@ alignment = 1
 [node name="PawnTexture" type="TextureRect" parent="PawnPanel/VBoxContainer/PawnContainer"]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
@@ -135,3 +137,62 @@ columns = 8
 [node name="Stockpile" type="Button" parent="ActionSelectionPanel/TabContainer/Zones/GridContainer"]
 layout_mode = 2
 text = "Create Stockpile"
+
+[node name="TilePawnInfo" type="Panel" parent="."]
+custom_minimum_size = Vector2(300, 200)
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -174.0
+offset_top = -92.0
+offset_bottom = -52.0
+grow_horizontal = 0
+grow_vertical = 0
+theme = ExtResource("2_fq6qt")
+script = ExtResource("6_7j0e1")
+
+[node name="MarginContainer" type="MarginContainer" parent="TilePawnInfo"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TilePawnInfo/MarginContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TilePawnInfo/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="NameInfo" type="Label" parent="TilePawnInfo/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="TilePawnInfo/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Health" type="Label" parent="TilePawnInfo/MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = "Health:"
+
+[node name="ProgressBar" type="ProgressBar" parent="TilePawnInfo/MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+show_percentage = false
+
+[node name="HealthRatio" type="Label" parent="TilePawnInfo/MarginContainer/VBoxContainer/HBoxContainer2/ProgressBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -10.5
+offset_right = 20.0
+offset_bottom = 10.5
+grow_horizontal = 2
+grow_vertical = 2

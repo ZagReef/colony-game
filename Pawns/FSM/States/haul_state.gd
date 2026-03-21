@@ -4,12 +4,11 @@ class_name HaulState
 
 var inventory: PawnInventory
 var job: Job
-var character: CharacterBody2D
-
+var character: PawnPrototype
 var next_item_exists: bool = false
 
 func enter(_msg: Dictionary = {}):
-	character = state_machine.get_parent()
+	character = state_machine.get_parent() as PawnPrototype
 	
 	inventory = character.character_inventory
 	job = character.current_job

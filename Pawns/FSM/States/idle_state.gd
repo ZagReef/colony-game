@@ -2,7 +2,7 @@ extends State
 
 class_name IdleState
 
-var character: CharacterBody2D
+var character: PawnPrototype
 @export var wander_range = 200
 @export var idle_speed = 300
 @export var wait_time_min = 1.0
@@ -15,7 +15,7 @@ var is_waiting: bool = false
 func enter(_msg: Dictionary = {}):
 	#print("İdle çalıştırıldı")
 	
-	character = state_machine.get_parent()
+	character = state_machine.get_parent() as PawnPrototype
 	
 	var inventory = character.character_inventory
 	

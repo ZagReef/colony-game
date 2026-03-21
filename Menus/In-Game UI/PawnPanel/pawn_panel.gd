@@ -15,6 +15,7 @@ func add_pawn(pawn: CharacterBody2D):
 	new_container.get_node("PawnTexture").texture = pawn.char_body_texture
 	new_container.get_node("PawnName").text = pawn.char_name
 	new_container.visible = true
+	new_container.gui_input.connect(_on_pawn_container_gui_input.bind(pawn))
 	container_parent.add_child(new_container)
 
 func clear_pawns():
@@ -23,3 +24,7 @@ func clear_pawns():
 			container.queue_free()
 	
 	canvas_layer.visible = false
+
+func _on_pawn_container_gui_input(event: InputEvent, pawn: CharacterBody2D):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		PawnManager.pawn_focus_requested.emit(pawn)

@@ -2,6 +2,7 @@ extends Node
 
 signal pressed_escape
 signal tool_mode_changed(tool_mode: Global.ToolMode)
+signal map_created
 
 var current_map = null
 

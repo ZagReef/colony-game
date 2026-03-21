@@ -2,7 +2,7 @@ extends State
 
 class_name DeliverMaterialState
 
-var character: CharacterBody2D
+var character: PawnPrototype
 var char_inventory: PawnInventory
 var char_memory
 
@@ -29,9 +29,9 @@ func enter(_msg: Dictionary = {}):
 	
 	var current_cell = Global.current_map.terrain_layer.local_to_map(character.global_position)
 	if char_inventory.item_amount == 0:
-		if char_memory.has("item_pickup_pos") and current_cell == char_memory["item_pickup_pos"]:
-			var take_amount = char_memory["reserved_amount"]
-			var target_mat = char_memory["target_material"]
+		if current_cell == char_memory.item_pickuo_pos:
+			var take_amount = char_memory.reserved_amount
+			var target_mat = char_memory.target_material
 			
 			ItemManager.consume_item(current_cell, take_amount)
 			
@@ -68,6 +68,7 @@ func enter(_msg: Dictionary = {}):
 			state_machine.change_state("IdleState")
 			return
 		
+		
 		var ground_item = ItemManager.get_item_at(closest_coords)
 		
 		var needed = bp.get_remaining_needs(selected_material)
@@ -78,9 +79,9 @@ func enter(_msg: Dictionary = {}):
 		
 		bp.progress[selected_material]["incoming"] += amount_to_take
 		
-		character.memory["reserved_amount"] = amount_to_take
-		character.memory["item_pickup_pos"] = closest_coords
-		character.memory["target_material"] = selected_material
+		character.memory.reserved_amount = amount_to_take
+		character.memory.item_pickup_pos = closest_coords
+		character.memory.target_material = selected_material
 		
 		character.move_target = Global.current_map.terrain_layer.map_to_local(closest_coords)
 		character.next_state_after_move = "DeliverMaterialState"

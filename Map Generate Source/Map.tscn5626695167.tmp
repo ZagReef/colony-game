@@ -823,7 +823,14 @@ item_drop = ExtResource("2_qodir")
 structure_recipes = {
 "stone_wall": ExtResource("3_8avdf")
 }
+width = null
+height = null
+fill_prob = null
+threshold = null
+default_seed = null
 npc = ExtResource("4_mrjnr")
+count_tree = null
+count_npc = null
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(1767, 1304)

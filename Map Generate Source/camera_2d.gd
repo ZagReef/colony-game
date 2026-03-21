@@ -8,6 +8,9 @@ var zoom_factor = 1.1
 var dragging := false
 var last_mouse_pos := Vector2.ZERO
 
+func _ready():
+	PawnManager.pawn_focus_requested.connect(focus_target)
+
 func _unhandled_input(event):
 	if event is InputEventMouseButton:
 		"""if event.button_index == MOUSE_BUTTON_WHEEL_UP:
@@ -52,3 +55,16 @@ func zoom_to_mouse(factor: float, mouse_pos: Vector2):
 	zoom = new_zoom
 	
 	global_position = mouse_pos - new_offset
+
+func focus_target(target_pawn: CharacterBody2D):
+	#global_position = target_pawn.global_position
+	
+	var tween = create_tween()
+	
+	tween.tween_property(
+		self,
+		"global_position",
+		target_pawn.global_position,
+		0.3
+	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	

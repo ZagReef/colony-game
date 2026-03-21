@@ -10,5 +10,6 @@ MarginContainer/constants/margin_bottom = 5
 MarginContainer/constants/margin_left = 5
 MarginContainer/constants/margin_right = 5
 MarginContainer/constants/margin_top = 5
+ProgressBar/fonts/font = ExtResource("1_4roaw")
 TabContainer/font_sizes/font_size = 18
 TabContainer/fonts/font = ExtResource("1_4roaw")

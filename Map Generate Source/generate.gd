@@ -6,6 +6,9 @@ var current_tool_mode = Global.ToolMode.NONE
 var is_dragging: bool = false
 var is_canceled: bool = false
 var drag_start_pos: Vector2 = Vector2.ZERO
+
+signal check_tile_info(tile_ground: String, tile_top: String, tile_roof: String, tile_max_health: int, tile_current_health: int)
+
 @onready var selection_box = $ColorRect
 
 @export var item_drop: PackedScene
@@ -19,6 +22,8 @@ var drag_start_pos: Vector2 = Vector2.ZERO
 @onready var item_layer = $Layers/Ysorted/ItemLayer
 @onready var zone_layer = $Layers/ZoneLayer
 @onready var roof_layer = $Layers/RoofLayer
+@onready var selection_layer = $Layers/SelectionLayer
+@onready var work_selection_layer = $Layers/WorkSelectionLayer
 
 var tileMap_cell_size = 32
 @export var width = 100
@@ -33,6 +38,11 @@ var ore_types: Array[String] = ["stone", "iron", "gold", "copper"]
 var dirt_res: Array[String] = ["clay"]
 var ground_types: Array[String] = ["grass", "dirt"]
 var structures: Array[String] = ["stone_wall"]
+
+var speed_multipliers: Dictionary = {
+	"dirt": 1,
+	"grass": 0.8
+}
 
 var tile_resources: Dictionary = {
 	"stone": load("res://Map Generate Source/TileData/stone.tres"),
@@ -62,7 +72,10 @@ var icons: Dictionary = {
 	"mine": Vector2i(8, 5),
 	"build": Vector2i(10, 5),
 	"deliver": Vector2i(4, 2),
-	"dig": Vector2i(9, 5)
+	"dig": Vector2i(9, 5),
+	"selection": Vector2i(5, 4),
+	"mine_selection": Vector2i(4, 3),
+	"work_selection": Vector2i(0, 10)
 }
 
 var map_data = []
@@ -80,6 +93,8 @@ var astar_grid = AStarGrid2D.new()
 func _ready() -> void:
 	selection_box.hide()
 	Global.current_map = self
+	current_tool_mode = Global.ToolMode.NONE
+	Global.map_created.emit()
 	BuildManager.structure_built.connect(_on_structure_built)
 	BuildManager.build_aborted.connect(_on_clear_bp)
 	generate_map()
@@ -130,13 +145,15 @@ func initialize_map():
 			var current_ground = "dirt" if is_wall else "grass"
 			var current_top = "stone" if is_wall else "none"
 			var current_roof = "mountain" if is_wall else "none"
+			var speed_multiplier = speed_multipliers[current_ground]
 			
 			var cell_info = {
 				"ground": current_ground,
 				"top": current_top,
 				"roof": current_roof,
 				"health": tile_resources["stone"].max_health if is_wall else 0,
-				"marked_for_mining": false
+				"marked_for_mining": false,
+				"speed_multiplier": speed_multiplier
 			}
 			row.append(cell_info)
 		map_data.append(row)
@@ -160,6 +177,7 @@ func smooth_map():
 			var current_ground = "dirt" if is_wall else "grass"
 			var current_top = "stone" if is_wall else "none"
 			var current_roof = "mountain" if is_wall else "none"
+			var speed_multiplier = speed_multipliers[current_ground]
 			if is_border(x, y):
 				is_wall = true
 			
@@ -168,7 +186,8 @@ func smooth_map():
 				"top": current_top,
 				"roof": current_roof,
 				"health": tile_resources["stone"].max_health if is_wall else 0,
-				"marked_for_mining": false
+				"marked_for_mining": false,
+				"speed_multiplier": speed_multiplier
 			}
 			
 			new_row.append(cell_info)
@@ -249,6 +268,21 @@ func _unhandled_input(event: InputEvent) -> void:
 	
 	if event is InputEventMouseButton:
 		if current_tool_mode == Global.ToolMode.NONE:
+			if event.button_index == MOUSE_BUTTON_LEFT and not is_dragging:
+				work_selection_layer.clear()
+				var coords = terrain_layer.local_to_map(terrain_layer.to_local(get_global_mouse_position()))
+				if is_within_bounds(coords.x, coords.y):
+					var cell = map_data[coords.y][coords.x]
+					var max_health
+					if cell["top"] != "none":
+						max_health = tile_resources[cell["top"]].max_health
+					else:
+						max_health = 0
+					check_tile_info.emit(cell["ground"], cell["top"], cell["roof"], cell["speed_multiplier"],
+					max_health, cell["health"])
+					selection_layer.clear()
+					selection_layer.set_cell(coords, 1, icons["selection"])
+			
 			if is_dragging:
 				is_dragging = false
 				selection_box.hide()
@@ -258,6 +292,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			if is_dragging:
 				is_dragging = false
 				selection_box.hide()
+				work_selection_layer.clear()
 			
 			else:
 				Global.tool_mode_changed.emit(Global.ToolMode.NONE)
@@ -275,7 +310,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				if is_dragging:
 					is_dragging = false
 					selection_box.hide()
-					process_selection_area(drag_start_pos, get_global_mouse_position())
+					var selected_tiles = get_full_tiles()
+					process_selection_area(selected_tiles)
 	elif event is InputEventMouseMotion:
 		if is_dragging:
 			var current_mouse_pos = get_global_mouse_position()
@@ -288,6 +324,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				abs(drag_start_pos.x - current_mouse_pos.x),
 				abs(drag_start_pos.y - current_mouse_pos.y)
 			)
+			update_work_selection()
 		"""
 		var mouse_pos = get_global_mouse_position()
 		var map_pos = object_layer.local_to_map(terrain_layer.to_local(mouse_pos))
@@ -308,22 +345,51 @@ func _unhandled_input(event: InputEvent) -> void:
 			if cell_type == "wood":
 				assign_job_to_cell(map_pos, mouse_pos, Job.Type.WOOD_CUTTING)"""
 
-func process_selection_area(start_pos: Vector2, end_pos: Vector2):
-	var start_map = object_layer.local_to_map(terrain_layer.to_local(start_pos))
-	var end_map = object_layer.local_to_map(terrain_layer.to_local(end_pos))
-	#print(start_map, " ", end_map)
-	
-	var stockpile: Array[Vector2i]
-	
-	var min_x = min(start_map.x, end_map.x)
-	var max_x = max(start_map.x, end_map.x)
-	var min_y = min(start_map.y, end_map.y)
-	var max_y = max(start_map.y, end_map.y)
+func process_selection_area(selected_tiles: Array[Vector2i]):
+	var stockpile: Array[Vector2i] = []
 	
 	if current_tool_mode == Global.ToolMode.CREATE_ZONE:
 		stockpile = []
 	
-	for x in range(min_x, max_x + 1):
+	for current_map_pos in selected_tiles:
+		var cell = map_data[current_map_pos.y][current_map_pos.x]
+		var cell_type = cell["top"]
+		
+		var cell_world_pos = terrain_layer.map_to_local(current_map_pos)
+		
+		match current_tool_mode:
+			Global.ToolMode.MINE:
+				if cell_type in ore_types:
+					assign_job_to_cell(current_map_pos, cell_world_pos, Job.Type.MINING)
+			Global.ToolMode.CHOP_WOOD:
+				if cell_type == "tree":
+					assign_job_to_cell(current_map_pos, cell_world_pos, Job.Type.WOOD_CUTTING)
+			Global.ToolMode.CREATE_ZONE:
+				if cell_type == "none" and ZoneManager.cell_in_any_zone(current_map_pos):
+					stockpile.append(current_map_pos)
+					zone_layer.set_cell(current_map_pos, grass_id, wood_atlas)
+			Global.ToolMode.CANCEL_JOB:
+				if cell_type != "none":
+					var job = JobManager.check_job(current_map_pos)
+					
+					if job:
+						JobManager.abort_job(job)
+					if BuildManager.active_blueprints.has(current_map_pos):
+						BuildManager.abort_blueprint(current_map_pos)
+			Global.ToolMode.BUILD_WALL:
+				if cell_type == "none":
+					BuildManager.create_blueprint(current_map_pos, structure_recipes["stone_wall"])
+			Global.ToolMode.ALLOW_ITEM:
+				if cell_type == "none" and ItemManager.get_item_at(current_map_pos) != null:
+					assign_job_to_cell(current_map_pos, cell_world_pos, Job.Type.HAUL_ITEMS)
+			Global.ToolMode.DIG:
+				if cell_type in dirt_res:
+					assign_job_to_cell(current_map_pos, cell_world_pos, Job.Type.DIGGING)
+	if stockpile.size() > 0:
+		ZoneManager.create_stockpile(stockpile)
+	
+	
+	"""for x in range(min_x, max_x + 1):
 		for y in range(min_y, max_y + 1):
 			var current_map_pos = Vector2i(x, y)
 			
@@ -374,7 +440,7 @@ func process_selection_area(start_pos: Vector2, end_pos: Vector2):
 					assign_job_to_cell(current_map_pos, cell_world_pos, Job.Type.DIGGING)
 	
 	if stockpile and stockpile.size() > 0:
-		ZoneManager.create_stockpile(stockpile)
+		ZoneManager.create_stockpile(stockpile)"""
 
 func assign_job_to_cell(map_pos: Vector2i, mouse_pos: Vector2, job_type: int):
 	var cell = map_data[map_pos.y][map_pos.x]
@@ -405,7 +471,7 @@ func spawn_trees():
 		var pos = walk_pos.pick_random()
 		#print(pos)
 		map_data[pos.y][pos.x]["top"] = "tree"
-		map_data[pos.y][pos.x]["health"] = 50
+		map_data[pos.y][pos.x]["health"] = tile_resources["tree"].max_health
 
 func damage_tile(coords: Vector2i, amount: int):
 	#print(coords)
@@ -429,7 +495,7 @@ func damage_tile(coords: Vector2i, amount: int):
 				object_layer.erase_cell(coords)
 			if prev_type in ore_types:
 				roof_layer.set_cell(coords, 2, Vector2i(0 ,0))
-				cell["roof"] = "default_roof"
+				cell["roof"] = "mountain"
 			elif prev_type == "tree":
 				plant_layer.erase_cell(coords)
 			
@@ -448,9 +514,16 @@ func set_astar_grid():
 	astar_grid.cell_size = Vector2i(tileMap_cell_size, tileMap_cell_size)
 	astar_grid.offset = astar_grid.cell_size / 2
 	astar_grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_AT_LEAST_ONE_WALKABLE
-	astar_grid.default_compute_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
-	astar_grid.default_estimate_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
+	astar_grid.default_compute_heuristic = AStarGrid2D.HEURISTIC_OCTILE
+	astar_grid.default_estimate_heuristic = AStarGrid2D.HEURISTIC_OCTILE
 	astar_grid.update()
+	
+	for y in height:
+		for x in width:
+			var coords = Vector2i(x, y)
+			var speed = map_data[y][x]["speed_multiplier"]
+			astar_grid.set_point_weight_scale(coords, 1.0 / speed)
+			
 	
 	for tile in object_layer.get_used_cells():
 		astar_grid.set_point_solid(tile, true)
@@ -651,7 +724,7 @@ func has_roof_support(coords: Vector2i) -> bool:
 	var visited = {coords: true}
 	
 	while queue.size() > 0:
-		var current_pos = queue.pop_front()
+		var current_pos = queue.pop_front()	
 		
 		if coords.distance_to(Vector2(current_pos)) > MAX_ROOF_SUPPORT_DIST:
 			continue
@@ -686,6 +759,58 @@ func update_roofs_after_mining(coords: Vector2i):
 						collapse_roof(neighbor)
 
 func collapse_roof(coords: Vector2i):
-	map_data[coords.y][coords.x]["roof"] == "none"
+	map_data[coords.y][coords.x]["roof"] = "none"
 	roof_layer.erase_cell(coords)
 	print("çatı yıkıldı")
+
+func update_work_selection():
+	work_selection_layer.clear()
+	
+	var valid_tiles = get_full_tiles()
+	
+	for coords in valid_tiles:
+		var cell = map_data[coords.y][coords.x]
+		
+		match current_tool_mode:
+			Global.ToolMode.MINE:
+				if cell["top"] in ore_types and not cell["marked_for_mining"]:
+					work_selection_layer.set_cell(coords, 1, icons["work_selection"])
+			Global.ToolMode.CHOP_WOOD:
+				if cell["top"] == "tree" and not cell["marked_for_mining"]:
+					work_selection_layer.set_cell(coords, 1, icons["work_selection"])
+			Global.ToolMode.DIG:
+				if cell["top"] == "clay" and not cell["marked_for_mining"]:
+					work_selection_layer.set_cell(coords, 1, icons["work_selection"])
+			Global.ToolMode.BUILD_WALL:
+				if cell["top"] in dirt_res and not BuildManager.check_blueprint(Vector2i(coords.x, coords.y)):
+					work_selection_layer.set_cell(coords, 1, icons["work_selection"])
+			Global.ToolMode.ALLOW_ITEM:
+				if cell["top"] == "none" and ItemManager.get_item_at(Vector2i(coords.x, coords.y)) != null:
+					work_selection_layer.set_cell(coords, 1, icons["work_selection"])
+
+func get_full_tiles() -> Array[Vector2i]:
+	var enclosed_tiles: Array[Vector2i] = []
+	
+	var selection_rect = Rect2(selection_box.global_position, selection_box.size)
+	
+	var tl_map = terrain_layer.local_to_map(terrain_layer.to_local(selection_rect.position))
+	var br_map = terrain_layer.local_to_map(terrain_layer.to_local(selection_rect.end))
+	
+	var cell_size = Vector2(terrain_layer.tile_set.tile_size)
+	
+	var shrink_factor = 0.2
+	var inner_box_size = cell_size * shrink_factor
+	
+	for y in range(min(tl_map.y, br_map.y) - 1, max(tl_map.y, br_map.y) + 2):
+		for x in range(min(tl_map.x, br_map.x) - 1, max(tl_map.x, br_map.x) + 2):
+			var coords = Vector2i(x, y)
+			
+			if is_within_bounds(coords.x, coords.y):
+				var tile_center = terrain_layer.to_global(terrain_layer.map_to_local(coords))
+				var tile_rect = Rect2(tile_center - inner_box_size / 2, inner_box_size) 
+				
+				if selection_rect.intersects(tile_rect):
+					enclosed_tiles.append(coords)
+	
+	return enclosed_tiles
+	

@@ -98,3 +98,8 @@ func abort_blueprint(coords: Vector2i):
 	active_blueprints.erase(coords)
 	build_aborted.emit(coords)
 	
+
+func check_blueprint(coords: Vector2i) -> bool:
+	if active_blueprints.has(coords):
+		return true
+	return false

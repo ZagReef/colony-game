@@ -2,7 +2,7 @@ extends State
 
 class_name BuildState
 
-var character: CharacterBody2D
+var character: PawnPrototype
 var is_building: bool = false
 var build_time: float = 0.0
 var target_bp: BluePrint
