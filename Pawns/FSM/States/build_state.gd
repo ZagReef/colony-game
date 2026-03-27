@@ -22,17 +22,23 @@ func enter(_msg: Dictionary = {}):
 	
 	var curr_cell = Global.current_map.terrain_layer.local_to_map(character.global_position)
 	
-	var dirs = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 	var is_adjacent = false
-	for dir in dirs:
-		if curr_cell + dir == target_bp.coords:
+	var footprint = target_bp.get_occupied_tiles() 
+	
+	for tile in footprint:
+		var dist_x = abs(curr_cell.x - tile.x)
+		var dist_y = abs(curr_cell.y - tile.y)
+		
+		# Çapraz veya yan yana (1 kare mesafe) ise bitişiktir
+		if dist_x <= 1 and dist_y <= 1:
 			is_adjacent = true
+			break
 	
 	if is_adjacent:
 		is_building = true
 		build_time = target_bp.recipe.build_time
 	else:
-		character.move_target = Global.current_map.terrain_layer.local_to_map(target_bp.coords)
+		character.move_target = Global.current_map.terrain_layer.map_to_local(target_bp.coords)
 		character.next_state_after_move = "BuildState"
 		state_machine.change_state("MoveState")
 

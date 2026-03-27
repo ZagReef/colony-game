@@ -6,13 +6,14 @@ var active_blueprints: Dictionary = {}
 
 signal blueprint_created(blueprint: BluePrint)
 signal ready_to_build(blueprint: BluePrint)
-signal structure_built(coords: Vector2i, structure_id: String)
+signal structure_built(coords: Vector2i, structure_id: String, footprint: Array[Vector2i], facing: int)
 signal build_aborted(coords: Vector2i)
 
 func _ready() -> void:
 	Global.pressed_escape.connect(reset_manager)
 
 func create_blueprint(coords: Vector2i, recipe: StructureRecipe):
+	
 	if active_blueprints.has(coords): return
 	
 	var new_bp = BluePrint.new(coords, recipe)
@@ -20,6 +21,42 @@ func create_blueprint(coords: Vector2i, recipe: StructureRecipe):
 	#print("gerekli materyal bulundu: ", active_blueprints[coords].get_material_needs())
 	
 	Global.current_map.astar_grid.set_point_solid(coords, true)
+	blueprint_created.emit(new_bp)
+
+func create_blueprint_from_ghost(ghost_bp: BluePrint):
+	
+	
+	var new_bp = BluePrint.new(ghost_bp.coords, ghost_bp.recipe, ghost_bp.facing)
+	if new_bp.recipe.ghost_texture != null:
+		var ghost_sprite = Sprite2D.new()
+		ghost_sprite.texture = ghost_bp.recipe.ghost_texture
+		ghost_sprite.modulate = Color(0.1, 1.0, 1.0, 0.5)
+		
+		var act_size = new_bp.recipe.size
+		if new_bp.facing == 1 or new_bp.facing == 3:
+			act_size = Vector2i(act_size.y, act_size.x)
+		
+		var anchor_world_pos = Global.current_map.terrain_layer.map_to_local(ghost_bp.coords)
+		var center_offset = Vector2(act_size.x - 1, act_size.y - 1) * (Global.current_map.tileMap_cell_size / 2)
+		ghost_sprite.global_position = anchor_world_pos + center_offset
+		ghost_sprite.rotation_degrees = new_bp.facing * (-90)
+		var ghost_sprite_scale: Vector2
+		
+		if new_bp.recipe.scene != null:
+			var temp_scene = ghost_bp.recipe.scene.instantiate()
+			ghost_sprite_scale = temp_scene.scale
+			temp_scene.queue_free()
+		
+		ghost_sprite.apply_scale(ghost_sprite_scale)
+		Global.current_map.object_layer.add_child(ghost_sprite)
+		new_bp.visual_node = ghost_sprite
+	var footprint = new_bp.get_occupied_tiles()
+	
+	for coords in footprint:
+		active_blueprints[coords] = new_bp
+		#Global.current_map.astar_grid.set_point_solid(coords, true)
+		Global.current_map.icon_layer.set_cell(coords, 2, Global.current_map.icons["deliver"])
+	
 	blueprint_created.emit(new_bp)
 
 func add_materials_to_blueprint(coords: Vector2i, item_type: String, amount: int):
@@ -35,14 +72,34 @@ func add_materials_to_blueprint(coords: Vector2i, item_type: String, amount: int
 
 func finish_building(coords: Vector2i):
 	if active_blueprints.has(coords):
-		var bp = active_blueprints[coords]
+		var bp: BluePrint = active_blueprints[coords]
 		var structure_id = bp.recipe.structure_id
+		var footprint = bp.get_occupied_tiles()
 		
+		if bp.recipe.scene != null:
+			var new_struct = bp.recipe.scene.instantiate()
+			new_struct.max_health = bp.recipe.health
+			new_struct.name = "Structure_" + str(bp.coords.x) + "_" + str(bp.coords.y)
+			var act_size = bp.recipe.size
+			if bp.facing == 1 or bp.facing == 3:
+				act_size = Vector2i(act_size.y , act_size.x)
+			
+			var anchor_world_pos = Global.current_map.terrain_layer.map_to_local(bp.coords)
+			var center_offset = Vector2(act_size.x - 1, act_size.y -1 ) * (Global.current_map.tileMap_cell_size / 2)
+			new_struct.global_position = anchor_world_pos + center_offset
+			if "facing" in new_struct:
+				new_struct.facing = bp.facing
+			
+			Global.current_map.object_layer.add_child(new_struct)
+			if new_struct.has_method("update_visual_rotation"):
+				new_struct.update_visual_rotation()
+			
 		if bp.visual_node != null:
 			bp.visual_node.queue_free()
-		active_blueprints.erase(coords)
+		for tile in footprint:
+			active_blueprints.erase(tile)
 		
-		structure_built.emit(coords, structure_id)
+		structure_built.emit(coords, structure_id, footprint, bp.facing)
 
 func get_save_data() -> Array:
 	var bp_save_array = []
@@ -86,8 +143,9 @@ func reset_manager():
 	active_blueprints.clear()
 
 func abort_blueprint(coords: Vector2i):
-	var bp = active_blueprints[coords]
+	var bp: BluePrint = active_blueprints[coords]
 	var materials: Array = bp.recipe.materials.keys()
+	var footprint = bp.get_occupied_tiles()
 	
 	for material in materials:
 		var drop_amount = bp.progress[material]["current"]
@@ -95,8 +153,11 @@ func abort_blueprint(coords: Vector2i):
 			ItemManager.add_item_to_grid(coords, material, drop_amount, Global.current_map.item_layer, 
 			Global.current_map.item_drop, Global.current_map.terrain_layer.map_to_local)
 	
-	active_blueprints.erase(coords)
-	build_aborted.emit(coords)
+	for tile in footprint:
+		active_blueprints.erase(tile)
+		Global.current_map.icon_layer.erase_cell(tile)
+		Global.current_map.astar_grid.set_point_solid(tile, false)
+		build_aborted.emit(tile)
 	
 
 func check_blueprint(coords: Vector2i) -> bool:

@@ -55,6 +55,7 @@ func do_haul():
 			if next_item_coords != null and job_exists != null:
 				job.target_map_pos = next_item_coords
 				character.move_target = Global.current_map.terrain_layer.map_to_local(next_item_coords)
+				character.next_state_after_move = "HaulState"
 				next_item_exists = true
 				state_machine.change_state("MoveState")
 				return
@@ -63,8 +64,8 @@ func do_haul():
 		var drop_pos = ZoneManager.get_available_stockpile_cell(inventory.carried_item)
 		
 		if drop_pos != null:
-			job.target_map_pos = drop_pos
 			character.move_target = Global.current_map.terrain_layer.map_to_local(drop_pos)
+			character.next_state_after_move = "HaulState"
 			state_machine.change_state("MoveState")
 		else:
 			var my_pos = Global.current_map.terrain_layer.local_to_map(character.global_position)
@@ -77,12 +78,13 @@ func do_haul():
 				Global.current_map.terrain_layer.map_to_local
 			)
 			inventory.clear_inventory()
+			job.target_map_pos = my_pos
 			JobManager.suspend_job(job)
 			character.current_job = null
 			character.next_state_after_move = ""
 			state_machine.change_state("IdleState") 
 	else:
-		var target_cell = job.target_map_pos
+		var target_cell = Global.current_map.terrain_layer.local_to_map(character.global_position)
 		var cell_item = ItemManager.get_item_at(target_cell)
 		var stack_limit = 75
 		
@@ -125,8 +127,9 @@ func find_new_stockpile_cell(_character: CharacterBody2D, _job: Job):
 	var new_drop_pos = ZoneManager.get_available_stockpile_cell(inventory.carried_item)
 	
 	if new_drop_pos != null:
-		job.target_map_pos = new_drop_pos
+		#job.target_map_pos = new_drop_pos
 		character.move_target = Global.current_map.terrain_layer.map_to_local(new_drop_pos)
+		character.next_state_after_move = "HaulState"
 		state_machine.change_state("MoveState")
 	else:
 		var curr_grid_pos = Global.current_map.terrain_layer.local_to_map(character.global_position)
@@ -135,7 +138,7 @@ func find_new_stockpile_cell(_character: CharacterBody2D, _job: Job):
 		Global.current_map.item_drop,
 		Global.current_map.terrain_layer.map_to_local
 		)
-		
+		job.target_map_pos = curr_grid_pos
 		inventory.clear_inventory()
 		JobManager.suspend_job(job)
 		character.next_state_after_move = ""

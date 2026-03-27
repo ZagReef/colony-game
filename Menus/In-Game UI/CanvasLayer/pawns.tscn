@@ -125,6 +125,41 @@ theme = ExtResource("2_fq6qt")
 text = "Stone Wall
 "
 
+[node name="SingleBed" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
+layout_mode = 2
+theme = ExtResource("2_fq6qt")
+text = "Single Bed
+"
+
+[node name="DoubleBed" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
+layout_mode = 2
+theme = ExtResource("2_fq6qt")
+text = "DoubleBed
+"
+
+[node name="SingleArmchair" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
+layout_mode = 2
+theme = ExtResource("2_fq6qt")
+text = "Single Armchair
+"
+
+[node name="Chair" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
+layout_mode = 2
+theme = ExtResource("2_fq6qt")
+text = "Chair
+"
+
+[node name="Sofa" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
+layout_mode = 2
+theme = ExtResource("2_fq6qt")
+text = "Sofa
+"
+
+[node name="Table" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
+layout_mode = 2
+theme = ExtResource("2_fq6qt")
+text = "Table"
+
 [node name="Zones" type="MarginContainer" parent="ActionSelectionPanel/TabContainer"]
 visible = false
 layout_mode = 2

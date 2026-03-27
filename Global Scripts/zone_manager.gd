@@ -32,7 +32,7 @@ func create_stockpile(cells: Array[Vector2i]):
 	
 	stockpiles.append(stockpile)
 	
-	new_stockpile_created.emit(cells.size())
+	new_stockpile_created.emit()
 
 func get_save_data():
 	var zones_save_array = []

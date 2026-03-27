@@ -31,6 +31,6 @@ func disp_amount(amount: int):
 	if amount_label:
 		$Label.text = str(amount)
 
-func is_forbidden(forbidden: bool):
-	forbidden_sprite.visible = forbidden
-	self.forbidden = forbidden
+func is_forbidden(_forbidden: bool):
+	forbidden_sprite.visible = _forbidden
+	self.forbidden = _forbidden

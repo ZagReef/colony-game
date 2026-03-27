@@ -8,7 +8,13 @@ extends Panel
 	"dig_ground": $TabContainer/Orders/GridContainer/Dig
 }
 @onready var build_array: Dictionary = {
-	"stone_wall": $TabContainer/Building/GridContainer/StoneWall
+	"stone_wall": $TabContainer/Building/GridContainer/StoneWall,
+	"single_bed": $TabContainer/Building/GridContainer/SingleBed,
+	"double_bed": $TabContainer/Building/GridContainer/DoubleBed,
+	"single_armchair": $TabContainer/Building/GridContainer/SingleArmchair,
+	"chair": $TabContainer/Building/GridContainer/Chair,
+	"sofa": $TabContainer/Building/GridContainer/Sofa,
+	"table": $TabContainer/Building/GridContainer/Table
 }
 @onready var zone_array: Dictionary = {
 	"stockpile": $TabContainer/Zones/GridContainer/Stockpile
@@ -20,7 +26,8 @@ func _ready():
 	for order_key in order_array.keys():
 		order_array[order_key].pressed.connect(_on_job_button_pressed.bind(order_key))
 	
-	build_array["stone_wall"].pressed.connect(_on_build_button_pressed.bind("stone_wall"))
+	for build_key in build_array.keys():
+		build_array[build_key].pressed.connect(_on_build_button_pressed.bind(build_key))
 	
 	zone_array["stockpile"].pressed.connect(_on_zone_button_pressed.bind("stockpile"))
 
@@ -41,10 +48,8 @@ func _on_job_button_pressed(button: String):
 
 func _on_build_button_pressed(button: String):
 	var tool_mode: Global.ToolMode
-	match button:
-		"stone_wall":
-			tool_mode = Global.ToolMode.BUILD_WALL
-	Global.tool_mode_changed.emit(tool_mode)
+	tool_mode = Global.ToolMode.BUILD_WALL
+	Global.tool_mode_changed.emit(tool_mode, button)
 
 func _on_zone_button_pressed(button: String):
 	var tool_mode: Global.ToolMode

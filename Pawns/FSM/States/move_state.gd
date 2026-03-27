@@ -39,6 +39,17 @@ func enter(_msg: Dictionary = {}):
 		
 		var char_job = character.current_job
 		if char_job:
+			if char_job.job_type == Job.Type.DELIVER_MATERIAL:
+				var bp_coords = char_job.target_map_pos
+				if BuildManager.active_blueprints.has(bp_coords):
+					var bp: BluePrint =  BuildManager.active_blueprints[bp_coords]
+					var mat = character.memory.target_material
+					var amount = character.memory.reserved_amount
+					if bp.progress.has(mat):
+						bp.progress[mat]["incoming"] -= amount
+						if bp.progress[mat]["incoming"] < 0:
+							bp.progress[mat]["incoming"] = 0
+					
 			char_job.worker_black_list.append(character)
 			character.current_job.is_taken = false
 			character.current_job.worker = null

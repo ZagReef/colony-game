@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://cn7bn50joouou"]
+
+[ext_resource type="Script" uid="uid://d1iksqlqhausg" path="res://Building System/Structure Scenes/SingleArmchair/single_armchair.gd" id="1_xehu3"]
+[ext_resource type="Texture2D" uid="uid://4ccpthdtbt1x" path="res://Building System/Furniture Textures/chair.png" id="2_ip0dx"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bd50w"]
+size = Vector2(72, 104)
+
+[node name="Chair" type="StaticBody2D"]
+scale = Vector2(0.25, 0.25)
+script = ExtResource("1_xehu3")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_ip0dx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_bd50w")

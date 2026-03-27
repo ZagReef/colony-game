@@ -2,22 +2,40 @@ extends RefCounted
 
 class_name BluePrint
 
+enum Direction {UP, RIGHT, DOWN, LEFT}
+
 var coords: Vector2i
 var recipe: StructureRecipe
+var facing:Direction = Direction.UP
 
 var progress: Dictionary = {}
 
 var visual_node: Node2D
 
-func _init(c: Vector2i, r: StructureRecipe):
+func _init(c: Vector2i, r: StructureRecipe, dir: Direction = Direction.UP):
 	coords = c
 	recipe = r
+	facing = dir
 	
 	for item_type in recipe.materials.keys():
 		progress[item_type] = {
 			"current": 0 , 
 			"incoming": 0
 		}
+
+func get_occupied_tiles() -> Array[Vector2i]:
+	var tiles: Array[Vector2i] = []
+	var act_size = recipe.size
+	
+	if facing == Direction.RIGHT or facing == Direction.LEFT:
+		act_size = Vector2i(recipe.size.y, recipe.size.x)
+	
+	for x in range(act_size.x):
+		for y in range(act_size.y):
+			tiles.append(coords + Vector2i(x, y))
+	
+	return tiles
+
 
 func get_remaining_needs(item_type: String):
 	if not progress.has(item_type):

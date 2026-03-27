@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://8s4em60xi6bi"]
+
+[ext_resource type="Script" uid="uid://rxcgu65ssufk" path="res://Building System/Structure Scenes/SingleBed/single_bed.gd" id="1_j8fki"]
+[ext_resource type="Texture2D" uid="uid://v8a8w5wvk8dy" path="res://Building System/Furniture Textures/double_bed.png" id="2_j8fki"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bd50w"]
+size = Vector2(196, 280)
+
+[node name="DoubleBed" type="StaticBody2D"]
+scale = Vector2(0.25, 0.25)
+script = ExtResource("1_j8fki")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_j8fki")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_bd50w")

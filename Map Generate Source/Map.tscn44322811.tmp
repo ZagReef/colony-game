@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://crfcqscx75gnu"]
+[gd_scene load_steps=25 format=3 uid="uid://crfcqscx75gnu"]
 
 [ext_resource type="Script" uid="uid://m7str48cx0oq" path="res://Map Generate Source/generate.gd" id="1_mrjnr"]
 [ext_resource type="Texture2D" uid="uid://wxvcua6jwwsf" path="res://Textures/Character Textures/MapSprite.png" id="2_cf7ik"]
@@ -8,13 +8,9 @@
 [ext_resource type="Resource" uid="uid://cvb3117xcx6fg" path="res://Building System/Building Recipes/single_bed.tres" id="4_6elfd"]
 [ext_resource type="PackedScene" uid="uid://bmynnjl7kdi7x" path="res://Pawns/pawn_prot.tscn" id="4_mrjnr"]
 [ext_resource type="Resource" uid="uid://wsn5uoanm42a" path="res://Building System/Building Recipes/double_bed.tres" id="5_c3avx"]
-[ext_resource type="Resource" uid="uid://drebnadowjd80" path="res://Building System/Building Recipes/single_armchair.tres" id="6_8hyrf"]
 [ext_resource type="Texture2D" uid="uid://cgsikh0clx5ww" path="res://Textures/Tile Textures/TreeDih-Photoroom-export.png" id="6_585ge"]
-[ext_resource type="Resource" uid="uid://djnequ54pf0vq" path="res://Building System/Building Recipes/chair.tres" id="7_jgu8k"]
 [ext_resource type="Texture2D" uid="uid://c8cgsxxqnt24d" path="res://Textures/Character Textures/Stone.png" id="7_qodir"]
 [ext_resource type="Texture2D" uid="uid://7r7apktmr5tu" path="res://Textures/Tile Textures/32x32 Basic Tiles.png" id="8_df55s"]
-[ext_resource type="Resource" uid="uid://d4lp1bnuebepa" path="res://Building System/Building Recipes/sofa.tres" id="8_prec8"]
-[ext_resource type="Resource" uid="uid://cd7tdl5up8m6w" path="res://Building System/Building Recipes/table.tres" id="9_enxgn"]
 [ext_resource type="Texture2D" uid="uid://cjxc6y6rai4s7" path="res://Textures/Tile Textures/tilemap_packed_colony_game.png" id="10_trlex"]
 [ext_resource type="Texture2D" uid="uid://c4en0qgp3svy2" path="res://Textures/Tile Textures/tilemap_packed-export.png" id="11_fx1ye"]
 [ext_resource type="Texture2D" uid="uid://btbfd3g1vxb4o" path="res://Textures/Tile Textures/tilemap_packed.png" id="12_ykx05"]
@@ -827,13 +823,9 @@ sources/2 = SubResource("TileSetAtlasSource_6elfd")
 script = ExtResource("1_mrjnr")
 item_drop = ExtResource("2_qodir")
 structure_recipes = {
-"chair": ExtResource("7_jgu8k"),
 "double_bed": ExtResource("5_c3avx"),
-"single_armchair": ExtResource("6_8hyrf"),
 "single_bed": ExtResource("4_6elfd"),
-"sofa": ExtResource("8_prec8"),
-"stone_wall": ExtResource("3_8avdf"),
-"table": ExtResource("9_enxgn")
+"stone_wall": ExtResource("3_8avdf")
 }
 npc = ExtResource("4_mrjnr")
 

@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://bi2frsf8veaxo"]
+
+[ext_resource type="Script" uid="uid://d1iksqlqhausg" path="res://Building System/Structure Scenes/SingleArmchair/single_armchair.gd" id="1_hajx5"]
+[ext_resource type="Texture2D" uid="uid://c3tna7kqe1viw" path="res://Building System/Furniture Textures/sofa.png" id="2_hajx5"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bd50w"]
+size = Vector2(224, 144)
+
+[node name="Sofa" type="StaticBody2D"]
+scale = Vector2(0.25, 0.25)
+script = ExtResource("1_hajx5")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_hajx5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_bd50w")

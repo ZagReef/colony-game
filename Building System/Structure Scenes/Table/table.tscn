@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://bxi0gsxho7tt3"]
+
+[ext_resource type="Script" uid="uid://d1iksqlqhausg" path="res://Building System/Structure Scenes/SingleArmchair/single_armchair.gd" id="1_ok4ke"]
+[ext_resource type="Texture2D" uid="uid://q04e6wis577v" path="res://Building System/Furniture Textures/single_table.png" id="2_m3fhv"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bd50w"]
+size = Vector2(144, 152)
+
+[node name="Table" type="StaticBody2D"]
+scale = Vector2(0.35, 0.35)
+script = ExtResource("1_ok4ke")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_m3fhv")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -4)
+shape = SubResource("RectangleShape2D_bd50w")

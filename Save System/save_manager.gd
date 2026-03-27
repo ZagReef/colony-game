@@ -80,6 +80,8 @@ func load_game():
 		ZoneManager.load_save_data(save_data["stockpiles"])
 	if save_data.has("jobs"):
 		JobManager.load_save_data(save_data["jobs"])
+	if save_data.has("seed"):
+		Global.custom_seed = save_data["seed"]
 	Global.is_loading_game = false
 
 func clear_current_world():

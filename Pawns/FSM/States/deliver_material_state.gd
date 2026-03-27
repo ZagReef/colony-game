@@ -15,6 +15,7 @@ func enter(_msg: Dictionary = {}):
 	if job == null:
 		character.next_state_after_move = ""
 		state_machine.change_state("IdleState")
+		return
 	var bp: BluePrint
 	
 	if BuildManager.active_blueprints.has(job.target_map_pos):
@@ -29,11 +30,12 @@ func enter(_msg: Dictionary = {}):
 	
 	var current_cell = Global.current_map.terrain_layer.local_to_map(character.global_position)
 	if char_inventory.item_amount == 0:
-		if current_cell == char_memory.item_pickuo_pos:
+		if current_cell == char_memory.item_pickup_pos:
 			var take_amount = char_memory.reserved_amount
 			var target_mat = char_memory.target_material
 			
 			ItemManager.consume_item(current_cell, take_amount)
+			ZoneManager.new_stockpile_created.emit()
 			
 			char_inventory.carried_item = target_mat
 			char_inventory.item_amount = take_amount
@@ -90,9 +92,14 @@ func enter(_msg: Dictionary = {}):
 	else:
 		var dirs = [Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.ZERO]
 		var is_adjacent = false
-		for dir in dirs:
-			if current_cell + dir == bp.coords:
+		var footprint = bp.get_occupied_tiles()
+		for tile in footprint:
+			var dist_x = abs(current_cell.x - tile.x)
+			var dist_y = abs(current_cell.y - tile.y)
+			
+			if dist_x <= 1 and dist_y <= 1:
 				is_adjacent = true
+				break
 		
 		if is_adjacent:
 			var drop_amount = char_inventory.item_amount
@@ -101,9 +108,6 @@ func enter(_msg: Dictionary = {}):
 			BuildManager.add_materials_to_blueprint(bp.coords, drop_mat, drop_amount)
 			
 			char_inventory.clear_inventory()
-			character.memory.erase("reserved_amount")
-			character.memory.erase("item_pickup_pos")
-			character.memory.erase("target_material")
 			
 			if bp.is_ready_to_build():
 				JobManager.complete_job(job)
@@ -115,6 +119,23 @@ func enter(_msg: Dictionary = {}):
 			character.next_state_after_move = ""
 			state_machine.change_state("IdleState")
 		else:
-			character.move_target = Global.current_map.terrain_layer.map_to_local(bp.coords)
+			var target_pos = bp.coords
+			var found_walkable = false
+			
+			for tile in footprint:
+				var neighbors = [Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP]
+				for offset in neighbors:
+					var neighbor = tile + offset
+					
+					if Global.current_map.is_within_bounds(neighbor.x, neighbor.y):
+						target_pos = neighbor
+						found_walkable = true
+						break
+				
+				if found_walkable:
+					break
+				
+			
+			character.move_target = Global.current_map.terrain_layer.map_to_local(target_pos)
 			character.next_state_after_move = "DeliverMaterialState"
 			state_machine.change_state("MoveState")

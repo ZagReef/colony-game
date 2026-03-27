@@ -157,12 +157,12 @@ func suspend_job(job: Job):
 						if not suspended_jobs.has(curr_job):
 							suspended_jobs.append(curr_job)
 
-func on_stockpile_cell_opened(space_amount: int):
-	var woken_count = 0
+func on_stockpile_cell_opened():
 	for i in range(suspended_jobs.size() - 1, -1, -1):
-		if woken_count >= space_amount:
-			break
 		var job = suspended_jobs[i]
+		
+		if job.job_type == Job.Type.HAUL_ITEMS:
+			continue
 		
 		var ground_item = ItemManager.get_item_at(job.target_map_pos)
 		
@@ -172,7 +172,6 @@ func on_stockpile_cell_opened(space_amount: int):
 		
 		suspended_jobs.remove_at(i)
 		available_jobs.append(job)
-		woken_count += 1
 
 func wake_up_jobs_for_type(item_type: String, capacity_to_fill: int):
 	var filled_so_far = 0
