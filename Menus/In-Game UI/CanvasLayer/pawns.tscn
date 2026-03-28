@@ -33,6 +33,7 @@ grow_horizontal = 2
 visible = false
 custom_minimum_size = Vector2(50, 40)
 layout_mode = 2
+accessibility_name = "template"
 alignment = 1
 
 [node name="PawnTexture" type="TextureRect" parent="PawnPanel/VBoxContainer/PawnContainer"]

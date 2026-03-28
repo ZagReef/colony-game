@@ -105,10 +105,13 @@ func _ready() -> void:
 
 #Diğer oluşum fonksiyonlarını gerekli sırayla çalıştırır.
 func generate_map() -> void:
+	SaveManager.clear_current_world()
 	terrain_layer.clear()
 	object_layer.clear()
 	plant_layer.clear()
 	icon_layer.clear()
+	if InfoMenu.visible:
+		PawnsUI.visible = false
 	if not Global.is_loading_game:
 		if Global.custom_seed == "":
 			Global.custom_seed = str(randi())

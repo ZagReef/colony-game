@@ -86,6 +86,10 @@ func load_game():
 
 func clear_current_world():
 	var old_pawns = get_tree().get_nodes_in_group("Pawn Group")
+	var old_pawnsui = PawnsUI.get_node("PawnPanel/VBoxContainer").get_children()
+	for pawn_ui in old_pawnsui:
+		if pawn_ui.visible:
+			pawn_ui.queue_free()
 	for pawn in old_pawns:
 		pawn.queue_free()
 	

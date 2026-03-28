@@ -10,7 +10,8 @@ func _ready():
 	InfoMenu.pressed_exit.connect(clear_pawns)
 
 func add_pawn(pawn: CharacterBody2D):
-	canvas_layer.visible = true
+	if !InfoMenu.visible:
+		canvas_layer.visible = true
 	var new_container = pawn_container.duplicate()
 	new_container.get_node("PawnTexture").texture = pawn.char_body_texture
 	new_container.get_node("PawnName").text = pawn.char_name
