@@ -48,6 +48,12 @@ layout_mode = 2
 size_flags_horizontal = 4
 text = "LOAD LATEST GAME"
 
+[node name="SaveButton" type="Button" parent="MenuPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "SAVE GAME"
+
 [node name="SettingButton" type="Button" parent="MenuPanel/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2

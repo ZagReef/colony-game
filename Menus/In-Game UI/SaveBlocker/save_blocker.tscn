@@ -1,0 +1,33 @@
+[gd_scene load_steps=3 format=3 uid="uid://dbtq3iebqilr8"]
+
+[ext_resource type="Script" uid="uid://dw5mocapbyo81" path="res://Menus/In-Game UI/SaveBlocker/save_blocker.gd" id="1_67ir8"]
+[ext_resource type="Theme" uid="uid://u313nb2pic47" path="res://Menus/In-Game UI/pawns_menu.tres" id="1_kofjn"]
+
+[node name="SaveBlocker" type="CanvasLayer"]
+visible = false
+script = ExtResource("1_67ir8")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.11764706, 0.11764706, 0.11764706, 0.43137255)
+
+[node name="Label" type="Label" parent="ColorRect"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.35200003
+anchor_top = 0.44900003
+anchor_right = 0.648
+anchor_bottom = 0.551
+offset_left = 114.99597
+offset_top = 21.547974
+offset_right = -114.99597
+offset_bottom = -21.548004
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_kofjn")
+theme_override_font_sizes/font_size = 50
+text = "Saving Game"

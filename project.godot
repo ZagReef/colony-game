@@ -29,6 +29,7 @@ PawnManager="*res://Global Scripts/pawn_manager.gd"
 PawnsUI="*res://Menus/In-Game UI/CanvasLayer/pawns.tscn"
 AudioPlayer="*res://Music Manager/audio_player.tscn"
 InfoMenu="*res://Menus/In-Game UI/InfoMenu/info_menu.tscn"
+SaveBlocker="*res://Menus/In-Game UI/SaveBlocker/save_blocker.tscn"
 
 [debug]
 

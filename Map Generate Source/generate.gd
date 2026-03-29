@@ -97,10 +97,10 @@ func _ready() -> void:
 	selection_box.hide()
 	Global.current_map = self
 	current_tool_mode = Global.ToolMode.NONE
-	Global.map_created.emit()
 	BuildManager.structure_built.connect(_on_structure_built)
 	BuildManager.build_aborted.connect(_on_clear_bp)
 	generate_map()
+	Global.map_created.emit()
 	Global.tool_mode_changed.connect(set_tool_mode)
 
 #Diğer oluşum fonksiyonlarını gerekli sırayla çalıştırır.
@@ -252,6 +252,8 @@ func mark_for_mining(map_pos: Vector2i):
 		#print("kazılmak için işaretlendi: ", map_pos)
 
 func _unhandled_input(event: InputEvent) -> void:
+	if Global.is_saving_game or Global.is_loading_game:
+		return
 	if event.is_action_pressed("ui_cancel"):
 		InfoMenu.visible = !InfoMenu.visible
 		Global.pressed_escape.emit()
@@ -278,8 +280,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	
 	if event is InputEventMouseButton:
 		if current_tool_mode == Global.ToolMode.NONE:
-			if event.button_index == MOUSE_BUTTON_LEFT and not is_dragging:
+			if event.button_index == MOUSE_BUTTON_LEFT and not is_dragging and not event.is_released():
 				work_selection_layer.clear()
+				
 				var coords = terrain_layer.local_to_map(terrain_layer.to_local(get_global_mouse_position()))
 				if is_within_bounds(coords.x, coords.y):
 					var cell = map_data[coords.y][coords.x]
@@ -301,7 +304,9 @@ func _unhandled_input(event: InputEvent) -> void:
 					max_health, current_health)
 					selection_layer.clear()
 					selection_layer.set_cell(coords, 1, icons["selection"])
-			
+			elif event.button_index == MOUSE_BUTTON_RIGHT:
+				PawnsUI.info_panel.hide()
+				selection_layer.clear()
 			if is_dragging:
 				is_dragging = false
 				selection_box.hide()
@@ -312,7 +317,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				is_dragging = false
 				selection_box.hide()
 				work_selection_layer.clear()
-			
+				
 			else:
 				Global.tool_mode_changed.emit(Global.ToolMode.NONE)
 			

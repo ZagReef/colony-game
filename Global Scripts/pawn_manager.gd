@@ -17,7 +17,8 @@ var char_textures: Array[Texture] = [
 var count_npc: int = 4
 
 func _ready() -> void:
-	Global.pressed_escape.connect(clear_pawns)
+	#Global.pressed_escape.connect(clear_pawns)
+	pass
 
 
 func spawn_pawns():
