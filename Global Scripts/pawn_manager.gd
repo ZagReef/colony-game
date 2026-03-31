@@ -1,12 +1,13 @@
 extends Node
 
-var current_pawns: Array
+var current_pawns: Array[PawnPrototype]
 var curr_map: Node2D
 
 const NPC: PackedScene = preload("res://Pawns/pawn_prot.tscn")
 
 signal pawn_spawned(pawn: CharacterBody2D)
 signal pawn_focus_requested(target_pawn: CharacterBody2D)
+signal pawn_focus_cancelled(target_pawn: CharacterBody2D)
 
 var char_textures: Array[Texture] = [
 	load("res://Textures/Character Textures/rimworld_demongirl.png"),
@@ -18,7 +19,9 @@ var count_npc: int = 4
 
 func _ready() -> void:
 	#Global.pressed_escape.connect(clear_pawns)
-	pass
+	pawn_focus_requested.connect(set_char_selection)
+	Global.pawn_selected.connect(set_char_selection)
+	pawn_focus_cancelled.connect(deselect_all_chars)
 
 
 func spawn_pawns():
@@ -77,3 +80,22 @@ func load_save_data(char_data_list: Array):
 
 func clear_pawns():
 	current_pawns.clear()
+
+func set_char_selection(pawn):
+	for curr_pawn in current_pawns:
+		if curr_pawn == pawn:
+			if !curr_pawn.is_selected:
+				curr_pawn.is_selected = true
+				curr_pawn.char_body.self_modulate = Color(0.412, 0.412, 0.412, 1.0)
+			elif curr_pawn.is_selected:
+				curr_pawn.is_selected = false
+				curr_pawn.char_body.self_modulate = Color(1.0, 1.0, 1.0, 1.0)
+		else:
+			if curr_pawn.is_selected:
+				curr_pawn.is_selected = false
+				curr_pawn.char_body.self_modulate = Color(1.0, 1.0, 1.0, 1.0)
+
+func deselect_all_chars():
+	for pawn in current_pawns:
+		pawn.is_selected = false
+		pawn.char_body.self_modulate = Color(1.0, 1.0, 1.0, 1.0)

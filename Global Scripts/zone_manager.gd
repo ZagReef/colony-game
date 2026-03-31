@@ -15,7 +15,7 @@ func cell_in_any_zone(map_pos: Vector2i):
 			return true
 	return false
 
-func get_available_stockpile_cell(item_type: String):
+func get_available_stockpile_cell(item_type: String = "None"):
 	for stockpile in stockpiles:
 		for cell_pos in stockpile.cells:
 			var item_in_cell = ItemManager.get_item_at(cell_pos)

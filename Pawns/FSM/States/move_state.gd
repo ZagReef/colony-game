@@ -30,7 +30,10 @@ func enter(_msg: Dictionary = {}):
 		"""if character.current_job:
 			print("HATA: ", character.name, " yol bulamadı! Hedef: ", character.current_job.target_map_pos)"""
 		
-		if character.global_position.distance_to(target) <= 15:
+		var current_cell = Global.current_map.terrain_layer.local_to_map(character.global_position)
+		var target_cell = Global.current_map.terrain_layer.local_to_map(target)
+		
+		if current_cell == target_cell:
 			if character.next_state_after_move != "":
 				state_machine.change_state(character.next_state_after_move)
 			else:
@@ -51,7 +54,7 @@ func enter(_msg: Dictionary = {}):
 							bp.progress[mat]["incoming"] = 0
 					
 			char_job.worker_black_list.append(character)
-			character.current_job.is_taken = false
+			char_job.is_taken = false
 			character.current_job.worker = null
 			character.current_job = null
 		
@@ -94,7 +97,7 @@ func physics_update(_delta: float):
 				var target_cell = Global.current_map.map_data[target_coords.y][target_coords.x] 
 				current_move_speed = target_cell["speed_multiplier"] * default_move_speed
 	else:
-		character.velocity = character.global_position.direction_to(target_point) * current_move_speed
+		character.velocity = character.global_position.direction_to(target_point) * current_move_speed * Global.sim_speed
 		character.move_and_slide()
 
 func exit():
@@ -110,4 +113,4 @@ func draw_debug_path(path_array: PackedVector2Array):
 	   # Çizgiyi sahneye ekle (Geçici olarak)
 	get_tree().root.add_child(line)
 		# 5 saniye sonra silinsin
-	get_tree().create_timer(5.0).timeout.connect(line.queue_free)
+	get_tree().create_timer(5.0 / Global.sim_speed).timeout.connect(line.queue_free)

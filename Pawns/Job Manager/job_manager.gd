@@ -7,7 +7,6 @@ func _ready():
 	ItemManager.item_dropped_on_ground.connect(on_item_dropped)
 	ZoneManager.new_stockpile_created.connect(on_stockpile_cell_opened)
 	BuildManager.blueprint_created.connect(_on_bp_created)
-	Global.pressed_escape.connect(reset_manager)
 
 func post_job(type: Job.Type, map_pos: Vector2i, world_pos: Vector2, priority: int = 0):
 	var new_job = Job.new()
@@ -50,14 +49,23 @@ func post_job(type: Job.Type, map_pos: Vector2i, world_pos: Vector2, priority: i
 			Global.current_map.icon_layer.set_cell(map_pos, tileset_id, tile_dict["dig"])
 
 func request_job(npc: CharacterBody2D):
+	var min_dist: float = INF
+	var target_job = null
 	for job in available_jobs:
 		# KRİTİK DEĞİŞİKLİK: İş alınmamışsa VE mühürlü değilse ver!
 		if not job.is_taken and not (npc in job.worker_black_list):
-			job.is_taken = true
-			job.worker = npc
-			return job
-		if job.job_type == Job.Type.DELIVER_MATERIAL:
-			pass
+			if job.job_type == Job.Type.HAUL_ITEMS:
+				var is_stockpile_available = ZoneManager.get_available_stockpile_cell()
+				if is_stockpile_available == null:
+					continue
+			var dist = npc.global_position.distance_to(job.target_world_pos)
+			if dist < min_dist:
+				min_dist = dist
+				target_job = job
+	if target_job != null:
+		target_job.is_taken = true
+		target_job.worker = npc
+		return target_job
 	return null
 
 func request_job_type(npc: CharacterBody2D, job_type: Job.Type):
@@ -105,23 +113,30 @@ func check_job(job_map_pos: Vector2i) -> Job:
 func on_item_dropped(coords: Vector2i, item_type: String):
 	var is_needed_for_construction = false
 	
-	for i in range(suspended_jobs.size() - 1, -1, -1):
-		var job = suspended_jobs[i]
-		
+	for job in available_jobs:
 		if job.job_type == Job.Type.DELIVER_MATERIAL:
-			
-			var bp = BuildManager.active_blueprints.get(job.target_map_pos)
-			
-			if bp == null:
-				suspended_jobs.remove_at(i)
-				continue
-			
-			if bp.get_remaining_needs(item_type):
-				
-				suspended_jobs.remove_at(i)
-				available_jobs.append(job)
-				
+			var bp: BluePrint = BuildManager.active_blueprints.get(job.target_map_pos)
+			if bp != null and bp.get_remaining_needs(item_type):
 				is_needed_for_construction = true
+	
+	if not is_needed_for_construction:
+		for i in range(suspended_jobs.size() - 1, -1, -1):
+			var job = suspended_jobs[i]
+			
+			if job.job_type == Job.Type.DELIVER_MATERIAL:
+				
+				var bp = BuildManager.active_blueprints.get(job.target_map_pos)
+				
+				if bp == null:
+					suspended_jobs.remove_at(i)
+					continue
+					
+				if bp.get_remaining_needs(item_type):
+					
+					suspended_jobs.remove_at(i)
+					available_jobs.append(job)
+					
+					is_needed_for_construction = true
 		
 	if not is_needed_for_construction and not ZoneManager.cell_in_any_zone(coords):
 		post_job(Job.Type.HAUL_ITEMS, coords, Global.current_map.terrain_layer.map_to_local(coords), 0)

@@ -102,10 +102,10 @@ func _ready() -> void:
 	generate_map()
 	Global.map_created.emit()
 	Global.tool_mode_changed.connect(set_tool_mode)
+	Global.is_in_game = true
 
 #Diğer oluşum fonksiyonlarını gerekli sırayla çalıştırır.
 func generate_map() -> void:
-	SaveManager.clear_current_world()
 	terrain_layer.clear()
 	object_layer.clear()
 	plant_layer.clear()
@@ -254,10 +254,6 @@ func mark_for_mining(map_pos: Vector2i):
 func _unhandled_input(event: InputEvent) -> void:
 	if Global.is_saving_game or Global.is_loading_game:
 		return
-	if event.is_action_pressed("ui_cancel"):
-		InfoMenu.visible = !InfoMenu.visible
-		Global.pressed_escape.emit()
-		return
 	if event.is_action_pressed("save_game"):
 		SaveManager.save_game_json()
 		return
@@ -281,6 +277,16 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if current_tool_mode == Global.ToolMode.NONE:
 			if event.button_index == MOUSE_BUTTON_LEFT and not is_dragging and not event.is_released():
+				var space_data = get_world_2d().direct_space_state
+				var query = PhysicsPointQueryParameters2D.new()
+				query.position = get_global_mouse_position()
+				query.collision_mask = 2
+				var hit_res = space_data.intersect_point(query)
+				if hit_res.size() > 0:
+					selection_layer.clear()
+					return
+				
+				PawnManager.emit_signal("pawn_focus_cancelled")
 				work_selection_layer.clear()
 				
 				var coords = terrain_layer.local_to_map(terrain_layer.to_local(get_global_mouse_position()))
@@ -300,11 +306,13 @@ func _unhandled_input(event: InputEvent) -> void:
 							max_health = structure_recipes["stone_wall"].health
 						if cell.has("health"):
 							current_health = cell["health"]
+					var job = JobManager.check_job(coords)
 					check_tile_info.emit(cell["ground"], cell["top"], cell["roof"], cell["speed_multiplier"],
-					max_health, current_health)
+					max_health, current_health, job)
 					selection_layer.clear()
 					selection_layer.set_cell(coords, 1, icons["selection"])
 			elif event.button_index == MOUSE_BUTTON_RIGHT:
+				PawnManager.pawn_focus_cancelled.emit()
 				PawnsUI.info_panel.hide()
 				selection_layer.clear()
 			if is_dragging:
@@ -746,6 +754,7 @@ func _on_structure_built(anchor_coords: Vector2i, structure_id: String, footprin
 	match structure_id:
 		"stone_wall":
 			object_layer.set_cell(anchor_coords, new_tileset_id, tiles[structure_id])
+			astar_grid.set_point_solid(anchor_coords, true)
 
 func get_save_data() -> Dictionary:
 	var map_save_array = []
@@ -1030,3 +1039,6 @@ func update_build_preview():
 			if is_within_bounds(coords.x, coords.y):
 				if can_build:
 					work_selection_layer.set_cell(coords, 1, icons["work_selection"])
+
+func _exit_tree() -> void:
+	Global.is_in_game = false

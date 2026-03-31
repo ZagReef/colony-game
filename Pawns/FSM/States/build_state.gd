@@ -44,7 +44,7 @@ func enter(_msg: Dictionary = {}):
 
 func physics_update(delta: float):
 	if is_building:
-		build_time -= delta
+		build_time -= delta * Global.sim_speed
 		if build_time <= 0:
 			is_building = false
 			finish_building()

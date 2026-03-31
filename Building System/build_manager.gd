@@ -10,7 +10,7 @@ signal structure_built(coords: Vector2i, structure_id: String, footprint: Array[
 signal build_aborted(coords: Vector2i)
 
 func _ready() -> void:
-	Global.pressed_escape.connect(reset_manager)
+	pass
 
 func create_blueprint(coords: Vector2i, recipe: StructureRecipe):
 	
@@ -103,15 +103,21 @@ func finish_building(coords: Vector2i):
 
 func get_save_data() -> Array:
 	var bp_save_array = []
+	var saved_anchors = []
 	
 	for coords in active_blueprints.keys():
 		var bp  = active_blueprints[coords]
+		
+		if saved_anchors.has(bp.coords):
+			continue
+		saved_anchors.append(bp.coords)
 		
 		var clean_data = {
 			"x": coords.x,
 			"y": coords.y,
 			"recipe_id": bp.recipe.structure_id,
-			"progress": bp.progress
+			"progress": bp.progress,
+			"facing": bp.facing
 		}
 		
 		bp_save_array.append(clean_data)
@@ -123,22 +129,44 @@ func load_save_data(bp_data_list: Array):
 		var coords = Vector2i(bp["x"], bp["y"])
 		var recipe_id = bp["recipe_id"]
 		var progress = bp["progress"]
+		var facing = bp.get("facing", 0)
 		
 		var recipe = load("res://Building System/Building Recipes/"+ recipe_id +".tres")
 		
-		var restored_bp = BluePrint.new(coords, recipe)
+		var restored_bp: BluePrint = BluePrint.new(coords, recipe)
 		
 		restored_bp.progress = progress
 		
-		active_blueprints[coords] = restored_bp
+		if restored_bp.recipe.ghost_texture != null:
+			var ghost_sprite = Sprite2D.new()
+			ghost_sprite.texture = restored_bp.recipe.ghost_texture
+			ghost_sprite.modulate = Color(0.1, 1.0, 1.0, 0.5)
+			
+			var act_size = restored_bp.recipe.size
+			if restored_bp.facing == 1 or restored_bp.facing == 3:
+				act_size = Vector2i(act_size.y, act_size.x)
+			
+			var anchor_world_pos = Global.current_map.terrain_layer.map_to_local(restored_bp.coords)
+			var center_offset = Vector2(act_size.x - 1, act_size.y - 1) * (Global.current_map.tileMap_cell_size / 2)
+			ghost_sprite.global_position = anchor_world_pos + center_offset
+			ghost_sprite.rotation_degrees = restored_bp.facing * (-90)
+			var ghost_sprite_scale: Vector2
+			
+			if restored_bp.recipe.scene != null:
+				var temp_scene = restored_bp.recipe.scene.instantiate()
+				ghost_sprite_scale = temp_scene.scale
+				temp_scene.queue_free()
+			
+			ghost_sprite.apply_scale(ghost_sprite_scale)
+			Global.current_map.object_layer.add_child(ghost_sprite)
+			restored_bp.visual_node = ghost_sprite
 		
-		var build_icon = Global.current_map.icons["build"]
-		
-		Global.current_map.astar_grid.set_point_solid(coords, true)
+		var footprint = restored_bp.get_occupied_tiles()
+		for tile in footprint:
+			active_blueprints[tile] = restored_bp
+			Global.current_map.icon_layer.set_cell(tile, 2, Global.current_map.icons["deliver"])
 		blueprint_created.emit(restored_bp)
-		
-		Global.current_map.icon_layer.set_cell(coords, 1, build_icon)
-
+	
 func reset_manager():
 	active_blueprints.clear()
 

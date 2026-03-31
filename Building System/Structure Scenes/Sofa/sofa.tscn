@@ -8,6 +8,7 @@ size = Vector2(224, 144)
 
 [node name="Sofa" type="StaticBody2D"]
 scale = Vector2(0.25, 0.25)
+collision_layer = 4
 script = ExtResource("1_hajx5")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

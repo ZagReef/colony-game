@@ -68,7 +68,7 @@ func start_waiting():
 	var wait_time = randf_range(wait_time_min, wait_time_max)
 	
 	#print(wait_time, " kadar bekliyor")
-	get_tree().create_timer(wait_time).timeout.connect(_on_timer_finished)
+	get_tree().create_timer(wait_time/Global.sim_speed).timeout.connect(_on_timer_finished)
 
 func check_for_work():
 	#print("iş kontrol edildi")

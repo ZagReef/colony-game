@@ -28,4 +28,9 @@ func clear_pawns():
 
 func _on_pawn_container_gui_input(event: InputEvent, pawn: CharacterBody2D):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		PawnManager.pawn_focus_requested.emit(pawn)
+		if pawn.is_selected:
+			PawnManager.pawn_focus_cancelled.emit()
+			#print("seçim yapıldı: ", pawn)
+		else:
+			PawnManager.pawn_focus_requested.emit(pawn)
+			Global.current_map.work_selection_layer.clear()

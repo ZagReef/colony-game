@@ -5,7 +5,7 @@ signal item_dropped_on_ground(coords: Vector2i, item_type: String)
 signal item_removed(coords: Vector2i, item_type: String)
 
 func _ready():
-	Global.pressed_escape.connect(reset_manager)
+	pass
 
 func add_item_to_grid(coords: Vector2i, item_type: String, amount: int, item_layer: Node2D, item_scene: PackedScene, map_to_local_func: Callable):
 	if not grid_items.has(coords):

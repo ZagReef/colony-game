@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://f0ll0g3xoagb" path="res://Menus/In-Game UI/InfoMenu/info_menu.gd" id="1_y61bu"]
 
 [node name="InfoMenu" type="CanvasLayer"]
+process_mode = 3
 visible = false
 script = ExtResource("1_y61bu")
 

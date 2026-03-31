@@ -838,6 +838,7 @@ structure_recipes = {
 npc = ExtResource("4_mrjnr")
 
 [node name="Camera2D" type="Camera2D" parent="."]
+process_mode = 3
 position = Vector2(1767, 1304)
 scale = Vector2(3, 3)
 zoom = Vector2(0.3, 0.3)

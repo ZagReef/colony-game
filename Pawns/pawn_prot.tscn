@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://dfgkutowcdnfc" path="res://Pawns/FSM/States/build_state.gd" id="8_2rnqd"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ci6r4"]
+radius = 19.39
 
 [sub_resource type="LabelSettings" id="LabelSettings_rxw6e"]
 font = ExtResource("5_80xj8")
@@ -19,12 +20,13 @@ outline_size = 45
 outline_color = Color(0, 0, 0, 1)
 
 [node name="PawnProt" type="CharacterBody2D" groups=["Pawn Group"]]
+collision_layer = 2
+input_pickable = true
 script = ExtResource("1_rxw6e")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -10)
+process_mode = 3
 shape = SubResource("CircleShape2D_ci6r4")
-disabled = true
 
 [node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("init_st")]
 script = ExtResource("1_xghl8")
@@ -63,5 +65,6 @@ offset_left = -15.999999
 offset_top = 17.999998
 offset_right = 17.0
 offset_bottom = 23.249998
+mouse_filter = 0
 text = "Pawn_Prototype"
 label_settings = SubResource("LabelSettings_rxw6e")

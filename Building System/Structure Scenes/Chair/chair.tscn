@@ -8,6 +8,7 @@ size = Vector2(72, 104)
 
 [node name="Chair" type="StaticBody2D"]
 scale = Vector2(0.25, 0.25)
+collision_layer = 4
 script = ExtResource("1_xehu3")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

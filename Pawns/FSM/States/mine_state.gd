@@ -30,7 +30,7 @@ func physics_update(delta: float):
 	if current_job == null:
 		state_machine.change_state("IdleState")
 		return
-	mining_timer += delta
+	mining_timer += delta * Global.sim_speed
 	if mining_timer >= hit_interval:
 		mining_timer = 0
 		hit_target()

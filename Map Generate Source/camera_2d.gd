@@ -8,8 +8,18 @@ var zoom_factor = 1.1
 var dragging := false
 var last_mouse_pos := Vector2.ZERO
 
+var is_following: bool = false
+var following_pawn: PawnPrototype = null
+signal cam_went
+
 func _ready():
 	PawnManager.pawn_focus_requested.connect(focus_target)
+	PawnManager.pawn_focus_cancelled.connect(unfocus_cam)
+	set_process(false)
+
+func _process(_delta: float) -> void:
+	if is_following and following_pawn != null:
+		global_position = following_pawn.global_position
 
 func _unhandled_input(event):
 	if event is InputEventMouseButton:
@@ -58,8 +68,10 @@ func zoom_to_mouse(factor: float, mouse_pos: Vector2):
 
 func focus_target(target_pawn: CharacterBody2D):
 	#global_position = target_pawn.global_position
+	set_process(false)
 	
 	var tween = create_tween()
+	tween.set_speed_scale(1.0 / Engine.time_scale)
 	
 	tween.tween_property(
 		self,
@@ -68,3 +80,14 @@ func focus_target(target_pawn: CharacterBody2D):
 		0.3
 	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	
+	is_following = true
+	following_pawn = target_pawn
+	
+	await get_tree().create_timer(0.5).timeout
+	
+	set_process(true)
+
+func unfocus_cam():
+	is_following = false
+	following_pawn = null
+	set_process(false)

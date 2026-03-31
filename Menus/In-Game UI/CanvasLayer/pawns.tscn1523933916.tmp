@@ -10,7 +10,6 @@
 [ext_resource type="Script" uid="uid://dr6th1kto4nl1" path="res://Menus/In-Game UI/TimeScaler/time_scaler.gd" id="8_hnuc0"]
 
 [node name="CanvasLayer" type="CanvasLayer"]
-process_mode = 3
 script = ExtResource("1_gqk24")
 
 [node name="PawnPanel" type="Panel" parent="."]
