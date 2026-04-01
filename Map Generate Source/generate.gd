@@ -251,6 +251,10 @@ func mark_for_mining(map_pos: Vector2i):
 		
 		#print("kazılmak için işaretlendi: ", map_pos)
 
+func _process(_delta: float) -> void:
+	var coords = terrain_layer.local_to_map(get_global_mouse_position())
+	PawnsUI.coords_panel.set_coords(coords.x, coords.y)
+
 func _unhandled_input(event: InputEvent) -> void:
 	if Global.is_saving_game or Global.is_loading_game:
 		return
@@ -308,7 +312,7 @@ func _unhandled_input(event: InputEvent) -> void:
 							current_health = cell["health"]
 					var job = JobManager.check_job(coords)
 					check_tile_info.emit(cell["ground"], cell["top"], cell["roof"], cell["speed_multiplier"],
-					max_health, current_health, job)
+					max_health, current_health, job, JobManager.job_in_list(job))
 					selection_layer.clear()
 					selection_layer.set_cell(coords, 1, icons["selection"])
 			elif event.button_index == MOUSE_BUTTON_RIGHT:

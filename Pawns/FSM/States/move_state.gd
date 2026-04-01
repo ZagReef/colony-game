@@ -74,7 +74,7 @@ func enter(_msg: Dictionary = {}):
 		state_machine.change_state("IdleState") 
 		return
 
-func physics_update(_delta: float):
+func physics_update(delta: float):
 	if current_path.is_empty() or current_path_index >= current_path.size():
 		character.velocity = Vector2.ZERO
 		#print(current_path.size())
@@ -87,7 +87,11 @@ func physics_update(_delta: float):
 	
 	var target_point = current_path[current_path_index]
 	
-	if character.global_position.distance_to(target_point) < 5.0:
+	var move_step = current_move_speed * Global.sim_speed * delta
+	var dist = character.global_position.distance_to(target_point)
+	
+	if dist < 5 or dist <= move_step:
+		character.global_position = target_point
 		current_path_index += 1
 		
 		if current_path_index < current_path.size():

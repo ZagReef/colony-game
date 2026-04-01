@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://cts7tmoyn3bim"]
+[gd_scene load_steps=10 format=3 uid="uid://cts7tmoyn3bim"]
 
 [ext_resource type="Script" uid="uid://cbu24nr8ddehu" path="res://Menus/In-Game UI/CanvasLayer/pawns.gd" id="1_gqk24"]
 [ext_resource type="Theme" uid="uid://u313nb2pic47" path="res://Menus/In-Game UI/pawns_menu.tres" id="2_fq6qt"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://bmhs0dvuixjl3" path="res://Menus/In-Game UI/Tile and Pawn Info Menu/info_panel.gd" id="6_7j0e1"]
 [ext_resource type="Script" uid="uid://sldr8bn1useh" path="res://Menus/In-Game UI/FPS Counter/fps_counter.gd" id="7_drciy"]
 [ext_resource type="Script" uid="uid://dr6th1kto4nl1" path="res://Menus/In-Game UI/TimeScaler/time_scaler.gd" id="8_hnuc0"]
+[ext_resource type="Script" uid="uid://df1ab8tet8bym" path="res://Menus/In-Game UI/Coords Panel/coords.gd" id="9_if1mp"]
 
 [node name="CanvasLayer" type="CanvasLayer"]
 process_mode = 3
@@ -283,3 +284,28 @@ ticks_position = 3
 [node name="Label" type="Label" parent="TimeScaler/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Time Scale = 1X"
+
+[node name="CoordsPanel" type="Panel" parent="."]
+custom_minimum_size = Vector2(100, 20)
+offset_top = 40.0
+offset_right = 100.0
+offset_bottom = 40.0
+theme = ExtResource("2_fq6qt")
+script = ExtResource("9_if1mp")
+
+[node name="MarginContainer" type="MarginContainer" parent="CoordsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="Label" type="Label" parent="CoordsPanel/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "X:        Y:"

@@ -3,6 +3,7 @@ extends Node
 var stockpiles: Array[StockpileZone] = []
 
 signal new_stockpile_created(space_amount: int)
+signal stockpile_item_consumed(space_amount: int, item_type: String)
 
 func _ready() -> void:
 	Global.pressed_escape.connect(reset_manager)

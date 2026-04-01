@@ -61,7 +61,7 @@ func create_blueprint_from_ghost(ghost_bp: BluePrint):
 
 func add_materials_to_blueprint(coords: Vector2i, item_type: String, amount: int):
 	if active_blueprints.has(coords):
-		var bp = active_blueprints[coords]
+		var bp: BluePrint = active_blueprints[coords]
 		
 		if bp.progress.has(item_type):
 			bp.progress[item_type]["incoming"] -= amount
@@ -69,6 +69,7 @@ func add_materials_to_blueprint(coords: Vector2i, item_type: String, amount: int
 			
 			if bp.is_ready_to_build():
 				ready_to_build.emit(bp)
+				Global.current_map.astar_grid.set_point_solid(bp.coords, true)
 
 func finish_building(coords: Vector2i):
 	if active_blueprints.has(coords):
@@ -129,13 +130,18 @@ func load_save_data(bp_data_list: Array):
 		var coords = Vector2i(bp["x"], bp["y"])
 		var recipe_id = bp["recipe_id"]
 		var progress = bp["progress"]
-		var facing = bp.get("facing", 0)
+		var facing = int(bp.get("facing", 0))
+		
+		for mat in progress.keys():
+			if progress[mat].has("incoming"):
+				progress[mat]["incoming"] = 0
 		
 		var recipe = load("res://Building System/Building Recipes/"+ recipe_id +".tres")
 		
 		var restored_bp: BluePrint = BluePrint.new(coords, recipe)
 		
 		restored_bp.progress = progress
+		restored_bp.facing = facing
 		
 		if restored_bp.recipe.ghost_texture != null:
 			var ghost_sprite = Sprite2D.new()

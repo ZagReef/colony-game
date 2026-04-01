@@ -34,8 +34,24 @@ func enter(_msg: Dictionary = {}):
 			var take_amount = char_memory.reserved_amount
 			var target_mat = char_memory.target_material
 			
+			var ground_item = ItemManager.get_item_at(current_cell)
+			
+			if ground_item == null:
+				if bp.progress.has(target_mat):
+					bp.progress[target_mat]["incoming"] -= take_amount
+					if bp.progress[target_mat]["incoming"] < 0:
+						bp.progress[target_mat]["incoming"] = 0
+				
+				job.worker = null
+				job.is_taken = false
+				
+				character.current_job = null
+				character.next_state_after_move = ""
+				
+				state_machine.change_state("IdleState")
+				return
+			ZoneManager.stockpile_item_consumed.emit(take_amount, target_mat)
 			ItemManager.consume_item(current_cell, take_amount)
-			ZoneManager.new_stockpile_created.emit()
 			
 			char_inventory.carried_item = target_mat
 			char_inventory.item_amount = take_amount

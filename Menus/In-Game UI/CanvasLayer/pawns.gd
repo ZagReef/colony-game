@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 @onready var info_panel = $TilePawnInfo
+@onready var coords_panel = $CoordsPanel
 
 func _ready():
 	self.visible = false

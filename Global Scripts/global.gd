@@ -18,3 +18,13 @@ var start_pawn_count: int = 1
 var custom_seed: String = ""
 var custom_threshold: int = 4
 var sim_speed: float = 1.0
+
+func _ready() -> void:
+	InfoMenu.pressed_exit.connect(reset_all_managers)
+
+func reset_all_managers():
+	PawnManager.clear_pawns()
+	ItemManager.reset_manager()
+	JobManager.reset_manager()
+	ZoneManager.reset_manager()
+	BuildManager.reset_manager()

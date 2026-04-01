@@ -17,7 +17,7 @@ func _ready():
 	PawnManager.pawn_focus_cancelled.connect(clear_panel)
 	set_process(false)
 
-func show_tile_info(item_ground: String, item_top: String, item_roof: String, speed_multiplier: float, item_max_health: int, item_current_health: int, assigned_job = null):
+func show_tile_info(item_ground: String, item_top: String, item_roof: String, speed_multiplier: float, item_max_health: int, item_current_health: int, assigned_job = null, assigned_job_list = "None"):
 	self.visible = true
 	tracked_pawn = null
 	tracked_job = assigned_job
@@ -26,7 +26,7 @@ func show_tile_info(item_ground: String, item_top: String, item_roof: String, sp
 	
 	if tracked_job != null:
 		var job_string = tracked_job.Type.find_key(tracked_job.job_type)
-		text += "\nJob: " + str(job_string)
+		text += "\nJob: " + str(job_string) + "\nJobList: " + str(assigned_job_list)
 		info_label.text = text
 		set_process(false)
 	elif item_max_health > 0:

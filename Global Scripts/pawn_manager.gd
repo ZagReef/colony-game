@@ -97,5 +97,6 @@ func set_char_selection(pawn):
 
 func deselect_all_chars():
 	for pawn in current_pawns:
-		pawn.is_selected = false
-		pawn.char_body.self_modulate = Color(1.0, 1.0, 1.0, 1.0)
+		if pawn in current_pawns:
+			pawn.is_selected = false
+			pawn.char_body.self_modulate = Color(1.0, 1.0, 1.0, 1.0)

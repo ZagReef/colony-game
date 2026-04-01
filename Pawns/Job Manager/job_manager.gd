@@ -6,6 +6,7 @@ var suspended_jobs: Array[Job] = []
 func _ready():
 	ItemManager.item_dropped_on_ground.connect(on_item_dropped)
 	ZoneManager.new_stockpile_created.connect(on_stockpile_cell_opened)
+	ZoneManager.stockpile_item_consumed.connect(_on_item_consumed)
 	BuildManager.blueprint_created.connect(_on_bp_created)
 
 func post_job(type: Job.Type, map_pos: Vector2i, world_pos: Vector2, priority: int = 0):
@@ -55,7 +56,12 @@ func request_job(npc: CharacterBody2D):
 		# KRİTİK DEĞİŞİKLİK: İş alınmamışsa VE mühürlü değilse ver!
 		if not job.is_taken and not (npc in job.worker_black_list):
 			if job.job_type == Job.Type.HAUL_ITEMS:
-				var is_stockpile_available = ZoneManager.get_available_stockpile_cell()
+				var ground_item = ItemManager.get_item_at(job.target_map_pos)
+				
+				if ground_item == null:
+					continue
+				
+				var is_stockpile_available = ZoneManager.get_available_stockpile_cell(ItemManager.grid_items[job.target_map_pos]["type"])
 				if is_stockpile_available == null:
 					continue
 			var dist = npc.global_position.distance_to(job.target_world_pos)
@@ -93,7 +99,7 @@ func abort_job(job: Job):
 	map_data[job.target_map_pos.y][job.target_map_pos.x]["marked_for_mining"] = false
 	curr_map.icon_layer.erase_cell(job.target_map_pos)
 	for pawn in PawnManager.current_pawns:
-		if pawn.current_job ==  job:
+		if pawn.current_job == job:
 			pawn.current_job = null
 			pawn.next_state_after_move = ""
 			pawn.state_machine.change_state("IdleState")
@@ -106,7 +112,7 @@ func check_job(job_map_pos: Vector2i) -> Job:
 		if job.target_map_pos == job_map_pos:
 			return job
 	for job in suspended_jobs:
-		if job.job_type == Job.Type.HAUL_ITEMS and job.target_map_pos == job_map_pos:
+		if (job.job_type == Job.Type.HAUL_ITEMS or job.job_type == Job.Type.DELIVER_MATERIAL) and job.target_map_pos == job_map_pos:
 			return job
 	return null
 
@@ -176,7 +182,7 @@ func on_stockpile_cell_opened():
 	for i in range(suspended_jobs.size() - 1, -1, -1):
 		var job = suspended_jobs[i]
 		
-		if job.job_type == Job.Type.HAUL_ITEMS:
+		if job.job_type != Job.Type.HAUL_ITEMS:
 			continue
 		
 		var ground_item = ItemManager.get_item_at(job.target_map_pos)
@@ -195,6 +201,9 @@ func wake_up_jobs_for_type(item_type: String, capacity_to_fill: int):
 			break
 		
 		var job = suspended_jobs[i]
+		if job.job_type != Job.Type.HAUL_ITEMS:
+			continue
+		
 		var ground_item = ItemManager.get_item_at(job.target_map_pos)
 		
 		if ground_item == null or ZoneManager.cell_in_any_zone(job.target_map_pos):
@@ -249,3 +258,36 @@ func abort_haul_job_coords(coords: Vector2i):
 func reset_manager():
 	available_jobs.clear()
 	suspended_jobs.clear()
+
+func _on_item_consumed(item_amount: int, item_type: String):
+	var space_freed = item_amount
+	
+	for i in range(suspended_jobs.size() - 1, -1, -1):
+		if space_freed <= 0:
+			break
+		
+		var job = suspended_jobs[i]
+		
+		if job.job_type != Job.Type.HAUL_ITEMS:
+			continue
+		
+		var ground_item = ItemManager.get_item_at(job.target_map_pos)
+		
+		if ground_item == null:
+			suspended_jobs.remove_at(i)
+			continue
+		
+		if ground_item["type"] == item_type:
+			var available_cell = ZoneManager.get_available_stockpile_cell(item_type)
+			suspended_jobs.remove_at(i)
+			available_jobs.append(job)
+			
+			space_freed -= ground_item["amount"]
+
+func job_in_list(job: Job):
+	for _job in available_jobs:
+		if _job == job:
+			return("Available")
+	for _job in suspended_jobs:
+		if _job == job:
+			return("Suspended")
