@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://bmynnjl7kdi7x"]
+[gd_scene load_steps=13 format=3 uid="uid://bmynnjl7kdi7x"]
 
 [ext_resource type="Script" uid="uid://b5i7nwjspphdv" path="res://Pawns/pawn_prot.gd" id="1_rxw6e"]
 [ext_resource type="Script" uid="uid://da1p88vedfj0u" path="res://Pawns/FSM/state_machine.gd" id="1_xghl8"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://mo06u2fx4o46" path="res://Pawns/FSM/States/haul_state.gd" id="6_hw5jg"]
 [ext_resource type="Script" uid="uid://dh72wcf2nql12" path="res://Pawns/FSM/States/deliver_material_state.gd" id="7_2d5kc"]
 [ext_resource type="Script" uid="uid://dfgkutowcdnfc" path="res://Pawns/FSM/States/build_state.gd" id="8_2rnqd"]
+[ext_resource type="Script" uid="uid://gp0s72m1bacd" path="res://Pawns/FSM/States/deconstruct_state.gd" id="9_7gixv"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ci6r4"]
 radius = 19.39
@@ -57,6 +58,12 @@ metadata/_custom_type_script = "uid://dh72wcf2nql12"
 script = ExtResource("8_2rnqd")
 metadata/_custom_type_script = "uid://dfgkutowcdnfc"
 
+[node name="DeconstructState" type="Node" parent="StateMachine"]
+script = ExtResource("9_7gixv")
+hit_interval = 0.5
+damage_per_hit = 30
+metadata/_custom_type_script = "uid://gp0s72m1bacd"
+
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.1, 0.1)
 
@@ -68,3 +75,4 @@ offset_bottom = 23.249998
 mouse_filter = 0
 text = "Pawn_Prototype"
 label_settings = SubResource("LabelSettings_rxw6e")
+horizontal_alignment = 1

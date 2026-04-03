@@ -80,16 +80,18 @@ func check_for_work():
 		
 		character.move_target = found_job.target_world_pos
 		
-		if job_type == Job.Type.HAUL_ITEMS:
-			character.next_state_after_move = "HaulState"
-		elif job_type in [Job.Type.WOOD_CUTTING, Job.Type.MINING, Job.Type.DIGGING]:
-			character.next_state_after_move = "MineState"
-		elif job_type == Job.Type.DELIVER_MATERIAL:
-			character.move_target = character.global_position
-			character.next_state_after_move = "DeliverMaterialState"
-		elif job_type == Job.Type.BUILD_STRUCTURE:
-			character.next_state_after_move = "BuildState"
-		
+		match job_type:
+			Job.Type.HAUL_ITEMS:
+				character.next_state_after_move = "HaulState"
+			Job.Type.WOOD_CUTTING, Job.Type.MINING, Job.Type.DIGGING:
+				character.next_state_after_move = "MineState"
+			Job.Type.DELIVER_MATERIAL:
+				character.move_target = character.global_position
+				character.next_state_after_move = "DeliverMaterialState"
+			Job.Type.BUILD_STRUCTURE:
+				character.next_state_after_move = "BuildState"
+			Job.Type.DECONSTRUCT:
+				character.next_state_after_move = "DeconstructState"
 		state_machine.change_state("MoveState")
 		return true
 	return false

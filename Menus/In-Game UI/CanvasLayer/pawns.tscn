@@ -114,6 +114,10 @@ text = "Cancel Job"
 layout_mode = 2
 text = "Allow Items"
 
+[node name="Deconstruct" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer"]
+layout_mode = 2
+text = "Deconstruct"
+
 [node name="Building" type="MarginContainer" parent="ActionSelectionPanel/TabContainer"]
 visible = false
 layout_mode = 2

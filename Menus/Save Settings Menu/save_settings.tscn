@@ -95,6 +95,30 @@ max_value = 7.0
 value = 5.0
 rounded = true
 
+[node name="SeedContainer2" type="HBoxContainer" parent="CanvasLayer/Panel/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="CanvasLayer/Panel/VBoxContainer/SeedContainer2"]
+layout_mode = 2
+theme = ExtResource("2_nf7x8")
+text = "Width:"
+
+[node name="Width" type="LineEdit" parent="CanvasLayer/Panel/VBoxContainer/SeedContainer2"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+placeholder_text = "50-300"
+
+[node name="Label2" type="Label" parent="CanvasLayer/Panel/VBoxContainer/SeedContainer2"]
+layout_mode = 2
+theme = ExtResource("2_nf7x8")
+text = "Height:"
+
+[node name="Height" type="LineEdit" parent="CanvasLayer/Panel/VBoxContainer/SeedContainer2"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+placeholder_text = "50-300"
+
 [node name="CreateButton" type="Button" parent="CanvasLayer/Panel/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 10

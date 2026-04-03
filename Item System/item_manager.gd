@@ -15,7 +15,7 @@ func add_item_to_grid(coords: Vector2i, item_type: String, amount: int, item_lay
 		new_item.global_position = map_to_local_func.call(coords)
 		item_layer.add_child(new_item)
 		new_item.disp_amount(amount)
-			
+		
 		grid_items[coords] = {
 				"type": item_type,
 				"amount": amount,

@@ -29,6 +29,8 @@ var is_selected: bool = false
 func _ready():
 	char_name = "PawnPrototype"
 	char_body.texture = char_body_texture
+	if char_body_texture == load("res://Textures/Character Textures/jamal.png"):
+		char_name = "Jamal"
 	character_inventory = PawnInventory.new()
 	character_inventory.max_capacity = 25
 	label.text = char_name

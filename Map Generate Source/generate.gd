@@ -18,15 +18,15 @@ signal check_tile_info(tile_ground: String, tile_top: String, tile_roof: String,
 
 @export var structure_recipes: Dictionary = {}
 
-@onready var terrain_layer = $Layers/TerrainLayer
-@onready var object_layer = $Layers/Ysorted/ObjectLayer
-@onready var plant_layer = $Layers/Ysorted/PlantLayer
-@onready var icon_layer = $Layers/IconLayer
-@onready var item_layer = $Layers/Ysorted/ItemLayer
-@onready var zone_layer = $Layers/ZoneLayer
-@onready var roof_layer = $Layers/RoofLayer
-@onready var selection_layer = $Layers/SelectionLayer
-@onready var work_selection_layer = $Layers/WorkSelectionLayer
+@onready var terrain_layer: TileMapLayer = $Layers/TerrainLayer
+@onready var object_layer: TileMapLayer = $Layers/Ysorted/ObjectLayer
+@onready var plant_layer: TileMapLayer = $Layers/Ysorted/PlantLayer
+@onready var icon_layer: TileMapLayer = $Layers/IconLayer
+@onready var item_layer: TileMapLayer = $Layers/Ysorted/ItemLayer
+@onready var zone_layer: TileMapLayer = $Layers/ZoneLayer
+@onready var roof_layer: TileMapLayer = $Layers/RoofLayer
+@onready var selection_layer: TileMapLayer = $Layers/SelectionLayer
+@onready var work_selection_layer: TileMapLayer = $Layers/WorkSelectionLayer
 
 var tileMap_cell_size = 32
 @export var width = 100
@@ -41,6 +41,7 @@ var ore_types: Array[String] = ["stone", "iron", "gold", "copper"]
 var dirt_res: Array[String] = ["clay"]
 var ground_types: Array[String] = ["grass", "dirt"]
 var structures: Array[String] = ["stone_wall"]
+var deconstructables: Array = []
 
 var speed_multipliers: Dictionary = {
 	"dirt": 1,
@@ -76,9 +77,10 @@ var icons: Dictionary = {
 	"build": Vector2i(10, 5),
 	"deliver": Vector2i(4, 2),
 	"dig": Vector2i(9, 5),
+	"deconstruct": Vector2i(7, 6),
 	"selection": Vector2i(5, 4),
 	"mine_selection": Vector2i(4, 3),
-	"work_selection": Vector2i(0, 10)
+	"work_selection": Vector2i(0, 10),
 }
 
 var map_data = []
@@ -94,6 +96,10 @@ var it = 10
 var astar_grid = AStarGrid2D.new()
 
 func _ready() -> void:
+	width = Global.map_width
+	height = Global.map_height
+	SaveManager.clear_current_world()
+	deconstructables = structure_recipes.keys()
 	selection_box.hide()
 	Global.current_map = self
 	current_tool_mode = Global.ToolMode.NONE
@@ -122,10 +128,18 @@ func generate_map() -> void:
 		initialize_map()
 		for i in it:
 			smooth_map()
-		generate_veins("iron", 8, 20)
-		generate_veins("gold", 5, 10)
-		generate_veins("copper", 15, 20)
-		generate_floor_res("clay", 6, 10)
+		var stones = 0
+		for y in height:
+			for x in width:
+				if map_data[y][x]["top"] == "stone":
+					stones += 1
+		print(stones)
+		var ore_ratio = stones * 0.0004
+		print(ore_ratio)
+		generate_veins("iron", int(8 * ore_ratio), 20)
+		generate_veins("gold", int(5 * ore_ratio), 10)
+		generate_veins("copper", int(15 * ore_ratio), 20)
+		generate_floor_res("clay", int(6 * ore_ratio), 10)
 		spawn_trees()
 		
 		print_map()
@@ -431,6 +445,14 @@ func process_selection_area(selected_tiles: Array[Vector2i]):
 			Global.ToolMode.DIG:
 				if cell_type in dirt_res:
 					assign_job_to_cell(current_map_pos, cell_world_pos, Job.Type.DIGGING)
+			Global.ToolMode.DECONSTRUCT:
+				var target_coords = current_map_pos
+				if cell_type in deconstructables:
+					if cell.has("shared_data") and cell["shared_data"] != null:
+						target_coords = cell["shared_data"]["anchor"]
+					if JobManager.check_job(target_coords):
+						continue
+					assign_job_to_cell(target_coords, terrain_layer.map_to_local(target_coords), Job.Type.DECONSTRUCT)
 	if stockpile.size() > 0:
 		ZoneManager.create_stockpile(stockpile)
 	work_selection_layer.clear()
@@ -491,10 +513,14 @@ func process_selection_area(selected_tiles: Array[Vector2i]):
 
 func assign_job_to_cell(map_pos: Vector2i, mouse_pos: Vector2, job_type: int):
 	var cell = map_data[map_pos.y][map_pos.x]
+	var priority = 1
+	
+	if job_type == Job.Type.HAUL_ITEMS or job_type == Job.Type.DELIVER_MATERIAL:
+		priority = 0
 	
 	if not cell["marked_for_mining"]:
 		cell["marked_for_mining"] = true
-		JobManager.post_job(job_type,map_pos, mouse_pos, 1)
+		JobManager.post_job(job_type,map_pos, mouse_pos, priority)
 		#print("yeni iş atandı: ", map_pos, " ", job_type)
 
 func is_within_bounds(x, y) -> bool:
@@ -513,6 +539,7 @@ func spawn_trees():
 	if walk_pos.is_empty():
 		print("yürünebilir alan yok!")
 		return
+	count_tree = int(walk_pos.size() * 0.25)
 	#print(walk_pos.size())
 	for i in range(count_tree):
 		var pos = walk_pos.pick_random()
@@ -536,6 +563,7 @@ func damage_tile(coords: Vector2i, amount: int):
 			
 			if s_data["health"] <= 0:
 				var prev_type = cell["top"]
+				var anchor = s_data["anchor"]
 				
 				for tile in s_data["footprint"]:
 					var t_cell = map_data[tile.y][tile.x]
@@ -543,16 +571,19 @@ func damage_tile(coords: Vector2i, amount: int):
 					t_cell["shared_data"] = null
 					t_cell["marked_for_mining"] = false
 					astar_grid.set_point_solid(tile, false)
-					var node_name = "Structure_" + str(s_data["anchor"].x) + "_" + str(s_data["anchor"].y)
-					var node_to_delete = object_layer.get_node_or_null(node_name)
-					if node_to_delete:
-						node_to_delete.queue_free()
-					
-					spawn_loot(s_data["anchor"], prev_type)
-					JobManager.wake_up_jobs()
-					update_roofs_after_mining(coords)
+					update_roofs_after_mining(tile)
+				var node_name = "Structure_" + str(s_data["anchor"].x) + "_" + str(s_data["anchor"].y)
+				var node_to_delete = object_layer.get_node_or_null(node_name)
+				#print(node_to_delete)
+				if node_to_delete:
+					node_to_delete.queue_free()
+				else:
+					object_layer.erase_cell(anchor)
+				spawn_loot(anchor, prev_type)
+				JobManager.wake_up_jobs()
 				return true
-		
+			return false
+			
 		cell["health"] -= amount
 		#print("Duvar canı: ", cell.health)
 		
@@ -561,7 +592,7 @@ func damage_tile(coords: Vector2i, amount: int):
 			cell["top"] = "none"
 			cell["marked_for_mining"] = false
 			spawn_loot(coords, prev_type)
-			if prev_type in ore_types or prev_type in dirt_res:
+			if prev_type in ore_types or prev_type in dirt_res or prev_type in structures:
 				object_layer.erase_cell(coords)
 			if prev_type in ore_types:
 				roof_layer.set_cell(coords, 2, Vector2i(0 ,0))
@@ -599,7 +630,7 @@ func set_astar_grid():
 		astar_grid.set_point_solid(tile, true)
 	for tile in plant_layer.get_used_cells_by_id(1, tiles["tree"]):
 		astar_grid.set_point_solid(tile, false)
-	for tile in object_layer.get_used_cells_by_id(1, tiles["clay"]):
+	for tile in object_layer.get_used_cells_by_id(3, tiles["clay"]):
 		astar_grid.set_point_solid(tile, false)
 
 func spawn_loot(grid_coords: Vector2i, type: String):
@@ -612,6 +643,12 @@ func spawn_loot(grid_coords: Vector2i, type: String):
 	if tile_resources.has(type):
 		drop_amount = randi_range(tile_resources[type].drop_min, tile_resources[type].drop_max)
 		drop_name = tile_resources[type].drop_material
+	
+	if structure_recipes.has(type):
+		var recipe: StructureRecipe = structure_recipes[type]
+		for mat in recipe.materials.keys():
+			drop_amount = recipe.materials[mat] * (randf_range(0.1, 0.5))
+			drop_name = mat
 	
 	if drop_amount <= 0:
 		return
@@ -778,26 +815,28 @@ func get_save_data() -> Dictionary:
 					"cell_info": clean_cell
 				})
 				
-				if cell_data.has("shared_data") and cell_data != null:
-					var s_data = cell_data["shared_data"]
+				var s_data = cell_data.get("shared_data")
+				
+				if typeof(s_data) == TYPE_DICTIONARY and s_data.has("anchor"):
 					var anchor_key = str(s_data["anchor"].x) + "_" + str(s_data["anchor"].y)
 					
 					if not processed_anchors.has(anchor_key):
 						processed_anchors[anchor_key] = true
 						
 						var safe_footprint = []
-						for pos in s_data["footprint"]:
-							safe_footprint.append({"x": pos.x, "y": pos.y})
-							
-							var safe_s_data = {
-								"health": s_data["health"],
-								"max_health": s_data["max_health"],
-								"anchor_x": s_data["anchor"].x,
-								"anchor_y": s_data["anchor"].y,
-								"facing": s_data["facing"],
-								"footprint": safe_footprint
-							}
-							structure_save_array.append(safe_s_data)
+						if s_data.has("footprint"):
+							for pos in s_data["footprint"]:
+								safe_footprint.append({"x": pos.x, "y": pos.y})
+						
+						var safe_s_data = {
+							"health": s_data["health"],
+							"max_health": s_data["max_health"],
+							"anchor_x": s_data["anchor"].x,
+							"anchor_y": s_data["anchor"].y,
+							"facing": s_data["facing"],
+							"footprint": safe_footprint
+						}
+						structure_save_array.append(safe_s_data)
 	return {"map_cells": map_save_array,
 			"structures": structure_save_array
 			}

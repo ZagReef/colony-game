@@ -4,7 +4,6 @@
 [ext_resource type="Texture2D" uid="uid://wxvcua6jwwsf" path="res://Textures/Character Textures/MapSprite.png" id="2_cf7ik"]
 [ext_resource type="PackedScene" uid="uid://dldrkj410dw2o" path="res://Item System/item_drop.tscn" id="2_qodir"]
 [ext_resource type="Resource" uid="uid://cnky0310wnq1h" path="res://Building System/Building Recipes/stone_wall.tres" id="3_8avdf"]
-[ext_resource type="Script" uid="uid://bar7nne2xurwj" path="res://Map Generate Source/camera_2d.gd" id="3_585ge"]
 [ext_resource type="Resource" uid="uid://cvb3117xcx6fg" path="res://Building System/Building Recipes/single_bed.tres" id="4_6elfd"]
 [ext_resource type="PackedScene" uid="uid://bmynnjl7kdi7x" path="res://Pawns/pawn_prot.tscn" id="4_mrjnr"]
 [ext_resource type="Resource" uid="uid://wsn5uoanm42a" path="res://Building System/Building Recipes/double_bed.tres" id="5_c3avx"]
@@ -17,6 +16,7 @@
 [ext_resource type="Resource" uid="uid://cd7tdl5up8m6w" path="res://Building System/Building Recipes/table.tres" id="9_enxgn"]
 [ext_resource type="Texture2D" uid="uid://cjxc6y6rai4s7" path="res://Textures/Tile Textures/tilemap_packed_colony_game.png" id="10_trlex"]
 [ext_resource type="Texture2D" uid="uid://c4en0qgp3svy2" path="res://Textures/Tile Textures/tilemap_packed-export.png" id="11_fx1ye"]
+[ext_resource type="Script" uid="uid://bar7nne2xurwj" path="res://Map Generate Source/camera_2d.gd" id="11_jgu8k"]
 [ext_resource type="Texture2D" uid="uid://btbfd3g1vxb4o" path="res://Textures/Tile Textures/tilemap_packed.png" id="12_ykx05"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_c11f8"]
@@ -842,7 +842,7 @@ process_mode = 3
 position = Vector2(1767, 1304)
 scale = Vector2(3, 3)
 zoom = Vector2(0.3, 0.3)
-script = ExtResource("3_585ge")
+script = ExtResource("11_jgu8k")
 
 [node name="Layers" type="Node2D" parent="."]
 y_sort_enabled = true

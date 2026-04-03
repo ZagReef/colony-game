@@ -5,7 +5,8 @@ extends Panel
 	"cut_tree": $TabContainer/Orders/GridContainer/CutTree,
 	"cancel_job": $TabContainer/Orders/GridContainer/CancelJob,
 	"allow_items": $TabContainer/Orders/GridContainer/AllowItem,
-	"dig_ground": $TabContainer/Orders/GridContainer/Dig
+	"dig_ground": $TabContainer/Orders/GridContainer/Dig,
+	"deconstruct": $TabContainer/Orders/GridContainer/Deconstruct
 }
 @onready var build_array: Dictionary = {
 	"stone_wall": $TabContainer/Building/GridContainer/StoneWall,
@@ -44,6 +45,8 @@ func _on_job_button_pressed(button: String):
 			tool_mode = Global.ToolMode.ALLOW_ITEM
 		"dig_ground":
 			tool_mode = Global.ToolMode.DIG
+		"deconstruct":
+			tool_mode = Global.ToolMode.DECONSTRUCT
 	Global.tool_mode_changed.emit(tool_mode)
 
 func _on_build_button_pressed(button: String):

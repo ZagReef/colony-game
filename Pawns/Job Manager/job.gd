@@ -2,7 +2,7 @@ extends Resource
 
 class_name Job
 
-enum Type {WOOD_CUTTING, MINING, HAUL_ITEMS, DELIVER_MATERIAL, BUILD_STRUCTURE, DIGGING}
+enum Type {WOOD_CUTTING, MINING, HAUL_ITEMS, DELIVER_MATERIAL, BUILD_STRUCTURE, DIGGING, DECONSTRUCT}
 
 var job_type: Type
 var target_world_pos: Vector2

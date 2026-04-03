@@ -12,7 +12,8 @@ signal pawn_focus_cancelled(target_pawn: CharacterBody2D)
 var char_textures: Array[Texture] = [
 	load("res://Textures/Character Textures/rimworld_demongirl.png"),
 	load("res://Textures/Character Textures/rimworld_buffedguy.png"),
-	load("res://Textures/Character Textures/rimworld_characters.png")
+	load("res://Textures/Character Textures/rimworld_characters.png"),
+	load("res://Textures/Character Textures/jamal.png")
 ]
 
 var count_npc: int = 4
@@ -70,6 +71,9 @@ func load_save_data(char_data_list: Array):
 		get_tree().current_scene.get_node("Layers/Ysorted").add_child(new_pawn)
 		
 		new_pawn.char_body_texture = load(char_data["texture"])
+		if new_pawn.char_body_texture == load("res://Textures/Character Textures/jamal.png"):
+			new_pawn.char_name = "Jamal"
+			new_pawn.label.text = "Jamal"
 		new_pawn.get_node("Sprite2D").texture = new_pawn.char_body_texture
 		
 		new_pawn.character_inventory.carried_item = char_data["carried_item"]

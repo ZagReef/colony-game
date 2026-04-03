@@ -24,6 +24,8 @@ func post_job(type: Job.Type, map_pos: Vector2i, world_pos: Vector2, priority: i
 	new_job.job_type = type
 	new_job.target_world_pos = world_pos
 	new_job.priority = priority
+	if type == Job.Type.HAUL_ITEMS and  !ItemManager.grid_items.has(map_pos):
+		return
 	
 	if Global.is_loading_game and type == Job.Type.HAUL_ITEMS and ItemManager.grid_items.has(new_job.target_map_pos) and ZoneManager.get_available_stockpile_cell(ItemManager.grid_items[new_job.target_map_pos]["type"]) != null:
 		suspended_jobs.append(new_job)
@@ -48,6 +50,8 @@ func post_job(type: Job.Type, map_pos: Vector2i, world_pos: Vector2, priority: i
 				print("zortingen oldu: ",map_pos)
 		Job.Type.DIGGING:
 			Global.current_map.icon_layer.set_cell(map_pos, tileset_id, tile_dict["dig"])
+		Job.Type.DECONSTRUCT:
+			Global.current_map.icon_layer.set_cell(map_pos, tileset_id, tile_dict["deconstruct"])
 
 func request_job(npc: CharacterBody2D):
 	var min_dist: float = INF
