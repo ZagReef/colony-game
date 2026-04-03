@@ -141,4 +141,20 @@ func clear_current_world():
 	JobManager.available_jobs.clear()
 	JobManager.suspended_jobs.clear()
 	BuildManager.active_blueprints.clear()
+
+func load_metadata():
+	if not FileAccess.file_exists("user://save_game.json"):
+		return
+		
+	var file = FileAccess.open("user://save_game.json", FileAccess.READ)
+	var json_string = file.get_as_text()
+	var json = JSON.new()
+	var parse_result = json.parse(json_string)
 	
+	if parse_result == OK:
+		var data = json.get_data()
+		if data.has("metadata"):
+			var meta = data["metadata"]
+			Global.map_width = meta.get("map_width", 100) # Değer yoksa varsayılan 100
+			Global.map_height = meta.get("map_height", 100)
+			Global.custom_seed = meta.get("seed", "")

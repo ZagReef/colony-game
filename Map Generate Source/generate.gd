@@ -147,6 +147,9 @@ func generate_map() -> void:
 		
 		PawnManager.spawn_pawns()
 	else:
+		SaveManager.load_metadata()
+		width = Global.map_width
+		height = Global.map_height
 		SaveManager.load_game()
 		Global.is_loading_game = false
 
@@ -837,7 +840,11 @@ func get_save_data() -> Dictionary:
 							"footprint": safe_footprint
 						}
 						structure_save_array.append(safe_s_data)
-	return {"map_cells": map_save_array,
+	return {"meta_data": {
+			"map_width": Global.map_width,
+			"map_height": Global.map_height
+			},
+			"map_cells": map_save_array,
 			"structures": structure_save_array
 			}
 
