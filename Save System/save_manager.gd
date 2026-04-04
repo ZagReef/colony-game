@@ -143,18 +143,21 @@ func clear_current_world():
 	BuildManager.active_blueprints.clear()
 
 func load_metadata():
-	if not FileAccess.file_exists("user://save_game.json"):
+	if not FileAccess.file_exists("user://colony_save.json"):
+		print("dosyaya erişilemedi çıkılıyor")
 		return
 		
-	var file = FileAccess.open("user://save_game.json", FileAccess.READ)
+	var file = FileAccess.open("user://colony_save.json", FileAccess.READ)
 	var json_string = file.get_as_text()
-	var json = JSON.new()
-	var parse_result = json.parse(json_string)
+	file.close()
+	var parse_result = JSON.parse_string(json_string)
 	
-	if parse_result == OK:
-		var data = json.get_data()
-		if data.has("metadata"):
-			var meta = data["metadata"]
-			Global.map_width = meta.get("map_width", 100) # Değer yoksa varsayılan 100
-			Global.map_height = meta.get("map_height", 100)
-			Global.custom_seed = meta.get("seed", "")
+	if parse_result != null:
+		print(parse_result.keys())
+		if parse_result.has("map_data"):
+			if parse_result["map_data"].has("meta_data"):
+				var meta = parse_result["map_data"]["meta_data"]
+				print(meta)
+				Global.map_width = int(meta.get("map_width", 100)) # Değer yoksa varsayılan 100
+				Global.map_height = int(meta.get("map_height", 100))
+				Global.custom_seed = meta.get("seed", "")
