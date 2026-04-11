@@ -23,6 +23,7 @@ func enter(_msg: Dictionary = {}):
 	
 	if bp == null:
 		print("blueprint yok")
+		cancel_reservation(character.current_job.target_map_pos)
 		JobManager.abort_job(job)
 		character.current_job = null
 		state_machine.change_state("IdleState")
@@ -33,20 +34,17 @@ func enter(_msg: Dictionary = {}):
 		if current_cell == char_memory.item_pickup_pos:
 			var take_amount = char_memory.reserved_amount
 			var target_mat = char_memory.target_material
-			
 			var ground_item = ItemManager.get_item_at(current_cell)
 			
 			if ground_item == null:
-				if bp.progress.has(target_mat):
-					bp.progress[target_mat]["incoming"] -= take_amount
-					if bp.progress[target_mat]["incoming"] < 0:
-						bp.progress[target_mat]["incoming"] = 0
+				cancel_reservation(bp.coords)
 				
 				job.worker = null
 				job.is_taken = false
 				
 				character.current_job = null
 				character.next_state_after_move = ""
+				char_memory.reserved_amount = 0
 				
 				state_machine.change_state("IdleState")
 				return
@@ -55,6 +53,7 @@ func enter(_msg: Dictionary = {}):
 			
 			char_inventory.carried_item = target_mat
 			char_inventory.item_amount = take_amount
+			char_memory.reserved_amount = 0
 			
 			character.move_target = Global.current_map.terrain_layer.map_to_local(bp.coords)
 			character.next_state_after_move = "DeliverMaterialState"
@@ -143,7 +142,7 @@ func enter(_msg: Dictionary = {}):
 				for offset in neighbors:
 					var neighbor = tile + offset
 					
-					if Global.current_map.is_within_bounds(neighbor.x, neighbor.y):
+					if Global.current_map.is_within_bounds(neighbor.x, neighbor.y) and not Global.current_map.astar_grid.is_point_solid(neighbor):
 						target_pos = neighbor
 						found_walkable = true
 						break
@@ -151,7 +150,33 @@ func enter(_msg: Dictionary = {}):
 				if found_walkable:
 					break
 				
+			if not found_walkable and not is_adjacent:
+				cancel_reservation(bp.coords)
+				job.worker = null
+				job.is_taken = false
+				character.current_job = null
+				state_machine.change_state("IdleState")
+				return
 			
 			character.move_target = Global.current_map.terrain_layer.map_to_local(target_pos)
 			character.next_state_after_move = "DeliverMaterialState"
 			state_machine.change_state("MoveState")
+
+func cancel_reservation(bp_coords: Vector2i):
+	if not BuildManager.check_blueprint(bp_coords): return
+	var bp: BluePrint = BuildManager.active_blueprints[bp_coords]
+	
+	var mat_to_cancel = ""
+	var amount_to_cancel = 0
+	
+	if char_inventory != null and char_inventory.item_amount > 0:
+		mat_to_cancel = char_inventory.carried_item
+		amount_to_cancel = char_inventory.item_amount
+	elif char_memory != null and char_memory.reserved_amount > 0:
+		mat_to_cancel = char_memory.target_material
+		amount_to_cancel = char_memory.reserved_amount
+	
+	if mat_to_cancel != "" and bp.progress.has(mat_to_cancel):
+		bp.progress[mat_to_cancel]["incoming"] -= amount_to_cancel
+		if bp.progress[mat_to_cancel]["incoming"] < 0:
+			bp.progress[mat_to_cancel]["incoming"] = 0

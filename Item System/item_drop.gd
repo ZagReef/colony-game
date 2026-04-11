@@ -27,6 +27,8 @@ func ready():
 
 func disp_amount(amount: int):
 	item_amount = amount
+	if amount <= 0:
+		ItemManager.consume_item(Global.current_map.terrain_layer.local_to_map(self.global_position), 1)
 	sprite.texture = textures[item_id]
 	if amount_label:
 		$Label.text = str(amount)

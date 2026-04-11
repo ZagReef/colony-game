@@ -26,35 +26,44 @@ grow_vertical = 2
 theme = ExtResource("2_fq6qt")
 script = ExtResource("3_fq6qt")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PawnPanel"]
+[node name="ScrollContainer" type="ScrollContainer" parent="PawnPanel"]
 layout_mode = 1
-anchors_preset = 10
+anchors_preset = 15
 anchor_right = 1.0
-offset_bottom = 70.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
 
-[node name="PawnContainer" type="VBoxContainer" parent="PawnPanel/VBoxContainer"]
-visible = false
-custom_minimum_size = Vector2(50, 40)
+[node name="VBoxContainer" type="VBoxContainer" parent="PawnPanel/ScrollContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="PawnContainer" type="VBoxContainer" parent="PawnPanel/ScrollContainer/VBoxContainer"]
+visible = false
+custom_minimum_size = Vector2(20, 40)
+layout_mode = 2
+size_flags_vertical = 4
 accessibility_name = "template"
 alignment = 1
 
-[node name="PawnTexture" type="TextureRect" parent="PawnPanel/VBoxContainer/PawnContainer"]
+[node name="PawnTexture" type="TextureRect" parent="PawnPanel/ScrollContainer/VBoxContainer/PawnContainer"]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="PawnName" type="Label" parent="PawnPanel/VBoxContainer/PawnContainer"]
+[node name="PawnName" type="Label" parent="PawnPanel/ScrollContainer/VBoxContainer/PawnContainer"]
 custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
-size_flags_horizontal = 4
 size_flags_vertical = 6
 theme_override_fonts/font = ExtResource("3_goss7")
 theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1
 clip_text = true
+text_overrun_behavior = 3
 
 [node name="ActionSelectionPanel" type="Panel" parent="."]
 custom_minimum_size = Vector2(800, 50)
@@ -82,9 +91,10 @@ offset_top = -81.0
 grow_horizontal = 2
 grow_vertical = 0
 theme = ExtResource("2_fq6qt")
-current_tab = 0
+current_tab = 1
 
 [node name="Orders" type="MarginContainer" parent="ActionSelectionPanel/TabContainer"]
+visible = false
 layout_mode = 2
 mouse_filter = 0
 metadata/_tab_index = 0
@@ -118,15 +128,22 @@ text = "Allow Items"
 layout_mode = 2
 text = "Deconstruct"
 
+[node name="RemoveFloor" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer"]
+layout_mode = 2
+text = "Remove Floor"
+
+[node name="BuildRoof" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer"]
+layout_mode = 2
+text = "Build Roof"
+
 [node name="Building" type="MarginContainer" parent="ActionSelectionPanel/TabContainer"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
 [node name="GridContainer" type="GridContainer" parent="ActionSelectionPanel/TabContainer/Building"]
 layout_mode = 2
 size_flags_horizontal = 0
-columns = 8
+columns = 9
 
 [node name="StoneWall" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
 layout_mode = 2
@@ -169,6 +186,18 @@ layout_mode = 2
 theme = ExtResource("2_fq6qt")
 text = "Table"
 
+[node name="WoodenFloor" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
+layout_mode = 2
+theme = ExtResource("2_fq6qt")
+text = "Wooden Floor
+"
+
+[node name="StoneFloor" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
+layout_mode = 2
+theme = ExtResource("2_fq6qt")
+text = "Stone Floor
+"
+
 [node name="Zones" type="MarginContainer" parent="ActionSelectionPanel/TabContainer"]
 visible = false
 layout_mode = 2
@@ -183,7 +212,6 @@ layout_mode = 2
 text = "Create Stockpile"
 
 [node name="TilePawnInfo" type="Panel" parent="."]
-visible = false
 custom_minimum_size = Vector2(300, 200)
 anchors_preset = 3
 anchor_left = 1.0
@@ -199,12 +227,17 @@ theme = ExtResource("2_fq6qt")
 script = ExtResource("6_7j0e1")
 
 [node name="MarginContainer" type="MarginContainer" parent="TilePawnInfo"]
+custom_minimum_size = Vector2(300, 200)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
 
 [node name="VBoxContainer" type="VBoxContainer" parent="TilePawnInfo/MarginContainer"]
 layout_mode = 2
@@ -214,6 +247,8 @@ layout_mode = 2
 
 [node name="NameInfo" type="Label" parent="TilePawnInfo/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
+autowrap_mode = 2
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="TilePawnInfo/MarginContainer/VBoxContainer"]
 layout_mode = 2

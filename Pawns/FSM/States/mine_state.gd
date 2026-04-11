@@ -48,6 +48,8 @@ func _on_work_completed():
 	if current_job:
 		JobManager.complete_job(current_job)
 	
+	current_job = null
+	
 	character.next_state_after_move = ""
 	character.current_job = null
 	state_machine.change_state("IdleState")
@@ -68,3 +70,6 @@ func exit():
 	#print("mine state'den çıkıldı")
 	#character.current_job = null
 	mining_timer = 0.0
+	
+	if current_job != null:
+		JobManager.abondon_job(current_job, character)

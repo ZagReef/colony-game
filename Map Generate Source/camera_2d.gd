@@ -27,11 +27,11 @@ func _unhandled_input(event):
 			zoom *= 1.0 + zoom_speed
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			zoom *= 1.0 - zoom_speed"""
-	
-		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
-			zoom_to_mouse(zoom_factor, get_global_mouse_position())
-		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			zoom_to_mouse(1.0 / zoom_factor, get_global_mouse_position())
+		if !Global.is_mouse_over_ui:
+			if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+				zoom_to_mouse(zoom_factor, get_global_mouse_position())
+			elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+				zoom_to_mouse(1.0 / zoom_factor, get_global_mouse_position())
 	
 		# zoom limitleri uygula
 		zoom.x = clamp(zoom.x, zoom_min, zoom_max)

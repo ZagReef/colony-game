@@ -72,11 +72,16 @@ func start_waiting():
 
 func check_for_work():
 	#print("iş kontrol edildi")
-	var found_job = JobManager.request_job(character)
+	var found_job: Job = JobManager.request_job(character)
 	if found_job:
 		var job_type = found_job.job_type
+		if job_type == Job.Type.BUILD_ROOF:
+			if not Global.current_map.has_roof_support(found_job.target_map_pos):
+				JobManager.suspend_job(found_job)
+				print("duvar desteği yok")
+				return
 		#print("iş bulundu")
-		character.current_job = found_job
+		JobManager.assign_job_to_pawn(found_job , character)
 		
 		character.move_target = found_job.target_world_pos
 		
@@ -88,9 +93,9 @@ func check_for_work():
 			Job.Type.DELIVER_MATERIAL:
 				character.move_target = character.global_position
 				character.next_state_after_move = "DeliverMaterialState"
-			Job.Type.BUILD_STRUCTURE:
+			Job.Type.BUILD_STRUCTURE, Job.Type.BUILD_ROOF:
 				character.next_state_after_move = "BuildState"
-			Job.Type.DECONSTRUCT:
+			Job.Type.DECONSTRUCT, Job.Type.REMOVE_FLOOR:
 				character.next_state_after_move = "DeconstructState"
 		state_machine.change_state("MoveState")
 		return true

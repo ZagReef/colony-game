@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="StructureRecipe" load_steps=2 format=3 uid="uid://be41j2wrshmel"]
+
+[ext_resource type="Script" uid="uid://cogoc0voavakx" path="res://Building System/structure_recipe.gd" id="1_pdr7p"]
+
+[resource]
+script = ExtResource("1_pdr7p")
+structure_id = "wooden_floor"
+structure_name = "Wooden Floor"
+build_time = 2.0
+materials = {
+"Wood": 5
+}
+metadata/_custom_type_script = "uid://cogoc0voavakx"

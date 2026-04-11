@@ -1,13 +1,16 @@
 extends Panel
 
-@onready var pawn_container = $VBoxContainer/PawnContainer
+@onready var pawn_container = $ScrollContainer/VBoxContainer/PawnContainer
 @onready var container_parent = pawn_container.get_parent()
 @onready var canvas_layer = self.get_parent()
+@onready var scroll_container = self.get_node("ScrollContainer")
 
 func _ready():
 	PawnManager.pawn_spawned.connect(add_pawn)
 	Global.pressed_escape.connect(func (): canvas_layer.visible = !canvas_layer.visible)
 	InfoMenu.pressed_exit.connect(clear_pawns)
+	scroll_container.mouse_entered.connect(switch_mouse_over)
+	scroll_container.mouse_exited.connect(switch_mouse_over)
 
 func add_pawn(pawn: CharacterBody2D):
 	if !InfoMenu.visible:
@@ -34,3 +37,6 @@ func _on_pawn_container_gui_input(event: InputEvent, pawn: CharacterBody2D):
 		else:
 			PawnManager.pawn_focus_requested.emit(pawn)
 			Global.current_map.work_selection_layer.clear()
+
+func switch_mouse_over():
+	Global.is_mouse_over_ui = !Global.is_mouse_over_ui

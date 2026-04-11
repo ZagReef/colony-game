@@ -6,7 +6,9 @@ extends Panel
 	"cancel_job": $TabContainer/Orders/GridContainer/CancelJob,
 	"allow_items": $TabContainer/Orders/GridContainer/AllowItem,
 	"dig_ground": $TabContainer/Orders/GridContainer/Dig,
-	"deconstruct": $TabContainer/Orders/GridContainer/Deconstruct
+	"deconstruct": $TabContainer/Orders/GridContainer/Deconstruct,
+	"remove_floor": $TabContainer/Orders/GridContainer/RemoveFloor,
+	"build_roof": $TabContainer/Orders/GridContainer/BuildRoof
 }
 @onready var build_array: Dictionary = {
 	"stone_wall": $TabContainer/Building/GridContainer/StoneWall,
@@ -15,7 +17,9 @@ extends Panel
 	"single_armchair": $TabContainer/Building/GridContainer/SingleArmchair,
 	"chair": $TabContainer/Building/GridContainer/Chair,
 	"sofa": $TabContainer/Building/GridContainer/Sofa,
-	"table": $TabContainer/Building/GridContainer/Table
+	"table": $TabContainer/Building/GridContainer/Table,
+	"wooden_floor": $TabContainer/Building/GridContainer/WoodenFloor,
+	"stone_floor": $TabContainer/Building/GridContainer/StoneFloor
 }
 @onready var zone_array: Dictionary = {
 	"stockpile": $TabContainer/Zones/GridContainer/Stockpile
@@ -31,6 +35,8 @@ func _ready():
 		build_array[build_key].pressed.connect(_on_build_button_pressed.bind(build_key))
 	
 	zone_array["stockpile"].pressed.connect(_on_zone_button_pressed.bind("stockpile"))
+	
+	Global.map_created.connect(_on_build_buttons_setted)
 
 func _on_job_button_pressed(button: String):
 	var tool_mode: Global.ToolMode
@@ -47,6 +53,10 @@ func _on_job_button_pressed(button: String):
 			tool_mode = Global.ToolMode.DIG
 		"deconstruct":
 			tool_mode = Global.ToolMode.DECONSTRUCT
+		"remove_floor":
+			tool_mode = Global.ToolMode.REMOVE_FLOOR
+		"build_roof":
+			tool_mode = Global.ToolMode.BUILD_ROOF
 	Global.tool_mode_changed.emit(tool_mode)
 
 func _on_build_button_pressed(button: String):
@@ -70,3 +80,11 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		tab_container.current_tab = 2
 	elif event.is_action_pressed("tab4"):
 		tab_container.current_tab = 3
+
+func _on_build_buttons_setted():
+	for build_key in build_array.keys():
+		build_array[build_key].tooltip_text = ""
+		var materials = Global.current_map.structure_recipes[build_key].materials
+		for material in materials:
+			var amount = materials[material]
+			build_array[build_key].tooltip_text += material + ": " + str(amount) + " "

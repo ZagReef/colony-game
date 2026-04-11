@@ -10,12 +10,13 @@ var drag_start_pos: Vector2 = Vector2.ZERO
 var ghost_blueprint: BluePrint
 var ghost_sprite: Sprite2D
 
+var selected_structure_id = "none"
+
 signal check_tile_info(tile_ground: String, tile_top: String, tile_roof: String, tile_max_health: int, tile_current_health: int)
 
 @onready var selection_box = $ColorRect
 
 @export var item_drop: PackedScene
-
 @export var structure_recipes: Dictionary = {}
 
 @onready var terrain_layer: TileMapLayer = $Layers/TerrainLayer
@@ -28,7 +29,7 @@ signal check_tile_info(tile_ground: String, tile_top: String, tile_roof: String,
 @onready var selection_layer: TileMapLayer = $Layers/SelectionLayer
 @onready var work_selection_layer: TileMapLayer = $Layers/WorkSelectionLayer
 
-var tileMap_cell_size = 32
+var tileMap_cell_size
 @export var width = 100
 @export var height = 100
 
@@ -41,11 +42,15 @@ var ore_types: Array[String] = ["stone", "iron", "gold", "copper"]
 var dirt_res: Array[String] = ["clay"]
 var ground_types: Array[String] = ["grass", "dirt"]
 var structures: Array[String] = ["stone_wall"]
+var floors: Array[String] = ["wooden_floor", "stone_floor"]
 var deconstructables: Array = []
+var all_resources: Array[String] = ["stone", "iron", "gold", "copper", "clay", "tree"]
 
 var speed_multipliers: Dictionary = {
 	"dirt": 1,
-	"grass": 0.8
+	"grass": 0.8,
+	"wooden_floor": 1.1,
+	"stone_floor": 1.2
 }
 
 var tile_resources: Dictionary = {
@@ -66,7 +71,9 @@ var tiles: Dictionary = {
 	"tree": Vector2i(0, 0),
 	"stone_wall": Vector2i(1, 11),
 	"clay": Vector2i(3, 10),
-	"dirt": Vector2i(0, 3)
+	"dirt": Vector2i(0, 3),
+	"stone_floor": Vector2i(1, 13),
+	"wooden_floor": Vector2i(1, 14)
 }
 
 
@@ -96,6 +103,7 @@ var it = 10
 var astar_grid = AStarGrid2D.new()
 
 func _ready() -> void:
+	tileMap_cell_size = terrain_layer.tile_set.tile_size.x
 	width = Global.map_width
 	height = Global.map_height
 	SaveManager.clear_current_world()
@@ -133,9 +141,9 @@ func generate_map() -> void:
 			for x in width:
 				if map_data[y][x]["top"] == "stone":
 					stones += 1
-		print(stones)
+		#print(stones)
 		var ore_ratio = stones * 0.0004
-		print(ore_ratio)
+		#print(ore_ratio)
 		generate_veins("iron", int(8 * ore_ratio), 20)
 		generate_veins("gold", int(5 * ore_ratio), 10)
 		generate_veins("copper", int(15 * ore_ratio), 20)
@@ -243,6 +251,8 @@ func print_map():
 			var pos = Vector2i(x, y)
 			if cell["ground"] == "dirt":
 				terrain_layer.set_cell(pos, new_tileset_id, tiles["dirt"])
+			elif cell["ground"] in floors:
+				terrain_layer.set_cell(pos, new_tileset_id, tiles[cell["ground"]])
 			else:
 				terrain_layer.set_cell(pos, new_tileset_id, get_weigthed_grass())
 			if cell["top"] == "stone":
@@ -328,8 +338,11 @@ func _unhandled_input(event: InputEvent) -> void:
 						if cell.has("health"):
 							current_health = cell["health"]
 					var job = JobManager.check_job(coords)
+					var bp = null
+					if BuildManager.check_blueprint(coords):
+						bp = BuildManager.active_blueprints[coords]
 					check_tile_info.emit(cell["ground"], cell["top"], cell["roof"], cell["speed_multiplier"],
-					max_health, current_health, job, JobManager.job_in_list(job))
+					max_health, current_health, job, JobManager.job_in_list(job), bp)
 					selection_layer.clear()
 					selection_layer.set_cell(coords, 1, icons["selection"])
 			elif event.button_index == MOUSE_BUTTON_RIGHT:
@@ -431,17 +444,24 @@ func process_selection_area(selected_tiles: Array[Vector2i]):
 					stockpile.append(current_map_pos)
 					zone_layer.set_cell(current_map_pos, grass_id, wood_atlas)
 			Global.ToolMode.CANCEL_JOB:
-				if cell_type != "none":
-					var job = JobManager.check_job(current_map_pos)
-					
-					if job:
-						JobManager.abort_job(job)
-					if BuildManager.active_blueprints.has(current_map_pos):
-						BuildManager.abort_blueprint(current_map_pos)
+				var job = JobManager.check_job(current_map_pos)
+				
+				if job:
+					JobManager.abort_job(job)
+				if BuildManager.active_blueprints.has(current_map_pos):
+					BuildManager.abort_blueprint(current_map_pos)
 			Global.ToolMode.BUILD_WALL:
 				if ghost_blueprint!= null and ghost_blueprint.get_occupied_tiles().size() == 1:
-					if cell_type == "none" and not BuildManager.check_blueprint(current_map_pos):
+					if (cell_type == "none" or cell_type in all_resources) and not BuildManager.check_blueprint(current_map_pos):
 						BuildManager.create_blueprint(current_map_pos, ghost_blueprint.recipe)
+				if ghost_blueprint == null:
+					var is_floor = selected_structure_id in floors
+					if is_floor:
+						if not cell["ground"] in floors and not BuildManager.check_blueprint(current_map_pos) or cell["top"] in structure_recipes.keys():
+							BuildManager.create_blueprint(current_map_pos, structure_recipes[selected_structure_id])
+					else:
+						if (cell_type == "none" or cell_type in all_resources) and not BuildManager.check_blueprint(current_map_pos) and selected_structure_id != "none":
+							BuildManager.create_blueprint(current_map_pos, structure_recipes[selected_structure_id])
 			Global.ToolMode.ALLOW_ITEM:
 				if cell_type == "none" and ItemManager.get_item_at(current_map_pos) != null:
 					assign_job_to_cell(current_map_pos, cell_world_pos, Job.Type.HAUL_ITEMS)
@@ -456,6 +476,18 @@ func process_selection_area(selected_tiles: Array[Vector2i]):
 					if JobManager.check_job(target_coords):
 						continue
 					assign_job_to_cell(target_coords, terrain_layer.map_to_local(target_coords), Job.Type.DECONSTRUCT)
+			Global.ToolMode.REMOVE_FLOOR:
+				var target_coords = current_map_pos
+				if map_data[target_coords.y][target_coords.x]["ground"] in floors:
+					assign_job_to_cell(target_coords, terrain_layer.map_to_local(target_coords), Job.Type.REMOVE_FLOOR)
+			Global.ToolMode.BUILD_ROOF:
+				var target_coords = current_map_pos
+				if map_data[target_coords.y][target_coords.x]["roof"] == "none":
+					assign_job_to_cell(target_coords, terrain_layer.map_to_local(target_coords), Job.Type.BUILD_ROOF)
+			Global.ToolMode.REMOVE_ROOF:
+				var target_coords = current_map_pos
+				if not map_data[target_coords.y][target_coords.x]["roof"] in ["none", "mountain"]:
+					assign_job_to_cell(target_coords, terrain_layer.map_to_local(target_coords), Job.Type.REMOVE_ROOF)
 	if stockpile.size() > 0:
 		ZoneManager.create_stockpile(stockpile)
 	work_selection_layer.clear()
@@ -550,42 +582,48 @@ func spawn_trees():
 		map_data[pos.y][pos.x]["top"] = "tree"
 		map_data[pos.y][pos.x]["health"] = tile_resources["tree"].max_health
 
-func damage_tile(coords: Vector2i, amount: int):
+func damage_tile(coords: Vector2i, amount: int, target_layer: String = "top"):
 	#print(coords)
 	var x = coords.x
 	var y = coords.y
 	if not is_within_bounds(x, y):
 		return false
+	#print(target_layer)
 	
 	var cell = map_data[y][x]
-	
-	if cell["top"] != "none":
-		if cell.has("shared_data") and cell["shared_data"] != null:
-			var s_data = cell["shared_data"]
-			s_data["health"] -= amount
-			
-			if s_data["health"] <= 0:
-				var prev_type = cell["top"]
-				var anchor = s_data["anchor"]
+	if target_layer == "top":
+		if cell["top"] != "none":
+			if cell.has("shared_data") and cell["shared_data"] != null:
+				var s_data = cell["shared_data"]
+				s_data["health"] -= amount
 				
-				for tile in s_data["footprint"]:
-					var t_cell = map_data[tile.y][tile.x]
-					t_cell["top"] = "none"
-					t_cell["shared_data"] = null
-					t_cell["marked_for_mining"] = false
-					astar_grid.set_point_solid(tile, false)
-					update_roofs_after_mining(tile)
-				var node_name = "Structure_" + str(s_data["anchor"].x) + "_" + str(s_data["anchor"].y)
-				var node_to_delete = object_layer.get_node_or_null(node_name)
+				if s_data["health"] <= 0:
+					var prev_type = cell["top"]
+					var anchor = s_data["anchor"]
+				
+					for tile in s_data["footprint"]:
+						var t_cell = map_data[tile.y][tile.x]
+						t_cell["top"] = "none"
+						t_cell["shared_data"] = null
+						t_cell["marked_for_mining"] = false
+						astar_grid.set_point_solid(tile, false)
+						update_roofs_after_mining(tile)
+					var node_name = "Structure_" + str(s_data["anchor"].x) + "_" + str(s_data["anchor"].y)
+					var node_to_delete = object_layer.get_node_or_null(node_name)
 				#print(node_to_delete)
-				if node_to_delete:
-					node_to_delete.queue_free()
-				else:
-					object_layer.erase_cell(anchor)
-				spawn_loot(anchor, prev_type)
-				JobManager.wake_up_jobs()
-				return true
-			return false
+					if node_to_delete:
+						node_to_delete.queue_free()
+					else:
+						object_layer.erase_cell(anchor)
+					spawn_loot(anchor, prev_type)
+					JobManager.wake_up_jobs()
+					if BuildManager.check_blueprint(coords):
+						var bp: BluePrint = BuildManager.active_blueprints[coords]
+						icon_layer.set_cell(coords, icon_tileset_id, icons["build"])
+						bp.is_blocked = false
+						JobManager.unsuspended_blueprint_job(bp)
+					return true
+				return false
 			
 		cell["health"] -= amount
 		#print("Duvar canı: ", cell.health)
@@ -606,11 +644,22 @@ func damage_tile(coords: Vector2i, amount: int):
 			icon_layer.erase_cell(coords)
 			astar_grid.set_point_solid(coords, false)
 			JobManager.wake_up_jobs()
-			
+			if BuildManager.check_blueprint(coords):
+				var bp: BluePrint = BuildManager.active_blueprints[coords]
+				icon_layer.set_cell(coords, icon_tileset_id, icons["build"])
+				bp.is_blocked = false
+				JobManager.unsuspended_blueprint_job(bp)
 			if prev_type in ore_types or prev_type in structures:
 				update_roofs_after_mining(coords)
 			return true
-	
+	else:
+		if cell["ground"] in floors:
+			var prev_type = cell["ground"]
+			cell["ground"] = "dirt"
+			cell["marked_for_mining"] = false
+			spawn_loot(coords, prev_type)
+			terrain_layer.set_cell(coords, new_tileset_id, tiles["dirt"])
+			return true
 	return false
 
 func set_astar_grid():
@@ -790,15 +839,29 @@ func _on_structure_built(anchor_coords: Vector2i, structure_id: String, footprin
 		"footprint": footprint
 	}
 	
-	
-	for coords in footprint:
-		map_data[coords.y][coords.x]["top"] = structure_id
-		map_data[coords.y][coords.x]["shared_data"] = shared_structure_data
-		icon_layer.erase_cell(coords)
-	match structure_id:
-		"stone_wall":
-			object_layer.set_cell(anchor_coords, new_tileset_id, tiles[structure_id])
-			astar_grid.set_point_solid(anchor_coords, true)
+	if structure_id not in floors:
+		for coords in footprint:
+			map_data[coords.y][coords.x]["top"] = structure_id
+			map_data[coords.y][coords.x]["shared_data"] = shared_structure_data
+			icon_layer.erase_cell(coords)
+		match structure_id:
+			"stone_wall":
+				object_layer.set_cell(anchor_coords, new_tileset_id, tiles[structure_id])
+				astar_grid.set_point_solid(anchor_coords, true)
+	else:
+		map_data[anchor_coords.y][anchor_coords.x]["ground"] = structure_id
+		#map_data[anchor_coords.y][anchor_coords.x]["shared_data"] = shared_structure_data
+		icon_layer.erase_cell(anchor_coords)
+		match structure_id:
+			"stone_floor":
+				terrain_layer.set_cell(anchor_coords, new_tileset_id, tiles[structure_id])
+				map_data[anchor_coords.y][anchor_coords.x]["speed_multiplier"] = speed_multipliers[structure_id]
+			"wooden_floor":
+				terrain_layer.set_cell(anchor_coords, new_tileset_id, tiles[structure_id])
+				map_data[anchor_coords.y][anchor_coords.x]["speed_multiplier"] = speed_multipliers[structure_id]
+		var coords = anchor_coords
+		var speed = map_data[coords.y][coords.x]["speed_multiplier"]
+		astar_grid.set_point_weight_scale(coords, 1.0 / speed)
 
 func get_save_data() -> Dictionary:
 	var map_save_array = []
@@ -842,7 +905,8 @@ func get_save_data() -> Dictionary:
 						structure_save_array.append(safe_s_data)
 	return {"meta_data": {
 			"map_width": Global.map_width,
-			"map_height": Global.map_height
+			"map_height": Global.map_height,
+			"seed": Global.custom_seed
 			},
 			"map_cells": map_save_array,
 			"structures": structure_save_array
@@ -909,6 +973,10 @@ func load_seed():
 
 func set_tool_mode(tool_mode: Global.ToolMode, structure: String = "none"):
 	current_tool_mode = tool_mode
+	selected_structure_id = structure
+	if structure in structures or structure in floors:
+		ghost_blueprint = null
+		return
 	
 	if ghost_sprite != null:
 		ghost_sprite.hide()
@@ -940,7 +1008,11 @@ func set_tool_mode(tool_mode: Global.ToolMode, structure: String = "none"):
 
 func _on_clear_bp(coords: Vector2i):
 	icon_layer.erase_cell(coords)
-	astar_grid.set_point_solid(coords, false)
+	if BuildManager.active_blueprints.has(coords):
+		var bp: BluePrint = BuildManager.active_blueprints[coords]
+		if bp.recipe.structure_id in floors:
+			return
+		astar_grid.set_point_solid(coords, false)
 
 func has_roof_support(coords: Vector2i) -> bool:
 	var queue = [coords]
@@ -1005,13 +1077,28 @@ func update_work_selection():
 				if cell["top"] in dirt_res and not cell["marked_for_mining"]:
 					work_selection_layer.set_cell(coords, 1, icons["work_selection"])
 			Global.ToolMode.BUILD_WALL:
-				if cell["top"] == "none" and not BuildManager.check_blueprint(Vector2i(coords.x, coords.y)):
-					work_selection_layer.set_cell(coords, 1, icons["work_selection"])
+				if not BuildManager.check_blueprint(coords):
+					var is_floor = selected_structure_id in floors
+					if is_floor:
+						if not cell["ground"] in floors and (cell["top"] == "none" or cell["top"] in structure_recipes.keys()):
+							work_selection_layer.set_cell(coords, 1, icons["work_selection"])
+					else:
+						if cell["top"] == "none" or cell["top"] in all_resources:
+							work_selection_layer.set_cell(coords, 1, icons["work_selection"])
 			Global.ToolMode.ALLOW_ITEM:
 				if cell["top"] == "none" and ItemManager.get_item_at(Vector2i(coords.x, coords.y)) != null:
 					work_selection_layer.set_cell(coords, 1, icons["work_selection"])
 			Global.ToolMode.CREATE_ZONE:
 				if cell["top"] == "none" and not ZoneManager.cell_in_any_zone(coords):
+					work_selection_layer.set_cell(coords, 1, icons["work_selection"])
+			Global.ToolMode.DECONSTRUCT:
+				if cell["top"] in structure_recipes.keys():
+					work_selection_layer.set_cell(coords, 1, icons["work_selection"])
+			Global.ToolMode.REMOVE_FLOOR:
+				if cell["ground"] in floors:
+					work_selection_layer.set_cell(coords, 1, icons["work_selection"])
+			Global.ToolMode.BUILD_ROOF:
+				if cell["roof"] == "none":
 					work_selection_layer.set_cell(coords, 1, icons["work_selection"])
 
 func get_full_tiles() -> Array[Vector2i]:
@@ -1027,16 +1114,33 @@ func get_full_tiles() -> Array[Vector2i]:
 	var shrink_factor = 0.2
 	var inner_box_size = cell_size * shrink_factor
 	
+	var max_sel_limit = 400
+	
+	var is_wall_mode = (current_tool_mode == Global.ToolMode.BUILD_WALL and ghost_blueprint == null and selected_structure_id != "none" and selected_structure_id not in floors)
+	
+	var min_x = min(tl_map.x, br_map.x)
+	var max_x = max(tl_map.x, br_map.x)
+	var min_y = min(tl_map.y, br_map.y)
+	var max_y = max(tl_map.y, br_map.y)
+	
 	for y in range(min(tl_map.y, br_map.y) - 1, max(tl_map.y, br_map.y) + 2):
 		for x in range(min(tl_map.x, br_map.x) - 1, max(tl_map.x, br_map.x) + 2):
 			var coords = Vector2i(x, y)
+			if enclosed_tiles.size() > max_sel_limit:
+				break
 			
 			if is_within_bounds(coords.x, coords.y):
 				var tile_center = terrain_layer.to_global(terrain_layer.map_to_local(coords))
 				var tile_rect = Rect2(tile_center - inner_box_size / 2, inner_box_size) 
 				
 				if selection_rect.intersects(tile_rect):
-					enclosed_tiles.append(coords)
+					if is_wall_mode:
+						if coords.x == min_x or coords.x == max_x or coords.y == min_y or coords.y == max_y:
+							enclosed_tiles.append(coords)
+					else:
+						enclosed_tiles.append(coords)
+		if enclosed_tiles.size() > max_sel_limit:
+			break
 	
 	return enclosed_tiles
 
@@ -1089,6 +1193,16 @@ func update_build_preview():
 			if is_within_bounds(coords.x, coords.y):
 				if can_build:
 					work_selection_layer.set_cell(coords, 1, icons["work_selection"])
+
+func build_tile_roof(coords: Vector2i):
+	var cell = map_data[coords.y][coords.x]
+	if cell["roof"] == "none":
+		cell["roof"] = "handmade_roof"
+		roof_layer.set_cell(coords, 2, Vector2i( 0, 0))
+		icon_layer.erase_cell(coords)
+		return true
+	return false
+
 
 func _exit_tree() -> void:
 	Global.is_in_game = false

@@ -18,6 +18,16 @@ func enter(_msg: Dictionary = {}):
 	
 	current_path = path_finder.get_astar_path(character.global_position, target)
 	current_path_index = 0
+	var curr_job = character.current_job
+	
+	if curr_job != null:
+		if curr_job.job_type == Job.Type.BUILD_ROOF and not Global.current_map.has_roof_support(curr_job.target_map_pos):
+			curr_job.worker_black_list.append(character)
+			JobManager.abondon_job(curr_job, character)
+			JobManager.suspend_job(curr_job)
+			character.next_state_after_move = ""
+			state_machine.change_state("IdleState")
+			return
 	
 	if character.next_state_after_move == "MineState":
 		#print(current_path)
@@ -27,8 +37,9 @@ func enter(_msg: Dictionary = {}):
 		draw_debug_path(current_path) # <--- YOLU ÇİZ
 	
 	if current_path.is_empty():
-		"""if character.current_job:
-			print("HATA: ", character.name, " yol bulamadı! Hedef: ", character.current_job.target_map_pos)"""
+		if character.current_job:
+			print("HATA: ", character.name, " yol bulamadı! Hedef: ", character.current_job.target_map_pos)
+			
 		
 		var current_cell = Global.current_map.terrain_layer.local_to_map(character.global_position)
 		var target_cell = Global.current_map.terrain_layer.local_to_map(target)
@@ -42,34 +53,20 @@ func enter(_msg: Dictionary = {}):
 		
 		var char_job = character.current_job
 		if char_job:
-			if char_job.job_type == Job.Type.DELIVER_MATERIAL:
-				var bp_coords = char_job.target_map_pos
-				if BuildManager.active_blueprints.has(bp_coords):
-					var bp: BluePrint =  BuildManager.active_blueprints[bp_coords]
-					var mat = character.memory.target_material
-					var amount = character.memory.reserved_amount
-					if bp.progress.has(mat):
-						bp.progress[mat]["incoming"] -= amount
-						if bp.progress[mat]["incoming"] < 0:
-							bp.progress[mat]["incoming"] = 0
-					
 			char_job.worker_black_list.append(character)
-			char_job.is_taken = false
-			character.current_job.worker = null
-			character.current_job = null
-		
-		if character.character_inventory and not character.character_inventory.is_inventory_empty():
-			var curr_grid = Global.current_map.terrain_layer.local_to_map(character.global_position)
-			ItemManager.add_item_to_grid(
-				curr_grid, 
-				character.character_inventory.carried_item, 
-				character.character_inventory.item_amount, 
-				Global.current_map.item_layer, 
-				Global.current_map.item_drop, 
-				Global.current_map.terrain_layer.map_to_local
-			)
-			character.character_inventory.clear_inventory()
 			
+			if character.character_inventory and not character.character_inventory.is_inventory_empty():
+				var curr_grid = Global.current_map.terrain_layer.local_to_map(character.global_position)
+				ItemManager.add_item_to_grid(
+					curr_grid, 
+					character.character_inventory.carried_item, 
+					character.character_inventory.item_amount, 
+					Global.current_map.item_layer, 
+					Global.current_map.item_drop, 
+					Global.current_map.terrain_layer.map_to_local
+				)
+				character.character_inventory.clear_inventory()
+			JobManager.abondon_job(char_job, character)
 		character.next_state_after_move = ""
 		state_machine.change_state("IdleState") 
 		return

@@ -28,9 +28,13 @@ func save_game_json():
 		return
 	Global.is_saving_game = true
 	
-	get_tree().paused = true
 	SaveBlocker.label.text = "Saving Game"
 	SaveBlocker.show()
+	
+	await get_tree().process_frame
+	await get_tree().process_frame
+	
+	get_tree().paused = true
 	
 	var is_save_corrupted = false
 	
@@ -58,7 +62,7 @@ func save_game_json():
 			
 	if not is_save_corrupted:
 		
-		var file = FileAccess.open(SAVE_PATH_JSON, FileAccess.WRITE)
+		var file = FileAccess.open_compressed(SAVE_PATH_JSON, FileAccess.WRITE, FileAccess.COMPRESSION_ZSTD)
 		if file:
 			var json_str = JSON.stringify(save_data, "\t")
 			
@@ -92,7 +96,10 @@ func load_game():
 	SaveBlocker.show()
 	get_tree().paused = true
 	
-	var file = FileAccess.open(SAVE_PATH_JSON, FileAccess.READ)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	
+	var file = FileAccess.open_compressed(SAVE_PATH_JSON, FileAccess.READ, FileAccess.COMPRESSION_ZSTD)
 	var json_str = file.get_as_text()
 	file.close()
 	
@@ -120,15 +127,13 @@ func load_game():
 		ZoneManager.load_save_data(save_data["stockpiles"])
 	if save_data.has("jobs"):
 		JobManager.load_save_data(save_data["jobs"])
-	if save_data.has("seed"):
-		Global.custom_seed = save_data["seed"]
 	SaveBlocker.hide()
 	get_tree().paused = false
 	Global.is_loading_game = false
 
 func clear_current_world():
 	var old_pawns = get_tree().get_nodes_in_group("Pawn Group")
-	var old_pawnsui = PawnsUI.get_node("PawnPanel/VBoxContainer").get_children()
+	var old_pawnsui = PawnsUI.get_node("PawnPanel/ScrollContainer/VBoxContainer").get_children()
 	for pawn_ui in old_pawnsui:
 		if pawn_ui.visible:
 			pawn_ui.queue_free()
@@ -141,13 +146,14 @@ func clear_current_world():
 	JobManager.available_jobs.clear()
 	JobManager.suspended_jobs.clear()
 	BuildManager.active_blueprints.clear()
+	ZoneManager.stockpiles.clear()
 
 func load_metadata():
 	if not FileAccess.file_exists("user://colony_save.json"):
 		print("dosyaya erişilemedi çıkılıyor")
 		return
 		
-	var file = FileAccess.open("user://colony_save.json", FileAccess.READ)
+	var file = FileAccess.open_compressed("user://colony_save.JSON", FileAccess.READ, FileAccess.COMPRESSION_ZSTD)
 	var json_string = file.get_as_text()
 	file.close()
 	var parse_result = JSON.parse_string(json_string)

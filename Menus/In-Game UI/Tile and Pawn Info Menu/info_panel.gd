@@ -1,12 +1,15 @@
 extends Panel
 
 @onready var info_label = $MarginContainer/VBoxContainer/HBoxContainer/NameInfo
+var info_container
 @onready var progress_bar = $MarginContainer/VBoxContainer/HBoxContainer2/ProgressBar
 @onready var progress_container = $MarginContainer/VBoxContainer/HBoxContainer2
 @onready var health_ratio = $MarginContainer/VBoxContainer/HBoxContainer2/ProgressBar/HealthRatio
+@onready var margin_container = $MarginContainer
 
 var tracked_pawn: PawnPrototype = null
 var tracked_job = null
+var tracked_bp: BluePrint = null
 
 func _ready():
 	self.visible = false
@@ -17,29 +20,32 @@ func _ready():
 	PawnManager.pawn_focus_cancelled.connect(clear_panel)
 	set_process(false)
 
-func show_tile_info(item_ground: String, item_top: String, item_roof: String, speed_multiplier: float, item_max_health: int, item_current_health: int, assigned_job = null, assigned_job_list = "None"):
+func show_tile_info(item_ground: String, item_top: String, item_roof: String, speed_multiplier: float, item_max_health: int, item_current_health: int, assigned_job = null, assigned_job_list = "None", blueprint = null):
 	self.visible = true
 	tracked_pawn = null
 	tracked_job = assigned_job
+	tracked_bp = blueprint
 	
-	var text = "Ground: " + item_ground + "\n" + "Top: " + item_top + "\n" + "Roof: " + item_roof + "\n" + "Speed Multplier: " + String.num(speed_multiplier, 2)
+	var text = "Ground: " + item_ground + " / " + "Top: " + item_top + "\n" + "Roof: " + item_roof + " / " + "Speed Multplier: " + String.num(speed_multiplier, 2)
 	
 	if tracked_job != null:
 		var job_string = tracked_job.Type.find_key(tracked_job.job_type)
-		text += "\nJob: " + str(job_string) + "\nJobList: " + str(assigned_job_list)
-		info_label.text = text
-		set_process(false)
-	elif item_max_health > 0:
+		text += "\nJob: " + str(job_string) + " / "+ str(assigned_job_list)
+	if tracked_bp != null:
+		text += "\nBlueprint Progress: " + tracked_bp.recipe.structure_name
+		for material in tracked_bp.progress.keys():
+			text += "\n" + material + ": " + str(int(tracked_bp.progress[material]["current"])) + " + " + str(tracked_bp.progress[material]["incoming"]) + " / " + str(tracked_bp.recipe.materials[material])
+	if item_max_health > 0:
 		info_label.text = text
 		progress_container.visible = true
 		progress_bar.max_value = item_max_health
 		progress_bar.value = item_current_health
 		health_ratio.text = str(item_current_health) + "/" + str(item_max_health)
-		set_process(false)
 	else:
 		info_label.text = text
 		progress_container.visible = false
-		set_process(false)
+	info_label.text = text
+	set_process(false)
 
 func show_pawn_info(pawn):
 	self.visible = true

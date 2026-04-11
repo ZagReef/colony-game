@@ -74,7 +74,7 @@ text = "Pawn Count:"
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 min_value = 1.0
-max_value = 5.0
+max_value = 10.0
 value = 1.0
 rounded = true
 

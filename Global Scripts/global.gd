@@ -12,7 +12,10 @@ var is_loading_game: bool = false
 var is_saving_game: bool = false
 var is_in_game: bool= false
 
-enum ToolMode {NONE, MINE, DIG, CHOP_WOOD, CANCEL_JOB, CREATE_ZONE, BUILD_WALL, ALLOW_ITEM, DECONSTRUCT}
+var is_mouse_over_ui: bool = false
+
+enum ToolMode {NONE, MINE, DIG, CHOP_WOOD, CANCEL_JOB, CREATE_ZONE, BUILD_WALL, ALLOW_ITEM, DECONSTRUCT,
+REMOVE_FLOOR, BUILD_ROOF, REMOVE_ROOF}
 
 var start_pawn_count: int = 1
 var custom_seed: String = ""

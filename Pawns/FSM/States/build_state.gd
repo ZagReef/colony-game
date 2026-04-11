@@ -7,11 +7,16 @@ var is_building: bool = false
 var build_time: float = 0.0
 var target_bp: BluePrint
 
+var target_layer: String
+
 func enter(_msg: Dictionary = {}):
 	character = state_machine.get_parent()
 	var job: Job = character.current_job
 	
 	target_bp = BuildManager.active_blueprints.get(job.target_map_pos)
+	
+	if job.job_type == Job.Type.BUILD_ROOF:
+		Global.current_map.build_tile_roof(job.target_map_pos)
 	
 	if target_bp == null:
 		JobManager.abort_job(job)

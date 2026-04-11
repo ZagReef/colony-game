@@ -8,6 +8,8 @@ func _ready():
 	pass
 
 func add_item_to_grid(coords: Vector2i, item_type: String, amount: int, item_layer: Node2D, item_scene: PackedScene, map_to_local_func: Callable):
+	if amount == 0:
+		return
 	if not grid_items.has(coords):
 		var new_item = item_scene.instantiate()
 		new_item.item_id = item_type

@@ -13,14 +13,25 @@ func _ready() -> void:
 	pass
 
 func create_blueprint(coords: Vector2i, recipe: StructureRecipe):
+	var cell = Global.current_map.map_data[coords.y][coords.x]
+	var is_blocked = false
 	
 	if active_blueprints.has(coords): return
 	
+	if cell["top"] != "none" and not recipe.structure_id in Global.current_map.floors:
+		is_blocked = true
+		print("cell_top", cell["top"])
+		if cell["top"] == "tree":
+			JobManager.post_job(Job.Type.WOOD_CUTTING, coords, Global.current_map.terrain_layer.map_to_local(coords), 1)
+		elif cell["top"] in Global.current_map.ore_types:
+			JobManager.post_job(Job.Type.MINING, coords, Global.current_map.terrain_layer.map_to_local(coords), 1)
+		elif cell["top"] in  Global.current_map.dirt_res:
+			JobManager.post_job(Job.Type.DIGGING, coords, Global.current_map.terrain_layer.map_to_local(coords), 1)
+	
 	var new_bp = BluePrint.new(coords, recipe)
+	new_bp.is_blocked = is_blocked
 	active_blueprints[coords] = new_bp
 	#print("gerekli materyal bulundu: ", active_blueprints[coords].get_material_needs())
-	
-	Global.current_map.astar_grid.set_point_solid(coords, true)
 	blueprint_created.emit(new_bp)
 
 func create_blueprint_from_ghost(ghost_bp: BluePrint):
@@ -69,6 +80,8 @@ func add_materials_to_blueprint(coords: Vector2i, item_type: String, amount: int
 			
 			if bp.is_ready_to_build():
 				ready_to_build.emit(bp)
+				if bp.recipe.structure_id in Global.current_map.floors:
+					return
 				Global.current_map.astar_grid.set_point_solid(bp.coords, true)
 
 func finish_building(coords: Vector2i):
@@ -76,6 +89,12 @@ func finish_building(coords: Vector2i):
 		var bp: BluePrint = active_blueprints[coords]
 		var structure_id = bp.recipe.structure_id
 		var footprint = bp.get_occupied_tiles()
+		
+		for mat in bp.recipe.materials:
+			if bp.progress[mat]["current"] > bp.recipe.materials[mat]:
+				var leftover = bp.progress[mat]["current"] - bp.recipe.materials[mat]
+				ItemManager.add_item_to_grid(bp.coords, mat, leftover, Global.current_map.item_layer,
+				Global.current_map.item_drop, Global.current_map.terrain_layer.map_to_local)
 		
 		if bp.recipe.scene != null:
 			var new_struct = bp.recipe.scene.instantiate()
@@ -99,6 +118,21 @@ func finish_building(coords: Vector2i):
 			bp.visual_node.queue_free()
 		for tile in footprint:
 			active_blueprints.erase(tile)
+			var trapped_item = ItemManager.get_item_at(tile)
+			
+			if trapped_item != null:
+				var dirs = [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]
+				var is_resplaced: bool = false
+				for dir in dirs:
+					var offset = tile + dir
+					if !Global.current_map.astar_grid.is_point_solid(offset):
+						var item_type = trapped_item["type"]
+						var item_amount = trapped_item["amount"]
+						
+						ItemManager.consume_item(tile, item_amount)
+						
+						ItemManager.add_item_to_grid(tile, item_type, item_amount, Global.current_map.item_layer,
+						Global.current_map.item_drop, Global.current_map.terrain_layer.map_to_local)
 		
 		structure_built.emit(coords, structure_id, footprint, bp.facing)
 
@@ -192,7 +226,6 @@ func abort_blueprint(coords: Vector2i):
 		Global.current_map.icon_layer.erase_cell(tile)
 		Global.current_map.astar_grid.set_point_solid(tile, false)
 		build_aborted.emit(tile)
-	
 
 func check_blueprint(coords: Vector2i) -> bool:
 	if active_blueprints.has(coords):

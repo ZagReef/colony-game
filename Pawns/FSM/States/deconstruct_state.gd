@@ -10,16 +10,23 @@ var mining_timer: float = 0.0
 @export var damage_per_hit = 20
 
 var is_performing_work: bool = false
+var job_type: String
 
 func enter(_msg: Dictionary = {}):
 	character = state_machine.get_parent() as PawnPrototype
 	is_performing_work = false
 	
 	current_job = character.current_job
-	
 	if current_job == null:
+		character.next_state_after_move = ""
 		state_machine.change_state("IdleState")
 		return
+	if current_job.job_type == Job.Type.DECONSTRUCT:
+		job_type = "top"
+		print("iş tipi: ", job_type)
+	elif current_job.job_type == Job.Type.REMOVE_FLOOR:
+		job_type = "ground"
+		print("iş tipi: ", job_type)
 	
 	#print("İş başladı", current_job.job_type)
 	
@@ -59,11 +66,14 @@ func hit_target():
 	var coords = current_job.target_map_pos
 	var curr_map = Global.current_map
 	var target_cell = curr_map.map_data[coords.y][coords.x]
-	if target_cell["top"] == "none":
+	if target_cell["top"] == "none" and job_type == "top":
+		_on_work_completed()
+		return
+	elif not target_cell["ground"] in Global.current_map.floors and job_type == "ground":
 		_on_work_completed()
 		return
 	
-	var is_destroyed = Global.current_map.damage_tile(coords,damage_per_hit)
+	var is_destroyed = Global.current_map.damage_tile(coords,damage_per_hit, job_type)
 	#print("taşa vuruldu")
 	
 	if is_destroyed:

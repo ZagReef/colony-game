@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://crfcqscx75gnu"]
+[gd_scene load_steps=31 format=3 uid="uid://crfcqscx75gnu"]
 
 [ext_resource type="Script" uid="uid://m7str48cx0oq" path="res://Map Generate Source/generate.gd" id="1_mrjnr"]
 [ext_resource type="Texture2D" uid="uid://wxvcua6jwwsf" path="res://Textures/Character Textures/MapSprite.png" id="2_cf7ik"]
@@ -14,7 +14,9 @@
 [ext_resource type="Texture2D" uid="uid://7r7apktmr5tu" path="res://Textures/Tile Textures/32x32 Basic Tiles.png" id="8_df55s"]
 [ext_resource type="Resource" uid="uid://d4lp1bnuebepa" path="res://Building System/Building Recipes/sofa.tres" id="8_prec8"]
 [ext_resource type="Resource" uid="uid://cd7tdl5up8m6w" path="res://Building System/Building Recipes/table.tres" id="9_enxgn"]
+[ext_resource type="Resource" uid="uid://be41j2wrshmel" path="res://Building System/Building Recipes/wooden_floor.tres" id="10_prec8"]
 [ext_resource type="Texture2D" uid="uid://cjxc6y6rai4s7" path="res://Textures/Tile Textures/tilemap_packed_colony_game.png" id="10_trlex"]
+[ext_resource type="Resource" uid="uid://c5r31v10rg2mj" path="res://Building System/Building Recipes/stone_floor.tres" id="11_enxgn"]
 [ext_resource type="Texture2D" uid="uid://c4en0qgp3svy2" path="res://Textures/Tile Textures/tilemap_packed-export.png" id="11_fx1ye"]
 [ext_resource type="Script" uid="uid://bar7nne2xurwj" path="res://Map Generate Source/camera_2d.gd" id="11_jgu8k"]
 [ext_resource type="Texture2D" uid="uid://btbfd3g1vxb4o" path="res://Textures/Tile Textures/tilemap_packed.png" id="12_ykx05"]
@@ -832,8 +834,10 @@ structure_recipes = {
 "single_armchair": ExtResource("6_8hyrf"),
 "single_bed": ExtResource("4_6elfd"),
 "sofa": ExtResource("8_prec8"),
+"stone_floor": ExtResource("11_enxgn"),
 "stone_wall": ExtResource("3_8avdf"),
-"table": ExtResource("9_enxgn")
+"table": ExtResource("9_enxgn"),
+"wooden_floor": ExtResource("10_prec8")
 }
 npc = ExtResource("4_mrjnr")
 

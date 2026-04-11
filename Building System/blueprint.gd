@@ -6,6 +6,7 @@ enum Direction {UP, RIGHT, DOWN, LEFT}
 
 var coords: Vector2i
 var recipe: StructureRecipe
+var is_blocked: bool = false
 var facing:Direction = Direction.UP
 
 var progress: Dictionary = {}
@@ -40,7 +41,8 @@ func get_occupied_tiles() -> Array[Vector2i]:
 func get_remaining_needs(item_type: String):
 	if not progress.has(item_type):
 		return 0
-		
+	if is_blocked:
+		return 0
 	
 	var needed = recipe.materials[item_type]
 	var current = progress[item_type]["current"]
@@ -58,6 +60,8 @@ func is_ready_to_build() -> bool:
 	return true
 
 func get_material_needs() -> Array[String]:
+	"""if is_blocked:
+		return []"""
 	var needs: Array[String] = []
 	for material in recipe.materials.keys():
 		#print(material)

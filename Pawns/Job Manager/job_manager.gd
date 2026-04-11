@@ -52,11 +52,20 @@ func post_job(type: Job.Type, map_pos: Vector2i, world_pos: Vector2, priority: i
 			Global.current_map.icon_layer.set_cell(map_pos, tileset_id, tile_dict["dig"])
 		Job.Type.DECONSTRUCT:
 			Global.current_map.icon_layer.set_cell(map_pos, tileset_id, tile_dict["deconstruct"])
+		Job.Type.REMOVE_FLOOR:
+			Global.current_map.icon_layer.set_cell(map_pos, tileset_id, tile_dict["deconstruct"])
+		Job.Type.BUILD_ROOF:
+			Global.current_map.icon_layer.set_cell(map_pos, tileset_id, tile_dict["build"])
+	return new_job
 
-func request_job(npc: CharacterBody2D):
+func request_job(npc: PawnPrototype):
 	var min_dist: float = INF
 	var target_job = null
 	for job in available_jobs:
+		if job.job_type == Job.Type.BUILD_ROOF:
+			if not Global.current_map.has_roof_support(job.target_map_pos):
+				suspend_job(job)
+				continue
 		# KRİTİK DEĞİŞİKLİK: İş alınmamışsa VE mühürlü değilse ver!
 		if not job.is_taken and not (npc in job.worker_black_list):
 			if job.job_type == Job.Type.HAUL_ITEMS:
@@ -73,8 +82,6 @@ func request_job(npc: CharacterBody2D):
 				min_dist = dist
 				target_job = job
 	if target_job != null:
-		target_job.is_taken = true
-		target_job.worker = npc
 		return target_job
 	return null
 
@@ -87,8 +94,52 @@ func request_job_type(npc: CharacterBody2D, job_type: Job.Type):
 			return job
 	return null
 
+func assign_job_to_pawn(job: Job, pawn:PawnPrototype):
+	if pawn.current_job != null:
+		var old_job = pawn.current_job
+		old_job.is_taken  =false
+		old_job.worker = null
+		"""abondon_job(pawn.current_job, pawn)"""
+	
+	job.is_taken = true
+	job.worker = pawn
+	pawn.current_job = job
+
+func abondon_job(job: Job, pawn: PawnPrototype):
+	if job.job_type == Job.Type.DELIVER_MATERIAL:
+		var bp = BuildManager.active_blueprints.get(job.target_map_pos)
+		if bp != null:
+			var cancel_amount = 0
+			var mat = ""
+			
+			if not pawn.character_inventory.is_inventory_empty():
+				cancel_amount = pawn.character_inventory.item_amount
+				mat = pawn.character_inventory.carried_item
+			elif pawn.memory.reserved_amount > 0:
+				cancel_amount = pawn.memory.reserved_amount
+				mat = pawn.memory.target_material
+			
+			if cancel_amount > 0 and bp.progress.has(mat):
+				bp.progress[mat]["incoming"] -= cancel_amount
+				if bp.progress[mat]["incoming"] < 0:
+					bp.progress[mat]["incoming"] = 0
+		pawn.memory.reserved_amount = 0
+		pawn.memory.target_material = ""
+	
+	if pawn.current_job == job:
+		pawn.current_job = null
+		"""if pawn.state_machine.current_state.name != "IdleState":
+			pawn.state_machine.change_state("IdleState")"""
+	
+	if not available_jobs.has(job):
+		available_jobs.append(job)
+	job.is_taken = false
+	job.worker = null
+
 func complete_job(job: Job):
 	Global.current_map.icon_layer.erase_cell(job.target_map_pos)
+	job.is_taken = false
+	job.worker = null
 	available_jobs.erase(job)
 
 func wake_up_jobs():
@@ -109,7 +160,11 @@ func abort_job(job: Job):
 			pawn.state_machine.change_state("IdleState")
 	if job.job_type == job.Type.HAUL_ITEMS:
 		ItemManager.cancel_haul_item(job.target_map_pos)
-	available_jobs.erase(job)
+	if available_jobs.has(job):
+		available_jobs.erase(job)
+	elif suspended_jobs.has(job):
+		suspended_jobs.erase(job)
+	
 
 func check_job(job_map_pos: Vector2i) -> Job:
 	for job in available_jobs:
@@ -163,7 +218,6 @@ func suspend_job(job: Job):
 	
 	
 	if job.job_type == Job.Type.HAUL_ITEMS:
-	
 		var failed_item = ItemManager.get_item_at(job.target_map_pos)
 		if failed_item != null:
 			var target_type = failed_item["type"]
@@ -258,6 +312,9 @@ func abort_haul_job_coords(coords: Vector2i):
 	for job in available_jobs:
 		if job.job_type == Job.Type.HAUL_ITEMS and job.target_map_pos == coords:
 			available_jobs.erase(job)
+	for job in suspended_jobs:
+		if job.job_type == Job.Type.HAUL_ITEMS and job.target_map_pos == coords:
+			suspended_jobs.erase(job)
 
 func reset_manager():
 	available_jobs.clear()
@@ -295,3 +352,10 @@ func job_in_list(job: Job):
 	for _job in suspended_jobs:
 		if _job == job:
 			return("Suspended")
+
+func unsuspended_blueprint_job(bp: BluePrint):
+	for job in suspended_jobs:
+		if job.target_map_pos == bp.coords:
+			suspended_jobs.erase(job)
+			available_jobs.append(job)
+			break

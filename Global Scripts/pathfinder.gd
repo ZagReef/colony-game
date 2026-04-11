@@ -41,7 +41,7 @@ func get_astar_path(path_start: Vector2, path_end: Vector2) -> PackedVector2Arra
 	#print("Yol İsteği: ", map_start, " -> ", map_end) # DEBUG 4
 	if !map_gen.is_within_bounds(map_end.x, map_end.y):
 		return PackedVector2Array()
-	if astar_grid.is_point_solid(map_end):
+	if astar_grid.is_point_solid(map_end) or BuildManager.check_blueprint(map_end):
 		var valid_neighbor = find_walkable_tile(map_end, map_start)
 			
 		if valid_neighbor != Vector2i(-1, -1) and Global.current_map.is_within_bounds(valid_neighbor.x, valid_neighbor.y):
