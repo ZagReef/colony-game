@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cts7tmoyn3bim"]
+[gd_scene format=3 uid="uid://cts7tmoyn3bim"]
 
 [ext_resource type="Script" uid="uid://cbu24nr8ddehu" path="res://Menus/In-Game UI/CanvasLayer/pawns.gd" id="1_gqk24"]
 [ext_resource type="Theme" uid="uid://u313nb2pic47" path="res://Menus/In-Game UI/pawns_menu.tres" id="2_fq6qt"]
@@ -6,15 +6,17 @@
 [ext_resource type="FontFile" uid="uid://dovit8vou7ea1" path="res://Textures/Lora/static/Lora-Bold.ttf" id="3_goss7"]
 [ext_resource type="Script" uid="uid://b8cyu606e7m75" path="res://Menus/In-Game UI/ActionPanel/action_select_panel.gd" id="5_goss7"]
 [ext_resource type="Script" uid="uid://bmhs0dvuixjl3" path="res://Menus/In-Game UI/Tile and Pawn Info Menu/info_panel.gd" id="6_7j0e1"]
+[ext_resource type="Texture2D" uid="uid://c4en0qgp3svy2" path="res://Textures/Tile Textures/tilemap_packed-export.png" id="6_dhdn0"]
 [ext_resource type="Script" uid="uid://sldr8bn1useh" path="res://Menus/In-Game UI/FPS Counter/fps_counter.gd" id="7_drciy"]
+[ext_resource type="Texture2D" uid="uid://7r7apktmr5tu" path="res://Textures/Tile Textures/32x32 Basic Tiles.png" id="7_qe1pr"]
 [ext_resource type="Script" uid="uid://dr6th1kto4nl1" path="res://Menus/In-Game UI/TimeScaler/time_scaler.gd" id="8_hnuc0"]
 [ext_resource type="Script" uid="uid://df1ab8tet8bym" path="res://Menus/In-Game UI/Coords Panel/coords.gd" id="9_if1mp"]
 
-[node name="CanvasLayer" type="CanvasLayer"]
+[node name="CanvasLayer" type="CanvasLayer" unique_id=1431323702]
 process_mode = 3
 script = ExtResource("1_gqk24")
 
-[node name="PawnPanel" type="Panel" parent="."]
+[node name="PawnPanel" type="Panel" parent="." unique_id=1284007452]
 custom_minimum_size = Vector2(70, 400)
 anchors_preset = 4
 anchor_top = 0.5
@@ -26,7 +28,7 @@ grow_vertical = 2
 theme = ExtResource("2_fq6qt")
 script = ExtResource("3_fq6qt")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="PawnPanel"]
+[node name="ScrollContainer" type="ScrollContainer" parent="PawnPanel" unique_id=1424093315]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -35,12 +37,12 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PawnPanel/ScrollContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="PawnPanel/ScrollContainer" unique_id=717430175]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="PawnContainer" type="VBoxContainer" parent="PawnPanel/ScrollContainer/VBoxContainer"]
+[node name="PawnContainer" type="VBoxContainer" parent="PawnPanel/ScrollContainer/VBoxContainer" unique_id=467364810]
 visible = false
 custom_minimum_size = Vector2(20, 40)
 layout_mode = 2
@@ -48,14 +50,14 @@ size_flags_vertical = 4
 accessibility_name = "template"
 alignment = 1
 
-[node name="PawnTexture" type="TextureRect" parent="PawnPanel/ScrollContainer/VBoxContainer/PawnContainer"]
+[node name="PawnTexture" type="TextureRect" parent="PawnPanel/ScrollContainer/VBoxContainer/PawnContainer" unique_id=1912862978]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="PawnName" type="Label" parent="PawnPanel/ScrollContainer/VBoxContainer/PawnContainer"]
+[node name="PawnName" type="Label" parent="PawnPanel/ScrollContainer/VBoxContainer/PawnContainer" unique_id=1519797889]
 custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
 size_flags_vertical = 6
@@ -65,7 +67,7 @@ horizontal_alignment = 1
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="ActionSelectionPanel" type="Panel" parent="."]
+[node name="ActionSelectionPanel" type="Panel" parent="." unique_id=988892400]
 custom_minimum_size = Vector2(800, 50)
 anchors_preset = 7
 anchor_left = 0.5
@@ -78,9 +80,12 @@ offset_right = 576.0
 grow_horizontal = 2
 grow_vertical = 0
 size_flags_horizontal = 3
+theme = ExtResource("2_fq6qt")
 script = ExtResource("5_goss7")
+ui_icons_texture = ExtResource("6_dhdn0")
+tile_texture = ExtResource("7_qe1pr")
 
-[node name="TabContainer" type="TabContainer" parent="ActionSelectionPanel"]
+[node name="TabContainer" type="TabContainer" parent="ActionSelectionPanel" unique_id=996795025]
 custom_minimum_size = Vector2(100, 40)
 layout_mode = 1
 anchors_preset = 12
@@ -91,127 +96,131 @@ offset_top = -81.0
 grow_horizontal = 2
 grow_vertical = 0
 theme = ExtResource("2_fq6qt")
-current_tab = 1
+current_tab = 0
 
-[node name="Orders" type="MarginContainer" parent="ActionSelectionPanel/TabContainer"]
-visible = false
+[node name="Orders" type="MarginContainer" parent="ActionSelectionPanel/TabContainer" unique_id=1745238890]
 layout_mode = 2
 mouse_filter = 0
 metadata/_tab_index = 0
 
-[node name="GridContainer" type="GridContainer" parent="ActionSelectionPanel/TabContainer/Orders"]
+[node name="GridContainer" type="GridContainer" parent="ActionSelectionPanel/TabContainer/Orders" unique_id=1347290504]
 layout_mode = 2
-columns = 8
+columns = 25
 
-[node name="Mine" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer"]
+[node name="Mine" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer" unique_id=725288427]
 layout_mode = 2
 text = "Mine
 "
 
-[node name="CutTree" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer"]
+[node name="CutTree" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer" unique_id=1304750709]
 layout_mode = 2
 text = "Cut Down Trees"
 
-[node name="Dig" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer"]
+[node name="Dig" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer" unique_id=1598266033]
 layout_mode = 2
 text = "Dig Ground"
 
-[node name="CancelJob" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer"]
+[node name="CancelJob" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer" unique_id=1769151053]
 layout_mode = 2
 text = "Cancel Job"
 
-[node name="AllowItem" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer"]
+[node name="AllowItem" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer" unique_id=1337707552]
 layout_mode = 2
 text = "Allow Items"
 
-[node name="Deconstruct" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer"]
+[node name="Deconstruct" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer" unique_id=1118406328]
 layout_mode = 2
 text = "Deconstruct"
 
-[node name="RemoveFloor" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer"]
+[node name="RemoveFloor" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer" unique_id=1600434608]
 layout_mode = 2
 text = "Remove Floor"
 
-[node name="BuildRoof" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer"]
+[node name="BuildRoof" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer" unique_id=538412825]
 layout_mode = 2
 text = "Build Roof"
 
-[node name="Building" type="MarginContainer" parent="ActionSelectionPanel/TabContainer"]
+[node name="RemoveRoof" type="Button" parent="ActionSelectionPanel/TabContainer/Orders/GridContainer" unique_id=1301327735]
+layout_mode = 2
+text = "Remove Roof"
+
+[node name="Building" type="MarginContainer" parent="ActionSelectionPanel/TabContainer" unique_id=1812875647]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="GridContainer" type="GridContainer" parent="ActionSelectionPanel/TabContainer/Building"]
+[node name="GridContainer" type="GridContainer" parent="ActionSelectionPanel/TabContainer/Building" unique_id=1827183391]
 layout_mode = 2
 size_flags_horizontal = 0
 columns = 9
 
-[node name="StoneWall" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
+[node name="StoneWall" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer" unique_id=24915502]
 layout_mode = 2
 theme = ExtResource("2_fq6qt")
 text = "Stone Wall
 "
 
-[node name="SingleBed" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
+[node name="SingleBed" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer" unique_id=1224242151]
 layout_mode = 2
 theme = ExtResource("2_fq6qt")
 text = "Single Bed
 "
 
-[node name="DoubleBed" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
+[node name="DoubleBed" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer" unique_id=443456305]
 layout_mode = 2
 theme = ExtResource("2_fq6qt")
 text = "DoubleBed
 "
 
-[node name="SingleArmchair" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
+[node name="SingleArmchair" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer" unique_id=77498453]
 layout_mode = 2
 theme = ExtResource("2_fq6qt")
 text = "Single Armchair
 "
 
-[node name="Chair" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
+[node name="Chair" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer" unique_id=1803909233]
 layout_mode = 2
 theme = ExtResource("2_fq6qt")
 text = "Chair
 "
 
-[node name="Sofa" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
+[node name="Sofa" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer" unique_id=1469764038]
 layout_mode = 2
 theme = ExtResource("2_fq6qt")
 text = "Sofa
 "
 
-[node name="Table" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
+[node name="Table" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer" unique_id=1074212952]
 layout_mode = 2
 theme = ExtResource("2_fq6qt")
 text = "Table"
 
-[node name="WoodenFloor" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
+[node name="WoodenFloor" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer" unique_id=2110602357]
 layout_mode = 2
 theme = ExtResource("2_fq6qt")
 text = "Wooden Floor
 "
 
-[node name="StoneFloor" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer"]
+[node name="StoneFloor" type="Button" parent="ActionSelectionPanel/TabContainer/Building/GridContainer" unique_id=2098603450]
 layout_mode = 2
 theme = ExtResource("2_fq6qt")
 text = "Stone Floor
 "
 
-[node name="Zones" type="MarginContainer" parent="ActionSelectionPanel/TabContainer"]
+[node name="Zones" type="MarginContainer" parent="ActionSelectionPanel/TabContainer" unique_id=1399989958]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 2
 
-[node name="GridContainer" type="GridContainer" parent="ActionSelectionPanel/TabContainer/Zones"]
+[node name="GridContainer" type="GridContainer" parent="ActionSelectionPanel/TabContainer/Zones" unique_id=970006369]
 layout_mode = 2
 columns = 8
 
-[node name="Stockpile" type="Button" parent="ActionSelectionPanel/TabContainer/Zones/GridContainer"]
+[node name="Stockpile" type="Button" parent="ActionSelectionPanel/TabContainer/Zones/GridContainer" unique_id=280073741]
 layout_mode = 2
 text = "Create Stockpile"
 
-[node name="TilePawnInfo" type="Panel" parent="."]
+[node name="TilePawnInfo" type="Panel" parent="." unique_id=2138325123]
 custom_minimum_size = Vector2(300, 200)
 anchors_preset = 3
 anchor_left = 1.0
@@ -226,7 +235,7 @@ grow_vertical = 0
 theme = ExtResource("2_fq6qt")
 script = ExtResource("6_7j0e1")
 
-[node name="MarginContainer" type="MarginContainer" parent="TilePawnInfo"]
+[node name="MarginContainer" type="MarginContainer" parent="TilePawnInfo" unique_id=83652122]
 custom_minimum_size = Vector2(300, 200)
 layout_mode = 1
 anchors_preset = 15
@@ -239,31 +248,31 @@ theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TilePawnInfo/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="TilePawnInfo/MarginContainer" unique_id=730666771]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="TilePawnInfo/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="TilePawnInfo/MarginContainer/VBoxContainer" unique_id=1046832652]
 layout_mode = 2
 
-[node name="NameInfo" type="Label" parent="TilePawnInfo/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="NameInfo" type="Label" parent="TilePawnInfo/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1573871491]
 layout_mode = 2
 size_flags_horizontal = 3
 autowrap_mode = 2
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="TilePawnInfo/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="TilePawnInfo/MarginContainer/VBoxContainer" unique_id=1859918486]
 layout_mode = 2
 
-[node name="Health" type="Label" parent="TilePawnInfo/MarginContainer/VBoxContainer/HBoxContainer2"]
+[node name="Health" type="Label" parent="TilePawnInfo/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1211697529]
 layout_mode = 2
 text = "Health:"
 
-[node name="ProgressBar" type="ProgressBar" parent="TilePawnInfo/MarginContainer/VBoxContainer/HBoxContainer2"]
+[node name="ProgressBar" type="ProgressBar" parent="TilePawnInfo/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=643118475]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
 show_percentage = false
 
-[node name="HealthRatio" type="Label" parent="TilePawnInfo/MarginContainer/VBoxContainer/HBoxContainer2/ProgressBar"]
+[node name="HealthRatio" type="Label" parent="TilePawnInfo/MarginContainer/VBoxContainer/HBoxContainer2/ProgressBar" unique_id=843860028]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -277,7 +286,7 @@ offset_bottom = 10.5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="FPSCounter" type="Label" parent="."]
+[node name="FPSCounter" type="Label" parent="." unique_id=1604943967]
 offset_right = 40.0
 offset_bottom = 23.0
 theme = ExtResource("2_fq6qt")
@@ -285,7 +294,7 @@ theme_override_colors/font_color = Color(0.10980392, 1, 0.13333334, 1)
 text = "FPS:00"
 script = ExtResource("7_drciy")
 
-[node name="TimeScaler" type="Panel" parent="."]
+[node name="TimeScaler" type="Panel" parent="." unique_id=1633344052]
 custom_minimum_size = Vector2(200, 40)
 anchors_preset = 1
 anchor_left = 1.0
@@ -296,7 +305,7 @@ grow_horizontal = 0
 theme = ExtResource("2_fq6qt")
 script = ExtResource("8_hnuc0")
 
-[node name="MarginContainer" type="MarginContainer" parent="TimeScaler"]
+[node name="MarginContainer" type="MarginContainer" parent="TimeScaler" unique_id=199221737]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -308,10 +317,10 @@ theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = -17
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TimeScaler/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="TimeScaler/MarginContainer" unique_id=2126357080]
 layout_mode = 2
 
-[node name="HSlider" type="HSlider" parent="TimeScaler/MarginContainer/VBoxContainer"]
+[node name="HSlider" type="HSlider" parent="TimeScaler/MarginContainer/VBoxContainer" unique_id=462035417]
 layout_mode = 2
 max_value = 3.0
 step = 0.5
@@ -320,11 +329,11 @@ scrollable = false
 tick_count = 7
 ticks_position = 3
 
-[node name="Label" type="Label" parent="TimeScaler/MarginContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="TimeScaler/MarginContainer/VBoxContainer" unique_id=1659256940]
 layout_mode = 2
 text = "Time Scale = 1X"
 
-[node name="CoordsPanel" type="Panel" parent="."]
+[node name="CoordsPanel" type="Panel" parent="." unique_id=1003842099]
 custom_minimum_size = Vector2(100, 20)
 offset_top = 40.0
 offset_right = 100.0
@@ -332,7 +341,7 @@ offset_bottom = 40.0
 theme = ExtResource("2_fq6qt")
 script = ExtResource("9_if1mp")
 
-[node name="MarginContainer" type="MarginContainer" parent="CoordsPanel"]
+[node name="MarginContainer" type="MarginContainer" parent="CoordsPanel" unique_id=254769059]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -344,7 +353,7 @@ theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="Label" type="Label" parent="CoordsPanel/MarginContainer"]
+[node name="Label" type="Label" parent="CoordsPanel/MarginContainer" unique_id=880095837]
 layout_mode = 2
 size_flags_horizontal = 4
 text = "X:        Y:"

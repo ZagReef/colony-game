@@ -30,6 +30,7 @@ func get_available_stockpile_cell(item_type: String = "None"):
 func create_stockpile(cells: Array[Vector2i]):
 	var stockpile = StockpileZone.new()
 	stockpile.cells = cells
+	stockpile.size = cells.size()
 	
 	stockpiles.append(stockpile)
 	
@@ -68,3 +69,24 @@ func load_save_data(stockpile_zones_list: Array):
 
 func reset_manager():
 	stockpiles.clear()
+
+func get_stockpile_cells(cell: Vector2i):
+	for stockpile in stockpiles:
+		if cell in stockpile.cells:
+			return stockpile.cells
+
+func get_stockpile_items(cells: Array[Vector2i]):
+	var item_list = {}
+	for cell in cells:
+		var item = ItemManager.get_item_at(cell)
+		
+		if item != null:
+			var item_name = item["type"]
+			var amount = item["amount"]
+			
+			if item_list.has(item_name):
+				item_list[item_name] += amount
+			else:
+				item_list[item_name] = amount
+	
+	return item_list

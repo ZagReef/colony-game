@@ -54,8 +54,22 @@ func show_pawn_info(pawn):
 	progress_container.visible = false
 	set_process(true)
 
+func show_stockpile_info(size: int, item_list: Dictionary):
+	self.show()
+	var text = "Stockpile Size: " + str(size) + "\n"
+	for item in item_list.keys():
+		text += item + ": " + str(item_list[item]) + "\n"
+	info_label.text = text
+
+func show_item_info(item: Dictionary):
+	self.show()
+	var text = item["type"] + ": " + str(item["amount"])
+	info_label.text = text
+
 func _set_signals():
 	Global.current_map.check_tile_info.connect(show_tile_info)
+	Global.current_map.check_stockpile_info.connect(show_stockpile_info)
+	Global.current_map.check_item_info.connect(show_item_info)
 
 func clear_panel():
 	self.visible = false

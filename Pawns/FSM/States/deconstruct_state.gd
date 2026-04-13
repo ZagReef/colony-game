@@ -21,12 +21,13 @@ func enter(_msg: Dictionary = {}):
 		character.next_state_after_move = ""
 		state_machine.change_state("IdleState")
 		return
-	if current_job.job_type == Job.Type.DECONSTRUCT:
-		job_type = "top"
-		print("iş tipi: ", job_type)
-	elif current_job.job_type == Job.Type.REMOVE_FLOOR:
-		job_type = "ground"
-		print("iş tipi: ", job_type)
+	match current_job.job_type:
+		Job.Type.DECONSTRUCT:
+			job_type = "top"
+		Job.Type.REMOVE_FLOOR:
+			job_type = "ground"
+		Job.Type.REMOVE_ROOF:
+			job_type = "roof"
 	
 	#print("İş başladı", current_job.job_type)
 	
@@ -70,6 +71,9 @@ func hit_target():
 		_on_work_completed()
 		return
 	elif not target_cell["ground"] in Global.current_map.floors and job_type == "ground":
+		_on_work_completed()
+		return
+	elif target_cell["roof"] == "none" and job_type == "roof":
 		_on_work_completed()
 		return
 	

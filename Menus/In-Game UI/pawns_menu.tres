@@ -1,6 +1,22 @@
-[gd_resource type="Theme" load_steps=2 format=3 uid="uid://u313nb2pic47"]
+[gd_resource type="Theme" format=3 uid="uid://u313nb2pic47"]
 
 [ext_resource type="FontFile" uid="uid://dovit8vou7ea1" path="res://Textures/Lora/static/Lora-Bold.ttf" id="1_4roaw"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_82yll"]
+bg_color = Color(0.2051174, 0.20511746, 0.20511732, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4roaw"]
+bg_color = Color(0, 0, 0, 0.93333334)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.21590167, 0.21590179, 0.21590155, 1)
+border_blend = true
+expand_margin_left = 4.0
+expand_margin_top = 4.0
+expand_margin_right = 4.0
+expand_margin_bottom = 4.0
 
 [resource]
 Button/font_sizes/font_size = 24
@@ -13,3 +29,5 @@ MarginContainer/constants/margin_top = 5
 ProgressBar/fonts/font = ExtResource("1_4roaw")
 TabContainer/font_sizes/font_size = 18
 TabContainer/fonts/font = ExtResource("1_4roaw")
+TooltipPanel/styles/embedded_border = SubResource("StyleBoxFlat_82yll")
+TooltipPanel/styles/panel = SubResource("StyleBoxFlat_4roaw")

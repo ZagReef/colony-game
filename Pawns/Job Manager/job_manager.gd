@@ -56,6 +56,8 @@ func post_job(type: Job.Type, map_pos: Vector2i, world_pos: Vector2, priority: i
 			Global.current_map.icon_layer.set_cell(map_pos, tileset_id, tile_dict["deconstruct"])
 		Job.Type.BUILD_ROOF:
 			Global.current_map.icon_layer.set_cell(map_pos, tileset_id, tile_dict["build"])
+		Job.Type.REMOVE_ROOF:
+			Global.current_map.icon_layer.set_cell(map_pos, tileset_id, tile_dict["deconstruct"])
 	return new_job
 
 func request_job(npc: PawnPrototype):
@@ -359,3 +361,9 @@ func unsuspended_blueprint_job(bp: BluePrint):
 			suspended_jobs.erase(job)
 			available_jobs.append(job)
 			break
+
+func unsuspend_all_jobs():
+	for i in range(suspended_jobs.size() - 1, -1, -1):
+		var job = suspended_jobs[i]
+		suspended_jobs.remove_at(i)
+		available_jobs.append(job)

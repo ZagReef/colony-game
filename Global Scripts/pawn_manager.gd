@@ -16,6 +16,12 @@ var char_textures: Array[Texture] = [
 	load("res://Textures/Character Textures/jamal.png")
 ]
 
+var easter_textures: Dictionary = {
+	"jamal": load("res://Textures/Character Textures/jamal.png")
+	}
+
+
+
 var count_npc: int = 4
 
 func _ready() -> void:
@@ -33,16 +39,46 @@ func spawn_pawns():
 	if walk_pos.is_empty():
 		print("yürünebilir alan yok!")
 		return
-	for i in range(count_npc):
-		var pos = walk_pos.pick_random()
-		pos = curr_map.terrain_layer.map_to_local(pos)
-		var new_npc = NPC.instantiate()
-		new_npc.char_body_texture = char_textures.pick_random()
-		new_npc.global_position = pos
-		new_npc.z_index = 1
-		y_sort.add_child(new_npc)
-		current_pawns.append(new_npc)
-		pawn_spawned.emit(new_npc)
+	var pos = walk_pos.pick_random()
+	var dirs = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
+	var visited_pos = []
+	if not Global.custom_seed == "GayKaan":
+		for i in range(count_npc):
+			var offset = dirs.pick_random()
+			pos = pos + offset
+			while (pos in visited_pos) or pos in Global.current_map.object_layer.get_used_cells():
+				offset = dirs.pick_random()
+				pos = pos + offset
+			var local_pos = curr_map.terrain_layer.map_to_local(pos)
+			var new_npc = NPC.instantiate()
+			new_npc.char_body_texture = char_textures.pick_random()
+			new_npc.global_position = local_pos
+			new_npc.z_index = 1
+			y_sort.add_child(new_npc)
+			current_pawns.append(new_npc)
+			pawn_spawned.emit(new_npc)
+			visited_pos.append(pos)
+	else:
+		if count_npc <= 6:
+			count_npc = 6
+		for i in range(count_npc):
+			var offset = dirs.pick_random()
+			pos = pos + offset
+			while (pos in visited_pos) or pos in Global.current_map.object_layer.get_used_cells():
+				offset = dirs.pick_random()
+				pos = pos + offset
+			var local_pos = curr_map.terrain_layer.map_to_local(pos)
+			var new_npc = NPC.instantiate()
+			if i == 0:
+				new_npc.char_body_texture = easter_textures["bengay"]
+			else:
+				new_npc.char_body_texture = easter_textures["jamal"]
+			new_npc.global_position = local_pos
+			new_npc.z_index = 1
+			y_sort.add_child(new_npc)
+			current_pawns.append(new_npc)
+			pawn_spawned.emit(new_npc)
+			visited_pos.append(pos)
 
 func get_character_save_data() -> Array:
 	var chars_save_array = []
@@ -74,6 +110,7 @@ func load_save_data(char_data_list: Array):
 		if new_pawn.char_body_texture == load("res://Textures/Character Textures/jamal.png"):
 			new_pawn.char_name = "Jamal"
 			new_pawn.label.text = "Jamal"
+		
 		new_pawn.get_node("Sprite2D").texture = new_pawn.char_body_texture
 		
 		new_pawn.character_inventory.carried_item = char_data["carried_item"]

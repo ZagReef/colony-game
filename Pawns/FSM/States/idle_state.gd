@@ -95,7 +95,7 @@ func check_for_work():
 				character.next_state_after_move = "DeliverMaterialState"
 			Job.Type.BUILD_STRUCTURE, Job.Type.BUILD_ROOF:
 				character.next_state_after_move = "BuildState"
-			Job.Type.DECONSTRUCT, Job.Type.REMOVE_FLOOR:
+			Job.Type.DECONSTRUCT, Job.Type.REMOVE_FLOOR, Job.Type.REMOVE_ROOF:
 				character.next_state_after_move = "DeconstructState"
 		state_machine.change_state("MoveState")
 		return true

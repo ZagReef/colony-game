@@ -6,6 +6,8 @@ var current_tool_mode = Global.ToolMode.NONE
 var is_dragging: bool = false
 var is_canceled: bool = false
 var drag_start_pos: Vector2 = Vector2.ZERO
+var last_clicked_cell: Vector2i = Vector2i(-1, -1)
+var selection_index: int = 0
 
 var ghost_blueprint: BluePrint
 var ghost_sprite: Sprite2D
@@ -13,6 +15,8 @@ var ghost_sprite: Sprite2D
 var selected_structure_id = "none"
 
 signal check_tile_info(tile_ground: String, tile_top: String, tile_roof: String, tile_max_health: int, tile_current_health: int)
+signal check_stockpile_info(size: Vector2i, materials: Dictionary)
+signal check_item_info(item: Dictionary)
 
 @onready var selection_box = $ColorRect
 
@@ -88,6 +92,8 @@ var icons: Dictionary = {
 	"selection": Vector2i(5, 4),
 	"mine_selection": Vector2i(4, 3),
 	"work_selection": Vector2i(0, 10),
+	"stockpile_selection": Vector2i(6, 3),
+	"item_selection": Vector2i(17,2)
 }
 
 var map_data = []
@@ -320,31 +326,59 @@ func _unhandled_input(event: InputEvent) -> void:
 				PawnManager.emit_signal("pawn_focus_cancelled")
 				work_selection_layer.clear()
 				
+				
 				var coords = terrain_layer.local_to_map(terrain_layer.to_local(get_global_mouse_position()))
-				if is_within_bounds(coords.x, coords.y):
-					var cell = map_data[coords.y][coords.x]
-					var max_health = 0
-					var current_health = 0
-					
-					if cell.has("shared_data") and cell["shared_data"] != null:
-						#print("shared_data bulundu")
-						max_health = cell["shared_data"]["max_health"]
-						current_health = cell["shared_data"]["health"]
-					else:
-						if cell["top"] != "none" and cell["top"] in tile_resources.keys():
-							max_health = tile_resources[cell["top"]].max_health
-						elif cell["top"] in structure_recipes.keys():
-							max_health = structure_recipes["stone_wall"].health
-						if cell.has("health"):
-							current_health = cell["health"]
-					var job = JobManager.check_job(coords)
-					var bp = null
-					if BuildManager.check_blueprint(coords):
-						bp = BuildManager.active_blueprints[coords]
-					check_tile_info.emit(cell["ground"], cell["top"], cell["roof"], cell["speed_multiplier"],
-					max_health, current_health, job, JobManager.job_in_list(job), bp)
-					selection_layer.clear()
-					selection_layer.set_cell(coords, 1, icons["selection"])
+				if not is_within_bounds(coords.x, coords.y):
+					return
+				if coords == last_clicked_cell:
+					selection_index += 1
+				else:
+					last_clicked_cell = coords
+					selection_index = 0
+				selection_layer.clear()
+				
+				var selectibles: Array[String] = ["tile"]
+				
+				if ZoneManager.cell_in_any_zone(coords):
+					selectibles.append("stockpile")
+				if ItemManager.get_item_at(coords):
+					selectibles.append("item")
+				
+				var curre_selection = selectibles[selection_index % selectibles.size()]
+				
+				match curre_selection:
+					"tile":
+						var cell = map_data[coords.y][coords.x]
+						var max_health = 0
+						var current_health = 0
+						
+						if cell.has("shared_data") and cell["shared_data"] != null:
+							#print("shared_data bulundu")
+							max_health = cell["shared_data"]["max_health"]
+							current_health = cell["shared_data"]["health"]
+						else:
+							if cell["top"] != "none" and cell["top"] in tile_resources.keys():
+								max_health = tile_resources[cell["top"]].max_health
+							elif cell["top"] in structure_recipes.keys():
+								max_health = structure_recipes["stone_wall"].health
+							if cell.has("health"):
+								current_health = cell["health"]
+						var job = JobManager.check_job(coords)
+						var bp = null
+						if BuildManager.check_blueprint(coords):
+							bp = BuildManager.active_blueprints[coords]
+						check_tile_info.emit(cell["ground"], cell["top"], cell["roof"], cell["speed_multiplier"],
+						max_health, current_health, job, JobManager.job_in_list(job), bp)
+						selection_layer.set_cell(coords, 1, icons["selection"])
+					"stockpile":
+						var cells = ZoneManager.get_stockpile_cells(coords)
+						for coord in cells:
+							selection_layer.set_cell(coord, 1, icons["stockpile_selection"])
+						check_stockpile_info.emit(cells.size(), ZoneManager.get_stockpile_items(cells))
+					"item":
+						var item = ItemManager.get_item_at(coords)
+						check_item_info.emit(item)
+						selection_layer.set_cell(coords, 1, icons["item_selection"])
 			elif event.button_index == MOUSE_BUTTON_RIGHT:
 				PawnManager.pawn_focus_cancelled.emit()
 				PawnsUI.info_panel.hide()
@@ -478,15 +512,15 @@ func process_selection_area(selected_tiles: Array[Vector2i]):
 					assign_job_to_cell(target_coords, terrain_layer.map_to_local(target_coords), Job.Type.DECONSTRUCT)
 			Global.ToolMode.REMOVE_FLOOR:
 				var target_coords = current_map_pos
-				if map_data[target_coords.y][target_coords.x]["ground"] in floors:
+				if cell["ground"] in floors:
 					assign_job_to_cell(target_coords, terrain_layer.map_to_local(target_coords), Job.Type.REMOVE_FLOOR)
 			Global.ToolMode.BUILD_ROOF:
 				var target_coords = current_map_pos
-				if map_data[target_coords.y][target_coords.x]["roof"] == "none":
+				if cell["roof"] == "none" and cell["top"] != "tree":
 					assign_job_to_cell(target_coords, terrain_layer.map_to_local(target_coords), Job.Type.BUILD_ROOF)
 			Global.ToolMode.REMOVE_ROOF:
 				var target_coords = current_map_pos
-				if not map_data[target_coords.y][target_coords.x]["roof"] in ["none", "mountain"]:
+				if not cell["roof"] in ["none", "mountain"]:
 					assign_job_to_cell(target_coords, terrain_layer.map_to_local(target_coords), Job.Type.REMOVE_ROOF)
 	if stockpile.size() > 0:
 		ZoneManager.create_stockpile(stockpile)
@@ -652,13 +686,22 @@ func damage_tile(coords: Vector2i, amount: int, target_layer: String = "top"):
 			if prev_type in ore_types or prev_type in structures:
 				update_roofs_after_mining(coords)
 			return true
-	else:
+	elif target_layer == "ground":
 		if cell["ground"] in floors:
 			var prev_type = cell["ground"]
 			cell["ground"] = "dirt"
 			cell["marked_for_mining"] = false
 			spawn_loot(coords, prev_type)
 			terrain_layer.set_cell(coords, new_tileset_id, tiles["dirt"])
+			return true
+	elif target_layer == "roof":
+		if not cell["roof"] in ["none", "mountain"]:
+			print("vurdu")
+			var prev_type = cell["roof"]
+			cell["roof"] = "none"
+			cell["marked_for_mining"] = false
+			roof_layer.erase_cell(coords)
+			update_roofs_after_mining(coords)
 			return true
 	return false
 
@@ -1052,6 +1095,10 @@ func update_roofs_after_mining(coords: Vector2i):
 				if map_data[neighbor.y][neighbor.x]["roof"] != "none":
 					if not has_roof_support(neighbor):
 						collapse_roof(neighbor)
+						var job = JobManager.check_job(neighbor)
+						if job != null:
+							if job.job_type == Job.Type.REMOVE_ROOF:
+								JobManager.abort_job(job)
 
 func collapse_roof(coords: Vector2i):
 	map_data[coords.y][coords.x]["roof"] = "none"
@@ -1098,7 +1145,10 @@ func update_work_selection():
 				if cell["ground"] in floors:
 					work_selection_layer.set_cell(coords, 1, icons["work_selection"])
 			Global.ToolMode.BUILD_ROOF:
-				if cell["roof"] == "none":
+				if cell["roof"] == "none" and cell["top"] != "tree":
+					work_selection_layer.set_cell(coords, 1, icons["work_selection"])
+			Global.ToolMode.REMOVE_ROOF:
+				if not cell["roof"] in ["none", "mountain"]:
 					work_selection_layer.set_cell(coords, 1, icons["work_selection"])
 
 func get_full_tiles() -> Array[Vector2i]:
@@ -1200,6 +1250,7 @@ func build_tile_roof(coords: Vector2i):
 		cell["roof"] = "handmade_roof"
 		roof_layer.set_cell(coords, 2, Vector2i( 0, 0))
 		icon_layer.erase_cell(coords)
+		JobManager.unsuspend_all_jobs()
 		return true
 	return false
 

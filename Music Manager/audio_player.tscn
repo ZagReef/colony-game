@@ -1,10 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://dn3gjqbxj3vrp"]
+[gd_scene format=3 uid="uid://dn3gjqbxj3vrp"]
 
 [ext_resource type="AudioStream" uid="uid://cgxy6u7sht6eo" path="res://Music Manager/Menu Musics/lost_.mp3" id="1_26x2e"]
+[ext_resource type="Script" uid="uid://dppcv03ns1heb" path="res://Music Manager/music_manager.gd" id="2_23ipx"]
 
-[node name="AudioPlayer" type="AudioStreamPlayer"]
+[node name="AudioPlayer" type="AudioStreamPlayer" unique_id=342073715]
 process_mode = 3
 stream = ExtResource("1_26x2e")
-volume_db = -20.991
+volume_db = -21.0
 autoplay = true
+bus = &"Music"
 parameters/looping = true
+script = ExtResource("2_23ipx")

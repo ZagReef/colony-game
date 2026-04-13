@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://crfcqscx75gnu"]
+[gd_scene format=3 uid="uid://crfcqscx75gnu"]
 
 [ext_resource type="Script" uid="uid://m7str48cx0oq" path="res://Map Generate Source/generate.gd" id="1_mrjnr"]
 [ext_resource type="Texture2D" uid="uid://wxvcua6jwwsf" path="res://Textures/Character Textures/MapSprite.png" id="2_cf7ik"]
@@ -825,7 +825,7 @@ sources/0 = SubResource("TileSetAtlasSource_mrjnr")
 sources/1 = SubResource("TileSetAtlasSource_ykx05")
 sources/2 = SubResource("TileSetAtlasSource_6elfd")
 
-[node name="Node2D" type="Node2D"]
+[node name="Node2D" type="Node2D" unique_id=235608478]
 script = ExtResource("1_mrjnr")
 item_drop = ExtResource("2_qodir")
 structure_recipes = {
@@ -841,65 +841,65 @@ structure_recipes = {
 }
 npc = ExtResource("4_mrjnr")
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=546227694]
 process_mode = 3
 position = Vector2(1767, 1304)
 scale = Vector2(3, 3)
 zoom = Vector2(0.3, 0.3)
 script = ExtResource("11_jgu8k")
 
-[node name="Layers" type="Node2D" parent="."]
+[node name="Layers" type="Node2D" parent="." unique_id=1345756567]
 y_sort_enabled = true
 
-[node name="TerrainLayer" type="TileMapLayer" parent="Layers"]
+[node name="TerrainLayer" type="TileMapLayer" parent="Layers" unique_id=658075010]
 tile_set = SubResource("TileSet_pkm4s")
 
-[node name="RoofLayer" type="TileMapLayer" parent="Layers"]
+[node name="RoofLayer" type="TileMapLayer" parent="Layers" unique_id=331480455]
 self_modulate = Color(1, 1, 1, 0.23529412)
 z_index = 4
 tile_set = SubResource("TileSet_pkm4s")
 
-[node name="IconLayer" type="TileMapLayer" parent="Layers"]
+[node name="IconLayer" type="TileMapLayer" parent="Layers" unique_id=2017282155]
 self_modulate = Color(1, 1, 1, 0.47843137)
 z_index = 5
 y_sort_enabled = true
 tile_set = SubResource("TileSet_qodir")
 
-[node name="SelectionLayer" type="TileMapLayer" parent="Layers"]
+[node name="SelectionLayer" type="TileMapLayer" parent="Layers" unique_id=111689233]
 self_modulate = Color(1, 1, 1, 0.47843137)
 z_index = 5
 y_sort_enabled = true
 tile_set = SubResource("TileSet_qodir")
 
-[node name="WorkSelectionLayer" type="TileMapLayer" parent="Layers"]
+[node name="WorkSelectionLayer" type="TileMapLayer" parent="Layers" unique_id=2026665959]
 self_modulate = Color(1, 1, 1, 0.47843137)
 z_index = 5
 y_sort_enabled = true
 tile_set = SubResource("TileSet_qodir")
 
-[node name="ZoneLayer" type="TileMapLayer" parent="Layers"]
+[node name="ZoneLayer" type="TileMapLayer" parent="Layers" unique_id=73776366]
 self_modulate = Color(1, 1, 1, 0.06666667)
 z_index = 5
 y_sort_enabled = true
 tile_set = SubResource("TileSet_qodir")
 
-[node name="Ysorted" type="Node2D" parent="Layers"]
+[node name="Ysorted" type="Node2D" parent="Layers" unique_id=1827700609]
 z_index = 1
 y_sort_enabled = true
 
-[node name="ObjectLayer" type="TileMapLayer" parent="Layers/Ysorted"]
-z_index = 1
-y_sort_enabled = true
-tile_set = SubResource("TileSet_pkm4s")
-
-[node name="PlantLayer" type="TileMapLayer" parent="Layers/Ysorted"]
+[node name="ObjectLayer" type="TileMapLayer" parent="Layers/Ysorted" unique_id=562509401]
 z_index = 1
 y_sort_enabled = true
 tile_set = SubResource("TileSet_pkm4s")
 
-[node name="ItemLayer" type="TileMapLayer" parent="Layers/Ysorted"]
+[node name="PlantLayer" type="TileMapLayer" parent="Layers/Ysorted" unique_id=1480573360]
+z_index = 1
+y_sort_enabled = true
+tile_set = SubResource("TileSet_pkm4s")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="ItemLayer" type="TileMapLayer" parent="Layers/Ysorted" unique_id=1962751535]
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=2068915460]
 z_index = 100
 offset_right = 40.0
 offset_bottom = 40.0
