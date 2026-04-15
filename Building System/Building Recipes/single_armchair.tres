@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="StructureRecipe" load_steps=4 format=3 uid="uid://drebnadowjd80"]
+[gd_resource type="Resource" script_class="StructureRecipe" format=3 uid="uid://drebnadowjd80"]
 
 [ext_resource type="Script" uid="uid://cogoc0voavakx" path="res://Building System/structure_recipe.gd" id="1_a6lv0"]
 [ext_resource type="Texture2D" uid="uid://1iiyqilb2vu7" path="res://Building System/Furniture Textures/singe_armchair.png" id="1_g03l4"]
@@ -11,7 +11,7 @@ structure_name = "Single Armchair"
 build_time = 3.0
 health = 80
 materials = {
-"Wood": 30
+"wood": 30
 }
 ghost_texture = ExtResource("1_g03l4")
 scene = ExtResource("2_2y43d")

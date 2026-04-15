@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://d1w37i0uemkrw"]
+
+[ext_resource type="Script" uid="uid://dbpt5usve2wm0" path="res://Item System/ItemData/item_data.gd" id="1_v3g1a"]
+[ext_resource type="Texture2D" uid="uid://dyh6afq4equyc" path="res://Textures/Item Textures/İronPile-Photoroom.png" id="2_v3g1a"]
+
+[resource]
+script = ExtResource("1_v3g1a")
+item_id = "iron"
+category = "Ores"
+ui_name = "Iron"
+texture = ExtResource("2_v3g1a")
+metadata/_custom_type_script = "uid://dbpt5usve2wm0"

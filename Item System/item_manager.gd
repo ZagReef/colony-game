@@ -1,20 +1,52 @@
 extends Node
 
+var ITEM_DB: Dictionary = {}
 var grid_items: Dictionary = {}
+
+const ITEM_FOLDER_PATH: String = "res://Item System/ItemData/Items/"
+
 signal item_dropped_on_ground(coords: Vector2i, item_type: String)
 signal item_removed(coords: Vector2i, item_type: String)
 
 func _ready():
-	pass
+	load_all_items()
+
+func load_all_items():
+	var dir = DirAccess.open(ITEM_FOLDER_PATH)
+	
+	if dir:
+		dir.list_dir_begin()
+		var file_name = dir.get_next()
+		
+		while file_name != "":
+			if not dir.current_is_dir() and file_name.ends_with(".tres"):
+				var file_path = ITEM_FOLDER_PATH + file_name
+				var item_data: ItemData = load(file_path)
+				
+				if item_data and item_data.item_id != "":
+					ITEM_DB[item_data.item_id] = item_data
+					print("eşya eklendi: ", item_data.item_id)
+				
+				file_name = dir.get_next()
+	else:
+		print("Eşya klasörü bulunamadı")
 
 func add_item_to_grid(coords: Vector2i, item_type: String, amount: int, item_layer: Node2D, item_scene: PackedScene, map_to_local_func: Callable):
 	if amount == 0:
 		return
+	
+	if not ITEM_DB.has(item_type):
+		print("böyle bir eşya yok: ", item_type)
+		return
+	
+	var max_cap = ITEM_DB[item_type].max_stack
+	
 	if not grid_items.has(coords):
 		var new_item = item_scene.instantiate()
 		new_item.item_id = item_type
 		new_item.item_amount = amount
 		new_item.global_position = map_to_local_func.call(coords)
+		
 		item_layer.add_child(new_item)
 		new_item.disp_amount(amount)
 		
@@ -27,17 +59,18 @@ func add_item_to_grid(coords: Vector2i, item_type: String, amount: int, item_lay
 		item_dropped_on_ground.emit(coords, item_type)
 	elif grid_items[coords]["type"] == item_type:
 		var grid_item_amount = grid_items[coords]["amount"]
-		if grid_item_amount + amount > 75:
-			var leftover = grid_item_amount + amount - 75
-			grid_items[coords]["amount"] = 75
-			grid_items[coords]["node"].disp_amount(75)
+		if grid_item_amount + amount > max_cap:
+			var leftover = grid_item_amount + amount - max_cap
+			grid_items[coords]["amount"] = max_cap
+			grid_items[coords]["node"].disp_amount(max_cap)
 			
 			var dirs = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 			
 			var spilled = false
+			
 			for dir in dirs:
 				var neighbor_coords = coords + dir
-				if not grid_items.has(neighbor_coords) or grid_items[neighbor_coords]["type"] == item_type and grid_items[neighbor_coords]["amount"] < 75:
+				if not grid_items.has(neighbor_coords) or grid_items[neighbor_coords]["type"] == item_type and grid_items[neighbor_coords]["amount"] < max_cap:
 					add_item_to_grid(neighbor_coords, item_type, leftover, item_layer, item_scene, map_to_local_func)
 					spilled = true
 					break
@@ -52,7 +85,7 @@ func add_item_to_grid(coords: Vector2i, item_type: String, amount: int, item_lay
 		
 		for dir in dirs:
 			var neighbor_coords = coords + dir
-			if not grid_items.has(neighbor_coords) or grid_items[neighbor_coords]["type"] == item_type and grid_items[neighbor_coords]["amount"] < 75:
+			if not grid_items.has(neighbor_coords) or grid_items[neighbor_coords]["type"] == item_type and grid_items[neighbor_coords]["amount"] < max_cap:
 				add_item_to_grid(neighbor_coords, item_type, amount, item_layer, item_scene, map_to_local_func)
 				spilled = true
 				break

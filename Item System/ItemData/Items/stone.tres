@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://bs4ts3h6bx3vt"]
+
+[ext_resource type="Script" uid="uid://dbpt5usve2wm0" path="res://Item System/ItemData/item_data.gd" id="1_8u6qd"]
+[ext_resource type="Texture2D" uid="uid://biuo0ysxyqfdw" path="res://Textures/Item Textures/StonePile-Photoroom.png" id="2_8u6qd"]
+
+[resource]
+script = ExtResource("1_8u6qd")
+item_id = "stone"
+ui_name = "Stone"
+texture = ExtResource("2_8u6qd")
+metadata/_custom_type_script = "uid://dbpt5usve2wm0"

@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://dldrkj410dw2o"]
+[gd_scene format=3 uid="uid://dldrkj410dw2o"]
 
 [ext_resource type="Script" uid="uid://cnaxyl4sx62hc" path="res://Item System/item_drop.gd" id="1_f8ixq"]
 [ext_resource type="Texture2D" uid="uid://biuo0ysxyqfdw" path="res://Textures/Item Textures/StonePile-Photoroom.png" id="1_wejow"]
@@ -9,14 +9,14 @@
 font = ExtResource("2_vywt4")
 font_size = 5
 
-[node name="ItemDrop" type="Area2D"]
+[node name="ItemDrop" type="Area2D" unique_id=1405857006]
 script = ExtResource("1_f8ixq")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1912657555]
 scale = Vector2(0.08, 0.08)
 texture = ExtResource("1_wejow")
 
-[node name="Label" type="Label" parent="."]
+[node name="Label" type="Label" parent="." unique_id=850281007]
 offset_left = -9.0
 offset_top = 5.0
 offset_right = 11.0
@@ -24,7 +24,7 @@ offset_bottom = 13.0
 text = "Amount"
 label_settings = SubResource("LabelSettings_f8ixq")
 
-[node name="Forbidden" type="TextureRect" parent="."]
+[node name="Forbidden" type="TextureRect" parent="." unique_id=496300945]
 offset_left = 3.0
 offset_top = 1.0
 offset_right = 8.0

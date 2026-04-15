@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://hkossny1tfgs"]
+
+[ext_resource type="Script" uid="uid://dbpt5usve2wm0" path="res://Item System/ItemData/item_data.gd" id="1_ogpa5"]
+[ext_resource type="Texture2D" uid="uid://vtd23mbkmy2v" path="res://Textures/Item Textures/gold_pile-Photoroom.png" id="2_ogpa5"]
+
+[resource]
+script = ExtResource("1_ogpa5")
+item_id = "gold"
+category = "Ores"
+ui_name = "Gold"
+texture = ExtResource("2_ogpa5")
+metadata/_custom_type_script = "uid://dbpt5usve2wm0"

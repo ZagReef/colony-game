@@ -5,8 +5,11 @@ var suspended_jobs: Array[Job] = []
 
 func _ready():
 	ItemManager.item_dropped_on_ground.connect(on_item_dropped)
+	
 	ZoneManager.new_stockpile_created.connect(on_stockpile_cell_opened)
 	ZoneManager.stockpile_item_consumed.connect(_on_item_consumed)
+	ZoneManager.stockpile_setting_changed.connect(_on_stockpile_changed)
+	
 	BuildManager.blueprint_created.connect(_on_bp_created)
 
 func post_job(type: Job.Type, map_pos: Vector2i, world_pos: Vector2, priority: int = 0):
@@ -17,14 +20,15 @@ func post_job(type: Job.Type, map_pos: Vector2i, world_pos: Vector2, priority: i
 	
 	for job in available_jobs:
 		if new_job.target_map_pos == job.target_map_pos and new_job.job_type == job.job_type:
+			print("iş oluşturma iptal edildi", new_job.job_type)
 			return
 	for job in suspended_jobs:
 		if new_job.target_map_pos == job.target_map_pos and new_job.job_type == job.job_type:
 			return
-	new_job.job_type = type
 	new_job.target_world_pos = world_pos
 	new_job.priority = priority
 	if type == Job.Type.HAUL_ITEMS and  !ItemManager.grid_items.has(map_pos):
+		print("iş iptal oldu")
 		return
 	
 	if Global.is_loading_game and type == Job.Type.HAUL_ITEMS and ItemManager.grid_items.has(new_job.target_map_pos) and ZoneManager.get_available_stockpile_cell(ItemManager.grid_items[new_job.target_map_pos]["type"]) != null:
@@ -205,7 +209,7 @@ func on_item_dropped(coords: Vector2i, item_type: String):
 					
 					is_needed_for_construction = true
 		
-	if not is_needed_for_construction and not ZoneManager.cell_in_any_zone(coords):
+	if not is_needed_for_construction and not ZoneManager.is_item_in_valid_stockpile(coords, item_type):
 		post_job(Job.Type.HAUL_ITEMS, coords, Global.current_map.terrain_layer.map_to_local(coords), 0)
 	
 
@@ -367,3 +371,10 @@ func unsuspend_all_jobs():
 		var job = suspended_jobs[i]
 		suspended_jobs.remove_at(i)
 		available_jobs.append(job)
+
+func _on_stockpile_changed(stockpile: StockpileZone):
+	for cell in stockpile.cells:
+		var item = ItemManager.get_item_at(cell)
+		
+		if item != null and not stockpile.allowed_items[item["type"]]:
+			post_job(Job.Type.HAUL_ITEMS, cell, Global.current_map.terrain_layer.map_to_local(cell), 1)

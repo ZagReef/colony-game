@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://7r7apktmr5tu" path="res://Textures/Tile Textures/32x32 Basic Tiles.png" id="7_qe1pr"]
 [ext_resource type="Script" uid="uid://dr6th1kto4nl1" path="res://Menus/In-Game UI/TimeScaler/time_scaler.gd" id="8_hnuc0"]
 [ext_resource type="Script" uid="uid://df1ab8tet8bym" path="res://Menus/In-Game UI/Coords Panel/coords.gd" id="9_if1mp"]
+[ext_resource type="Script" uid="uid://bs68dhrgjw0uq" path="res://Menus/In-Game UI/StockpileInfoMenu/stockpile_info.gd" id="9_u17p8"]
 
 [node name="CanvasLayer" type="CanvasLayer" unique_id=1431323702]
 process_mode = 3
@@ -285,6 +286,91 @@ offset_right = 20.0
 offset_bottom = 10.5
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="StockpileInfo" type="Panel" parent="." unique_id=1300221697]
+custom_minimum_size = Vector2(300, 200)
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -174.0
+offset_top = -92.0
+offset_bottom = -52.0
+grow_horizontal = 0
+grow_vertical = 0
+theme = ExtResource("2_fq6qt")
+script = ExtResource("9_u17p8")
+
+[node name="MarginContainer" type="MarginContainer" parent="StockpileInfo" unique_id=839507254]
+custom_minimum_size = Vector2(300, 200)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="StockpileInfo/MarginContainer" unique_id=769676309]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="StockpileInfo/MarginContainer/VBoxContainer" unique_id=1862882989]
+layout_mode = 2
+
+[node name="Label1" type="Label" parent="StockpileInfo/MarginContainer/VBoxContainer/HBoxContainer" unique_id=727921493]
+layout_mode = 2
+size_flags_horizontal = 3
+autowrap_mode = 2
+
+[node name="Label2" type="Label" parent="StockpileInfo/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1887698772]
+layout_mode = 2
+size_flags_horizontal = 3
+autowrap_mode = 2
+
+[node name="TabContainer" type="TabContainer" parent="StockpileInfo/MarginContainer/VBoxContainer" unique_id=2097256367]
+layout_mode = 2
+size_flags_vertical = 3
+current_tab = 1
+
+[node name="Item List" type="VBoxContainer" parent="StockpileInfo/MarginContainer/VBoxContainer/TabContainer" unique_id=589836787]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="RichTextLabel" type="RichTextLabel" parent="StockpileInfo/MarginContainer/VBoxContainer/TabContainer/Item List" unique_id=1040650666]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_force_pass_scroll_events = false
+
+[node name="Allowed Items" type="VBoxContainer" parent="StockpileInfo/MarginContainer/VBoxContainer/TabContainer" unique_id=775522985]
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="StockpileInfo/MarginContainer/VBoxContainer/TabContainer/Allowed Items" unique_id=1941246103]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 0
+mouse_force_pass_scroll_events = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="StockpileInfo/MarginContainer/VBoxContainer/TabContainer/Allowed Items/ScrollContainer" unique_id=746763248]
+layout_mode = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="StockpileInfo/MarginContainer/VBoxContainer" unique_id=3895270]
+layout_mode = 2
+
+[node name="Expand" type="Button" parent="StockpileInfo/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1252313103]
+layout_mode = 2
+
+[node name="Shrink" type="Button" parent="StockpileInfo/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1740340499]
+layout_mode = 2
+
+[node name="Delete" type="Button" parent="StockpileInfo/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1712224205]
+layout_mode = 2
 
 [node name="FPSCounter" type="Label" parent="." unique_id=1604943967]
 offset_right = 40.0

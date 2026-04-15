@@ -1,6 +1,7 @@
 extends Node2D
 
 const MAX_ROOF_SUPPORT_DIST = 5
+const TILE_FOLDER_PATH = "res://Map Generate Source/TileData/"
 
 var current_tool_mode = Global.ToolMode.NONE
 var is_dragging: bool = false
@@ -57,14 +58,7 @@ var speed_multipliers: Dictionary = {
 	"stone_floor": 1.2
 }
 
-var tile_resources: Dictionary = {
-	"stone": load("res://Map Generate Source/TileData/stone.tres"),
-	"iron": load("res://Map Generate Source/TileData/iron.tres"),
-	"gold": load("res://Map Generate Source/TileData/gold.tres"),
-	"copper": load("res://Map Generate Source/TileData/copper.tres"),
-	"clay": load("res://Map Generate Source/TileData/clay.tres"),
-	"tree": load("res://Map Generate Source/TileData/tree.tres"),
-}
+var tile_resources: Dictionary = {}
 
 var rng = RandomNumberGenerator.new()
 
@@ -109,6 +103,7 @@ var it = 10
 var astar_grid = AStarGrid2D.new()
 
 func _ready() -> void:
+	load_all_tiles()
 	tileMap_cell_size = terrain_layer.tile_set.tile_size.x
 	width = Global.map_width
 	height = Global.map_height
@@ -123,6 +118,26 @@ func _ready() -> void:
 	Global.map_created.emit()
 	Global.tool_mode_changed.connect(set_tool_mode)
 	Global.is_in_game = true
+
+func load_all_tiles():
+	var dir = DirAccess.open(TILE_FOLDER_PATH)
+	
+	if dir:
+		dir.list_dir_begin()
+		var file_name = dir.get_next()
+		
+		while file_name != "":
+			if not dir.current_is_dir() and file_name.ends_with(".tres"):
+				var file_path = TILE_FOLDER_PATH + file_name
+				var item_data: TileStats = load(file_path)
+				
+				if item_data and item_data.item_id != "":
+					tile_resources[item_data.item_id] = item_data
+					print("Tile eklendi: ", item_data.item_id)
+				
+				file_name = dir.get_next()
+	else:
+		print("Tile klasörü bulunamadı")
 
 #Diğer oluşum fonksiyonlarını gerekli sırayla çalıştırır.
 func generate_map() -> void:
@@ -374,7 +389,7 @@ func _unhandled_input(event: InputEvent) -> void:
 						var cells = ZoneManager.get_stockpile_cells(coords)
 						for coord in cells:
 							selection_layer.set_cell(coord, 1, icons["stockpile_selection"])
-						check_stockpile_info.emit(cells.size(), ZoneManager.get_stockpile_items(cells))
+						check_stockpile_info.emit(cells.size(), ZoneManager.get_stockpile_items(cells), ZoneManager.get_stockpile_id(coords))
 					"item":
 						var item = ItemManager.get_item_at(coords)
 						check_item_info.emit(item)
@@ -649,6 +664,7 @@ func damage_tile(coords: Vector2i, amount: int, target_layer: String = "top"):
 						node_to_delete.queue_free()
 					else:
 						object_layer.erase_cell(anchor)
+					print(prev_type)
 					spawn_loot(anchor, prev_type)
 					JobManager.wake_up_jobs()
 					if BuildManager.check_blueprint(coords):
@@ -666,6 +682,7 @@ func damage_tile(coords: Vector2i, amount: int, target_layer: String = "top"):
 			var prev_type = cell["top"]
 			cell["top"] = "none"
 			cell["marked_for_mining"] = false
+			print(prev_type)
 			spawn_loot(coords, prev_type)
 			if prev_type in ore_types or prev_type in dirt_res or prev_type in structures:
 				object_layer.erase_cell(coords)

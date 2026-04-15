@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="TileStats" load_steps=2 format=3 uid="uid://dtvpqingk8djt"]
+[gd_resource type="Resource" script_class="TileStats" format=3 uid="uid://dtvpqingk8djt"]
 
 [ext_resource type="Script" uid="uid://pxwifhd4ykxt" path="res://Map Generate Source/TileStat.gd" id="1_h1gdg"]
 
@@ -7,7 +7,7 @@ script = ExtResource("1_h1gdg")
 item_id = "tree"
 display_name = "Tree"
 max_health = 90
-drop_material = "Wood"
+drop_material = "wood"
 drop_max = 8
 drop_min = 20
 metadata/_custom_type_script = "uid://pxwifhd4ykxt"

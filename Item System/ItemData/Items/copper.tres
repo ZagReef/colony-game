@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://cx478heu3ewp5"]
+
+[ext_resource type="Script" uid="uid://dbpt5usve2wm0" path="res://Item System/ItemData/item_data.gd" id="1_joj6f"]
+[ext_resource type="Texture2D" uid="uid://6ohmalmdy0nb" path="res://Textures/Item Textures/copper_pile-Photoroom.png" id="2_joj6f"]
+
+[resource]
+script = ExtResource("1_joj6f")
+item_id = "copper"
+category = "Ores"
+ui_name = "Copper"
+texture = ExtResource("2_joj6f")
+metadata/_custom_type_script = "uid://dbpt5usve2wm0"

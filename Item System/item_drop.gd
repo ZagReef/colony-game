@@ -2,22 +2,13 @@ extends Area2D
 
 class_name ItemDrop
 
-@export var item_id: String = "Stone"
+@export var item_id: String = "stone"
 @export var item_amount: int
 @onready var amount_label = $Label
 @onready var sprite = $Sprite2D
 @onready var forbidden_sprite = $Forbidden
 
 var forbidden: bool
-
-var textures: Dictionary = {
-	"Wood": load("res://Textures/Item Textures/WoodPile-Photoroom.png"),
-	"Stone": load("res://Textures/Item Textures/StonePile-Photoroom.png"),
-	"Iron": load("res://Textures/Item Textures/İronPile-Photoroom.png"),
-	"Gold": load("res://Textures/Item Textures/gold_pile-Photoroom.png"),
-	"Copper": load("res://Textures/Item Textures/copper_pile-Photoroom.png"),
-	"Clay": load("res://Textures/Item Textures/clay-Photoroom.png")
-}
 
 func ready():
 	pass
@@ -29,7 +20,9 @@ func disp_amount(amount: int):
 	item_amount = amount
 	if amount <= 0:
 		ItemManager.consume_item(Global.current_map.terrain_layer.local_to_map(self.global_position), 1)
-	sprite.texture = textures[item_id]
+		return
+	if ItemManager.ITEM_DB.has(item_id):
+		sprite.texture = ItemManager.ITEM_DB[item_id].texture
 	if amount_label:
 		$Label.text = str(amount)
 

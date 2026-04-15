@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="StructureRecipe" load_steps=4 format=3 uid="uid://wsn5uoanm42a"]
+[gd_resource type="Resource" script_class="StructureRecipe" format=3 uid="uid://wsn5uoanm42a"]
 
 [ext_resource type="PackedScene" uid="uid://8s4em60xi6bi" path="res://Building System/Structure Scenes/DoubleBed/double_bed.tscn" id="1_65sp0"]
 [ext_resource type="Texture2D" uid="uid://v8a8w5wvk8dy" path="res://Building System/Furniture Textures/double_bed.png" id="1_cm7i7"]
@@ -12,7 +12,7 @@ build_time = 5.0
 health = 100
 size = Vector2i(2, 2)
 materials = {
-"Wood": 75
+"wood": 75
 }
 ghost_texture = ExtResource("1_cm7i7")
 scene = ExtResource("1_65sp0")

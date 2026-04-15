@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="TileStats" load_steps=2 format=3 uid="uid://c21odudyo4r4q"]
+[gd_resource type="Resource" script_class="TileStats" format=3 uid="uid://c21odudyo4r4q"]
 
 [ext_resource type="Script" uid="uid://pxwifhd4ykxt" path="res://Map Generate Source/TileStat.gd" id="1_hhnv5"]
 
@@ -7,7 +7,7 @@ script = ExtResource("1_hhnv5")
 item_id = "copper"
 display_name = "Copper Ore"
 max_health = 150
-drop_material = "Copper"
+drop_material = "copper"
 drop_max = 8
 drop_min = 20
 metadata/_custom_type_script = "uid://pxwifhd4ykxt"

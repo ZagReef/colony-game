@@ -21,6 +21,7 @@ func _ready():
 	set_process(false)
 
 func show_tile_info(item_ground: String, item_top: String, item_roof: String, speed_multiplier: float, item_max_health: int, item_current_health: int, assigned_job = null, assigned_job_list = "None", blueprint = null):
+	self.get_parent().check_panel(self)
 	self.visible = true
 	tracked_pawn = null
 	tracked_job = assigned_job
@@ -33,8 +34,8 @@ func show_tile_info(item_ground: String, item_top: String, item_roof: String, sp
 		text += "\nJob: " + str(job_string) + " / "+ str(assigned_job_list)
 	if tracked_bp != null:
 		text += "\nBlueprint Progress: " + tracked_bp.recipe.structure_name
-		for material in tracked_bp.progress.keys():
-			text += "\n" + material + ": " + str(int(tracked_bp.progress[material]["current"])) + " + " + str(tracked_bp.progress[material]["incoming"]) + " / " + str(tracked_bp.recipe.materials[material])
+		for mat in tracked_bp.progress.keys():
+			text += "\n" + ItemManager.ITEM_DB[mat].ui_name + ": " + str(int(tracked_bp.progress[material]["current"])) + " + " + str(tracked_bp.progress[mat]["incoming"]) + " / " + str(tracked_bp.recipe.materials[mat])
 	if item_max_health > 0:
 		info_label.text = text
 		progress_container.visible = true
@@ -54,21 +55,14 @@ func show_pawn_info(pawn):
 	progress_container.visible = false
 	set_process(true)
 
-func show_stockpile_info(size: int, item_list: Dictionary):
-	self.show()
-	var text = "Stockpile Size: " + str(size) + "\n"
-	for item in item_list.keys():
-		text += item + ": " + str(item_list[item]) + "\n"
-	info_label.text = text
-
 func show_item_info(item: Dictionary):
+	self.get_parent().check_panel(self)
 	self.show()
 	var text = item["type"] + ": " + str(item["amount"])
 	info_label.text = text
 
 func _set_signals():
 	Global.current_map.check_tile_info.connect(show_tile_info)
-	Global.current_map.check_stockpile_info.connect(show_stockpile_info)
 	Global.current_map.check_item_info.connect(show_item_info)
 
 func clear_panel():

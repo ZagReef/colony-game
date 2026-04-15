@@ -19,11 +19,14 @@ func enter(_msg: Dictionary = {}):
 
 func do_haul():
 	if inventory.is_inventory_empty() or next_item_exists:
-		var ground_item = ItemManager.get_item_at(job.target_map_pos)
+		var ground_variant: Variant = ItemManager.get_item_at(job.target_map_pos)
+		
+		var needs_lefover_job: bool = false
+		var pickup_pos
 		
 		next_item_exists = false
 		
-		if ground_item == null:
+		if ground_variant == null:
 			if inventory.item_amount > 0:
 				pass
 			
@@ -35,11 +38,16 @@ func do_haul():
 				return
 		
 		else:
+			var ground_item: Dictionary = ground_variant as Dictionary
 			var leftover = inventory.collect_items(ground_item["type"], ground_item["amount"])
 			
 			if leftover > 0:
 				ground_item["amount"] = leftover
 				ground_item["node"].disp_amount(leftover)
+				
+				if not ZoneManager.is_item_in_valid_stockpile(job.target_map_pos, ground_item["type"]):
+					needs_lefover_job = true
+					pickup_pos = job.target_map_pos
 			elif ground_item.has("node"):
 				ground_item["node"].queue_free()
 				ItemManager.grid_items.erase(job.target_map_pos)
@@ -61,9 +69,11 @@ func do_haul():
 				return
 			else: next_item_exists = false
 		
+		
 		var drop_pos = ZoneManager.get_available_stockpile_cell(inventory.carried_item)
 		
 		if drop_pos != null:
+			job.target_map_pos = drop_pos
 			character.move_target = Global.current_map.terrain_layer.map_to_local(drop_pos)
 			character.next_state_after_move = "HaulState"
 			state_machine.change_state("MoveState")
@@ -82,24 +92,27 @@ func do_haul():
 			JobManager.suspend_job(job)
 			character.current_job = null
 			character.next_state_after_move = ""
-			state_machine.change_state("IdleState") 
+			state_machine.change_state("IdleState")
+		if needs_lefover_job:
+			JobManager.post_job(Job.Type.HAUL_ITEMS, pickup_pos, Global.current_map.terrain_layer.map_to_local(pickup_pos), 0) 
 	else:
 		var target_cell = Global.current_map.terrain_layer.local_to_map(character.global_position)
-		var cell_item = ItemManager.get_item_at(target_cell)
-		var stack_limit = 75
-		
-		if cell_item != null and cell_item["type"] != inventory.carried_item:
-			find_new_stockpile_cell(character, job)
-			return
-		
+		var cell_variant: Variant = ItemManager.get_item_at(target_cell)
+		var stack_limit = ItemManager.ITEM_DB[inventory.carried_item].max_stack
 		var space_left = stack_limit
-		if cell_item != null:
+		
+		if cell_variant != null:
+			var cell_item: Dictionary = cell_variant as Dictionary
+			if cell_item["type"] != inventory.carried_item:
+				find_new_stockpile_cell(character, job)
+				return
+			
 			space_left = stack_limit - cell_item["amount"]
-		
-		if space_left <= 0:
-			find_new_stockpile_cell(character, job)
-			return
-		
+			
+			if space_left <= 0:
+				find_new_stockpile_cell(character, job)
+				return
+			
 		var drop_amount = min(inventory.item_amount, space_left)
 		var leftover = inventory.item_amount - drop_amount
 		
