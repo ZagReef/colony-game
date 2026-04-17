@@ -28,7 +28,8 @@ func do_haul():
 		
 		if ground_variant == null:
 			if inventory.item_amount > 0:
-				pass
+				find_new_stockpile_cell(character, job)
+				return
 			
 			else:
 				JobManager.abort_job(job)
@@ -55,46 +56,29 @@ func do_haul():
 		
 		if inventory.item_amount < inventory.max_capacity:
 			var curr_cell = Global.current_map.terrain_layer.local_to_map(character.global_position)
-			var next_item_coords = ItemManager.get_closest_item(curr_cell, inventory.carried_item)
+			var next_item_coords = ItemManager.get_closest_item(curr_cell, job.item_type)
 			var job_exists: Job
 			if next_item_coords != null:
 				job_exists = JobManager.check_job(next_item_coords)
-			
-			if next_item_coords != null and job_exists != null:
-				job.target_map_pos = next_item_coords
-				character.move_target = Global.current_map.terrain_layer.map_to_local(next_item_coords)
-				character.next_state_after_move = "HaulState"
-				next_item_exists = true
-				state_machine.change_state("MoveState")
-				return
-			else: next_item_exists = false
-		
-		
-		var drop_pos = ZoneManager.get_available_stockpile_cell(inventory.carried_item)
-		
-		if drop_pos != null:
-			job.target_map_pos = drop_pos
-			character.move_target = Global.current_map.terrain_layer.map_to_local(drop_pos)
-			character.next_state_after_move = "HaulState"
-			state_machine.change_state("MoveState")
-		else:
-			var my_pos = Global.current_map.terrain_layer.local_to_map(character.global_position)
-			ItemManager.add_item_to_grid(
-				my_pos, 
-				inventory.carried_item, 
-				inventory.item_amount, 
-				Global.current_map.item_layer, 
-				Global.current_map.item_drop, 
-				Global.current_map.terrain_layer.map_to_local
-			)
-			inventory.clear_inventory()
-			job.target_map_pos = my_pos
-			JobManager.suspend_job(job)
-			character.current_job = null
-			character.next_state_after_move = ""
-			state_machine.change_state("IdleState")
+				
+				if next_item_coords != null and job_exists != null and not job_exists.is_taken:
+					job_exists.is_taken = true
+					job_exists.worker = character
+					
+					JobManager.complete_job(job)
+					character.current_job = job_exists
+					job = job_exists
+					
+					#job.target_map_pos = next_item_coords
+					character.move_target = Global.current_map.terrain_layer.map_to_local(next_item_coords)
+					character.next_state_after_move = "HaulState"
+					next_item_exists = true
+					state_machine.change_state("MoveState")
+					return
+					
+		find_new_stockpile_cell(character, job)
 		if needs_lefover_job:
-			JobManager.post_job(Job.Type.HAUL_ITEMS, pickup_pos, Global.current_map.terrain_layer.map_to_local(pickup_pos), 0) 
+			JobManager.post_job(Job.Type.HAUL_ITEMS, pickup_pos, Global.current_map.terrain_layer.map_to_local(pickup_pos), 0, job.item_type) 
 	else:
 		var target_cell = Global.current_map.terrain_layer.local_to_map(character.global_position)
 		var cell_variant: Variant = ItemManager.get_item_at(target_cell)
@@ -137,10 +121,11 @@ func do_haul():
 			find_new_stockpile_cell(character, job)
 
 func find_new_stockpile_cell(_character: CharacterBody2D, _job: Job):
-	var new_drop_pos = ZoneManager.get_available_stockpile_cell(inventory.carried_item)
+	var search_item = inventory.carried_item if inventory.item_amount > 0 else job.item_type
+	var new_drop_pos = ZoneManager.get_available_stockpile_cell(search_item)
 	
 	if new_drop_pos != null:
-		#job.target_map_pos = new_drop_pos
+		job.target_map_pos = new_drop_pos
 		character.move_target = Global.current_map.terrain_layer.map_to_local(new_drop_pos)
 		character.next_state_after_move = "HaulState"
 		state_machine.change_state("MoveState")

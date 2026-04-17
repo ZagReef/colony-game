@@ -47,3 +47,16 @@ func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> vo
 func _physics_process(_delta: float) -> void:
 	pass
 	#label.text = $StateMachine.current_state.name
+
+func force_step_aside(forbidden_pos: Vector2i):
+	var neighbors = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT, 
+					Vector2i(1, 1), Vector2i(-1, -1), Vector2i(1, -1), Vector2i(-1, 1)]
+	for offset in neighbors:
+		var target_pos = forbidden_pos + offset
+		print(target_pos)
+		print(Global.current_map.astar_grid.is_point_solid(target_pos))
+		if not Global.current_map.astar_grid.is_point_solid(target_pos) and not PawnManager.is_cell_occupied_by_pawns(target_pos):
+			self.global_position = Global.current_map.terrain_layer.map_to_local(target_pos)
+			state_machine.current_state.enter()
+			break
+		

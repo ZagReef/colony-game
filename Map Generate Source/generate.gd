@@ -15,7 +15,7 @@ var ghost_sprite: Sprite2D
 
 var selected_structure_id = "none"
 
-signal check_tile_info(tile_ground: String, tile_top: String, tile_roof: String, tile_max_health: int, tile_current_health: int)
+signal check_tile_info(tile_ground: String, tile_top: String, tile_roof: String, tile_passable: String, tile_max_health: int, tile_current_health: int)
 signal check_stockpile_info(size: Vector2i, materials: Dictionary)
 signal check_item_info(item: Dictionary)
 
@@ -382,8 +382,8 @@ func _unhandled_input(event: InputEvent) -> void:
 						var bp = null
 						if BuildManager.check_blueprint(coords):
 							bp = BuildManager.active_blueprints[coords]
-						check_tile_info.emit(cell["ground"], cell["top"], cell["roof"], cell["speed_multiplier"],
-						max_health, current_health, job, JobManager.job_in_list(job), bp)
+						check_tile_info.emit(cell["ground"], cell["top"], cell["roof"], cell["speed_multiplier"], 
+						astar_grid.is_point_solid(coords), max_health, current_health, job, JobManager.job_in_list(job), bp)
 						selection_layer.set_cell(coords, 1, icons["selection"])
 					"stockpile":
 						var cells = ZoneManager.get_stockpile_cells(coords)
@@ -507,6 +507,7 @@ func process_selection_area(selected_tiles: Array[Vector2i]):
 					var is_floor = selected_structure_id in floors
 					if is_floor:
 						if not cell["ground"] in floors and not BuildManager.check_blueprint(current_map_pos) or cell["top"] in structure_recipes.keys():
+							print(selected_structure_id)
 							BuildManager.create_blueprint(current_map_pos, structure_recipes[selected_structure_id])
 					else:
 						if (cell_type == "none" or cell_type in all_resources) and not BuildManager.check_blueprint(current_map_pos) and selected_structure_id != "none":
@@ -664,7 +665,6 @@ func damage_tile(coords: Vector2i, amount: int, target_layer: String = "top"):
 						node_to_delete.queue_free()
 					else:
 						object_layer.erase_cell(anchor)
-					print(prev_type)
 					spawn_loot(anchor, prev_type)
 					JobManager.wake_up_jobs()
 					if BuildManager.check_blueprint(coords):
@@ -774,7 +774,7 @@ func spawn_loot(grid_coords: Vector2i, type: String):
 		terrain_layer.map_to_local
 	)
 	
-	JobManager.post_job(Job.Type.HAUL_ITEMS, grid_coords, terrain_layer.map_to_local(grid_coords), 0)
+	JobManager.post_job(Job.Type.HAUL_ITEMS, grid_coords, terrain_layer.map_to_local(grid_coords), 0, type)
 
 func get_weigthed_grass():
 	var main_grass = Vector2i(0, 5)
@@ -1072,7 +1072,6 @@ func _on_clear_bp(coords: Vector2i):
 		var bp: BluePrint = BuildManager.active_blueprints[coords]
 		if bp.recipe.structure_id in floors:
 			return
-		astar_grid.set_point_solid(coords, false)
 
 func has_roof_support(coords: Vector2i) -> bool:
 	var queue = [coords]

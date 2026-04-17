@@ -42,43 +42,21 @@ func spawn_pawns():
 	var pos = walk_pos.pick_random()
 	var dirs = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 	var visited_pos = []
-	if not Global.custom_seed == "GayKaan":
-		for i in range(count_npc):
-			var offset = dirs.pick_random()
+	for i in range(count_npc):
+		var offset = dirs.pick_random()
+		pos = pos + offset
+		while (pos in visited_pos) or pos in Global.current_map.object_layer.get_used_cells() or not Global.current_map.is_within_bounds(pos.x, pos.y):
+			offset = dirs.pick_random()
 			pos = pos + offset
-			while (pos in visited_pos) or pos in Global.current_map.object_layer.get_used_cells():
-				offset = dirs.pick_random()
-				pos = pos + offset
-			var local_pos = curr_map.terrain_layer.map_to_local(pos)
-			var new_npc = NPC.instantiate()
-			new_npc.char_body_texture = char_textures.pick_random()
-			new_npc.global_position = local_pos
-			new_npc.z_index = 1
-			y_sort.add_child(new_npc)
-			current_pawns.append(new_npc)
-			pawn_spawned.emit(new_npc)
-			visited_pos.append(pos)
-	else:
-		if count_npc <= 6:
-			count_npc = 6
-		for i in range(count_npc):
-			var offset = dirs.pick_random()
-			pos = pos + offset
-			while (pos in visited_pos) or pos in Global.current_map.object_layer.get_used_cells():
-				offset = dirs.pick_random()
-				pos = pos + offset
-			var local_pos = curr_map.terrain_layer.map_to_local(pos)
-			var new_npc = NPC.instantiate()
-			if i == 0:
-				new_npc.char_body_texture = easter_textures["bengay"]
-			else:
-				new_npc.char_body_texture = easter_textures["jamal"]
-			new_npc.global_position = local_pos
-			new_npc.z_index = 1
-			y_sort.add_child(new_npc)
-			current_pawns.append(new_npc)
-			pawn_spawned.emit(new_npc)
-			visited_pos.append(pos)
+		var local_pos = curr_map.terrain_layer.map_to_local(pos)
+		var new_npc = NPC.instantiate()
+		new_npc.char_body_texture = char_textures.pick_random()
+		new_npc.global_position = local_pos
+		new_npc.z_index = 1
+		y_sort.add_child(new_npc)
+		current_pawns.append(new_npc)
+		pawn_spawned.emit(new_npc)
+		visited_pos.append(pos)
 
 func get_character_save_data() -> Array:
 	var chars_save_array = []
@@ -141,3 +119,24 @@ func deselect_all_chars():
 		if pawn in current_pawns:
 			pawn.is_selected = false
 			pawn.char_body.self_modulate = Color(1.0, 1.0, 1.0, 1.0)
+
+func is_cell_occupied_by_pawns(map_pos: Vector2i) -> bool:
+	for pawn in current_pawns:
+		var curr_pos = Global.current_map.terrain_layer.local_to_map(pawn.global_position)
+		if map_pos == curr_pos:
+			return true
+	return false
+
+func request_cell_clearance(footprint: Array[Vector2i], requester: PawnPrototype):
+	var is_clear = true
+	
+	for pawn in current_pawns:
+		if pawn == requester: continue
+		
+		var current_pos = Global.current_map.terrain_layer.local_to_map(pawn.global_position)
+		
+		if current_pos in footprint:
+			pawn.force_step_aside(current_pos)
+			is_clear = false
+	
+	return is_clear

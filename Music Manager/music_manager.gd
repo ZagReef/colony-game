@@ -32,4 +32,5 @@ func _on_music_finished():
 		set_music(default_music)
 		self.volume_db = default_volume
 	else:
-		pass
+		set_music(default_music)
+		self.volume_db = default_volume

@@ -37,9 +37,11 @@ func enter(_msg: Dictionary = {}):
 		draw_debug_path(current_path) # <--- YOLU ÇİZ
 	
 	if current_path.is_empty():
-		if character.current_job:
-			print("HATA: ", character.name, " yol bulamadı! Hedef: ", character.current_job.target_map_pos)
-			
+		"""if character.current_job:
+			print("HATA: ", character.name, " yol bulamadı! Hedef: ", character.current_job.target_map_pos)"""
+		
+		if Global.current_map.astar_grid.is_point_solid(Global.current_map.terrain_layer.local_to_map(character.global_position)):
+			character.force_step_aside(Global.current_map.terrain_layer.local_to_map(character.global_position))
 		
 		var current_cell = Global.current_map.terrain_layer.local_to_map(character.global_position)
 		var target_cell = Global.current_map.terrain_layer.local_to_map(target)
@@ -54,6 +56,23 @@ func enter(_msg: Dictionary = {}):
 		var char_job = character.current_job
 		if char_job:
 			char_job.worker_black_list.append(character)
+			
+			if char_job.job_type == Job.Type.DELIVER_MATERIAL:
+				if BuildManager.active_blueprints.has(char_job.target_map_pos):
+					var bp = BuildManager.active_blueprints[char_job.target_map_pos]
+					var target_mat = character.memory.target_material
+					var res_amount = character.memory.reserved_amount
+					
+					if res_amount == 0 and character.character_inventory and character.character_inventory.item_amount > 0:
+						target_mat = character.character_inventory.carried_item
+						res_amount = character.character_inventory.item_amount
+					
+					if target_mat != "" and bp.progress.has(target_mat):
+						bp.progress[target_mat]["incoming"] -= res_amount
+						if bp.progress[target_mat]["incoming"] < 0:
+							bp.progress[target_mat]["incoming"] = 0
+					
+					character.memory.reserved_amount = 0
 			
 			if character.character_inventory and not character.character_inventory.is_inventory_empty():
 				var curr_grid = Global.current_map.terrain_layer.local_to_map(character.global_position)
@@ -87,7 +106,10 @@ func physics_update(delta: float):
 	var move_step = current_move_speed * Global.sim_speed * delta
 	var dist = character.global_position.distance_to(target_point)
 	
-	if dist < 5 or dist <= move_step:
+	var current_cell = Global.current_map.terrain_layer.local_to_map(character.global_position)
+	var target_point_cell = Global.current_map.terrain_layer.local_to_map(target_point)
+	
+	if dist < 5 or dist <= move_step and current_cell == target_point_cell:
 		character.global_position = target_point
 		current_path_index += 1
 		

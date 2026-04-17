@@ -35,8 +35,6 @@ func create_blueprint(coords: Vector2i, recipe: StructureRecipe):
 	blueprint_created.emit(new_bp)
 
 func create_blueprint_from_ghost(ghost_bp: BluePrint):
-	
-	
 	var new_bp = BluePrint.new(ghost_bp.coords, ghost_bp.recipe, ghost_bp.facing)
 	if new_bp.recipe.ghost_texture != null:
 		var ghost_sprite = Sprite2D.new()
@@ -82,7 +80,6 @@ func add_materials_to_blueprint(coords: Vector2i, item_type: String, amount: int
 				ready_to_build.emit(bp)
 				if bp.recipe.structure_id in Global.current_map.floors:
 					return
-				Global.current_map.astar_grid.set_point_solid(bp.coords, true)
 
 func finish_building(coords: Vector2i):
 	if active_blueprints.has(coords):

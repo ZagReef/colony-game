@@ -53,32 +53,20 @@ func enter(_msg: Dictionary = {}):
 			
 			char_inventory.carried_item = target_mat
 			char_inventory.item_amount = take_amount
-			char_memory.reserved_amount = 0
 			
 			character.move_target = Global.current_map.terrain_layer.map_to_local(bp.coords)
 			character.next_state_after_move = "DeliverMaterialState"
 			state_machine.change_state("MoveState")
 			return
 			
-		
-		var needed_materials = bp.get_material_needs()
-		var selected_material = ""
-		var closest_coords = null
-		
-		#print(needed_materials)
-		
-		for material in needed_materials:
-			var char_cell = Global.current_map.terrain_layer.local_to_map(character.global_position)
-			var coords = ItemManager.get_closest_item(char_cell, material)
-			if coords != null:
-				closest_coords = coords
-				selected_material = material
-				break
+		var selected_material = job.item_type
+		var char_cell = Global.current_map.terrain_layer.local_to_map(character.global_position)
+		var closest_coords = ItemManager.get_closest_item(char_cell, selected_material)
 		
 		if closest_coords == null or selected_material == "":
 			job.worker = null
 			job.is_taken = false
-			#print("koordinat bulunmadı")
+			print("koordinat bulunmadı")
 			JobManager.suspend_job(job)
 			character.current_job = null
 			character.next_state_after_move = ""
@@ -123,13 +111,18 @@ func enter(_msg: Dictionary = {}):
 			BuildManager.add_materials_to_blueprint(bp.coords, drop_mat, drop_amount)
 			
 			char_inventory.clear_inventory()
+			char_memory.reserved_amount = 0
 			
-			if bp.is_ready_to_build():
+			var still_needed = bp.get_remaining_needs(job.item_type)
+			
+			if still_needed <= 0:
 				JobManager.complete_job(job)
-				JobManager.post_job(Job.Type.BUILD_STRUCTURE, bp.coords, Global.current_map.terrain_layer.map_to_local(bp.coords), 0)
 			else:
 				job.worker = null
 				job.is_taken = false
+			
+			if bp.is_ready_to_build():
+				JobManager.post_job(Job.Type.BUILD_STRUCTURE, bp.coords, Global.current_map.terrain_layer.map_to_local(bp.coords), 0)
 			character.current_job = null
 			character.next_state_after_move = ""
 			state_machine.change_state("IdleState")
@@ -169,14 +162,12 @@ func cancel_reservation(bp_coords: Vector2i):
 	var mat_to_cancel = ""
 	var amount_to_cancel = 0
 	
-	if char_inventory != null and char_inventory.item_amount > 0:
-		mat_to_cancel = char_inventory.carried_item
-		amount_to_cancel = char_inventory.item_amount
-	elif char_memory != null and char_memory.reserved_amount > 0:
+	if char_memory != null and char_memory.reserved_amount > 0:
 		mat_to_cancel = char_memory.target_material
 		amount_to_cancel = char_memory.reserved_amount
-	
-	if mat_to_cancel != "" and bp.progress.has(mat_to_cancel):
-		bp.progress[mat_to_cancel]["incoming"] -= amount_to_cancel
-		if bp.progress[mat_to_cancel]["incoming"] < 0:
-			bp.progress[mat_to_cancel]["incoming"] = 0
+		
+		if bp.progress.has(mat_to_cancel):
+			bp.progress[mat_to_cancel]["incoming"] -= amount_to_cancel
+			if bp.progress[mat_to_cancel]["incoming"] < 0:
+				bp.progress[mat_to_cancel]["incoming"] = 0
+		char_memory.reserved_amount = 0

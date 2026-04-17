@@ -51,8 +51,13 @@ func physics_update(delta: float):
 	if is_building:
 		build_time -= delta * Global.sim_speed
 		if build_time <= 0:
-			is_building = false
-			finish_building()
+			var footprint = target_bp.get_occupied_tiles()
+			
+			if PawnManager.request_cell_clearance(footprint, character):
+				is_building = false
+				finish_building()
+			else:
+				build_time == 0
 
 func finish_building():
 	var job: Job = character.current_job

@@ -4,8 +4,8 @@
 
 [resource]
 script = ExtResource("1_cvhds")
-structure_id = "wooden_floor"
-structure_name = "Wooden Floor"
+structure_id = "stone_floor"
+structure_name = "Stone Floor"
 build_time = 2.0
 materials = {
 "stone": 5

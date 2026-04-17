@@ -12,18 +12,19 @@ func _ready():
 	
 	BuildManager.blueprint_created.connect(_on_bp_created)
 
-func post_job(type: Job.Type, map_pos: Vector2i, world_pos: Vector2, priority: int = 0):
+func post_job(type: Job.Type, map_pos: Vector2i, world_pos: Vector2, priority: int = 0, req_item: String = ""):
 	var new_job = Job.new()
 	new_job.target_map_pos = map_pos
 	new_job.job_type = type
+	new_job.item_type = req_item
 	
 	
 	for job in available_jobs:
-		if new_job.target_map_pos == job.target_map_pos and new_job.job_type == job.job_type:
+		if new_job.target_map_pos == job.target_map_pos and new_job.job_type == job.job_type and new_job.item_type == job.item_type:
 			print("iş oluşturma iptal edildi", new_job.job_type)
 			return
 	for job in suspended_jobs:
-		if new_job.target_map_pos == job.target_map_pos and new_job.job_type == job.job_type:
+		if new_job.target_map_pos == job.target_map_pos and new_job.job_type == job.job_type and new_job.item_type == job.item_type:
 			return
 	new_job.target_world_pos = world_pos
 	new_job.priority = priority
@@ -78,10 +79,12 @@ func request_job(npc: PawnPrototype):
 				var ground_item = ItemManager.get_item_at(job.target_map_pos)
 				
 				if ground_item == null:
+					abort_job(job)
 					continue
 				
 				var is_stockpile_available = ZoneManager.get_available_stockpile_cell(ItemManager.grid_items[job.target_map_pos]["type"])
 				if is_stockpile_available == null:
+					suspend_job(job)
 					continue
 			var dist = npc.global_position.distance_to(job.target_world_pos)
 			if dist < min_dist:
@@ -143,7 +146,16 @@ func abondon_job(job: Job, pawn: PawnPrototype):
 	job.worker = null
 
 func complete_job(job: Job):
-	Global.current_map.icon_layer.erase_cell(job.target_map_pos)
+	var cell_erase_needed = true
+	for temp_job in available_jobs:
+		if temp_job.target_map_pos == job.target_map_pos and temp_job.item_type != job.item_type:
+			cell_erase_needed = false
+	for temp_job in suspended_jobs:
+		if temp_job.target_map_pos == job.target_map_pos and temp_job.item_type != job.item_type:
+			cell_erase_needed = false
+	
+	if cell_erase_needed:
+		Global.current_map.icon_layer.erase_cell(job.target_map_pos)
 	job.is_taken = false
 	job.worker = null
 	available_jobs.erase(job)
@@ -177,7 +189,7 @@ func check_job(job_map_pos: Vector2i) -> Job:
 		if job.target_map_pos == job_map_pos:
 			return job
 	for job in suspended_jobs:
-		if (job.job_type == Job.Type.HAUL_ITEMS or job.job_type == Job.Type.DELIVER_MATERIAL) and job.target_map_pos == job_map_pos:
+		if job.target_map_pos == job_map_pos:
 			return job
 	return null
 
@@ -282,9 +294,10 @@ func wake_up_jobs_for_type(item_type: String, capacity_to_fill: int):
 
 func _on_bp_created(bp: BluePrint):
 	for item_type in bp.recipe.materials.keys():
-		var _needed = bp.get_remaining_needs(item_type)
-		#print("malzemeler: ", item_type, "gereken miktar: ", needed)
-	post_job(Job.Type.DELIVER_MATERIAL, bp.coords, Global.current_map.terrain_layer.map_to_local(bp.coords), 0)
+		var needed = bp.get_remaining_needs(item_type)
+		if needed > 0:
+			post_job(Job.Type.DELIVER_MATERIAL, bp.coords, Global.current_map.terrain_layer.map_to_local(bp.coords), 0, item_type)
+	
 
 func get_save_data() -> Array:
 	var jobs_save_array = []
@@ -364,7 +377,6 @@ func unsuspended_blueprint_job(bp: BluePrint):
 		if job.target_map_pos == bp.coords:
 			suspended_jobs.erase(job)
 			available_jobs.append(job)
-			break
 
 func unsuspend_all_jobs():
 	for i in range(suspended_jobs.size() - 1, -1, -1):

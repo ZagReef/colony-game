@@ -48,6 +48,8 @@ func _on_work_completed():
 	if current_job:
 		JobManager.complete_job(current_job)
 	
+	JobManager.unsuspend_all_jobs()
+	
 	current_job = null
 	
 	character.next_state_after_move = ""

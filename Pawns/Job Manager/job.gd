@@ -11,5 +11,7 @@ var target_map_pos: Vector2i
 var priority: int  = 0
 var is_taken: bool = false
 
+var item_type: String = ""
+
 var worker: CharacterBody2D = null
 var worker_black_list: Array[CharacterBody2D] = []

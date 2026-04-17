@@ -20,14 +20,14 @@ func _ready():
 	PawnManager.pawn_focus_cancelled.connect(clear_panel)
 	set_process(false)
 
-func show_tile_info(item_ground: String, item_top: String, item_roof: String, speed_multiplier: float, item_max_health: int, item_current_health: int, assigned_job = null, assigned_job_list = "None", blueprint = null):
+func show_tile_info(item_ground: String, item_top: String, item_roof: String, speed_multiplier: float, is_passable: bool, item_max_health: int, item_current_health: int, assigned_job = null, assigned_job_list = "None", blueprint = null):
 	self.get_parent().check_panel(self)
 	self.visible = true
 	tracked_pawn = null
 	tracked_job = assigned_job
 	tracked_bp = blueprint
 	
-	var text = "Ground: " + item_ground + " / " + "Top: " + item_top + "\n" + "Roof: " + item_roof + " / " + "Speed Multplier: " + String.num(speed_multiplier, 2)
+	var text = "Ground: " + item_ground + " / " + "Top: " + item_top + "\n" + "Roof: " + item_roof + " / " + "Speed Multplier: " + String.num(speed_multiplier, 2) + " \n " + "Is Passable: " + str(!is_passable).to_upper()
 	
 	if tracked_job != null:
 		var job_string = tracked_job.Type.find_key(tracked_job.job_type)
@@ -35,7 +35,7 @@ func show_tile_info(item_ground: String, item_top: String, item_roof: String, sp
 	if tracked_bp != null:
 		text += "\nBlueprint Progress: " + tracked_bp.recipe.structure_name
 		for mat in tracked_bp.progress.keys():
-			text += "\n" + ItemManager.ITEM_DB[mat].ui_name + ": " + str(int(tracked_bp.progress[material]["current"])) + " + " + str(tracked_bp.progress[mat]["incoming"]) + " / " + str(tracked_bp.recipe.materials[mat])
+			text += "\n" + ItemManager.ITEM_DB[mat].ui_name + ": " + str(int(tracked_bp.progress[mat]["current"])) + " + " + str(tracked_bp.progress[mat]["incoming"]) + " / " + str(tracked_bp.recipe.materials[mat])
 	if item_max_health > 0:
 		info_label.text = text
 		progress_container.visible = true
