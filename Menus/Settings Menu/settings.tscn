@@ -22,6 +22,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
 theme = ExtResource("1_of6dc")
 
 [node name="PanelContainer" type="PanelContainer" parent="Control" unique_id=1639218075]
@@ -31,47 +33,58 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_of6dc")
 theme_override_styles/panel = SubResource("StyleBoxFlat_2fnsm")
 
-[node name="MarginContainer" type="MarginContainer" parent="Control/PanelContainer" unique_id=1312527512]
-layout_mode = 2
-size_flags_horizontal = 3
+[node name="MarginContainer" type="MarginContainer" parent="Control" unique_id=1312527512 groups=["hud_elements"]]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -576.0
+offset_top = -324.0
+offset_right = 576.0
+offset_bottom = 324.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control/PanelContainer/MarginContainer" unique_id=840913827]
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer" unique_id=840913827]
 layout_mode = 2
 
-[node name="ExitButton" type="Button" parent="Control/PanelContainer/MarginContainer/VBoxContainer" unique_id=1416945233]
+[node name="ExitButton" type="Button" parent="Control/MarginContainer/VBoxContainer" unique_id=1416945233]
 layout_mode = 2
 size_flags_horizontal = 10
 icon = SubResource("AtlasTexture_of6dc")
 flat = true
 
-[node name="ButtonBox" type="HBoxContainer" parent="Control/PanelContainer/MarginContainer/VBoxContainer" unique_id=1811696640]
+[node name="ButtonBox" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer" unique_id=1811696640]
 layout_mode = 2
 
-[node name="SoundHeader" type="Label" parent="Control/PanelContainer/MarginContainer/VBoxContainer/ButtonBox" unique_id=1894319197]
+[node name="SoundHeader" type="Label" parent="Control/MarginContainer/VBoxContainer/ButtonBox" unique_id=1894319197]
 layout_mode = 2
 size_flags_horizontal = 6
 text = "Sound"
 
-[node name="DisplayHeader" type="Label" parent="Control/PanelContainer/MarginContainer/VBoxContainer/ButtonBox" unique_id=366312802]
+[node name="DisplayHeader" type="Label" parent="Control/MarginContainer/VBoxContainer/ButtonBox" unique_id=366312802]
 layout_mode = 2
 size_flags_horizontal = 6
 text = "Display"
 
-[node name="SettingBox" type="HBoxContainer" parent="Control/PanelContainer/MarginContainer/VBoxContainer" unique_id=464074873]
+[node name="SettingBox" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer" unique_id=464074873]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Sounds" type="Panel" parent="Control/PanelContainer/MarginContainer/VBoxContainer/SettingBox" unique_id=1871885175]
+[node name="Sounds" type="Panel" parent="Control/MarginContainer/VBoxContainer/SettingBox" unique_id=1871885175]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="Control/PanelContainer/MarginContainer/VBoxContainer/SettingBox/Sounds" unique_id=207662561]
+[node name="MarginContainer" type="MarginContainer" parent="Control/MarginContainer/VBoxContainer/SettingBox/Sounds" unique_id=207662561]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -79,47 +92,47 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control/PanelContainer/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer" unique_id=1912298897]
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer" unique_id=1912298897]
 layout_mode = 2
 
-[node name="GeneralSoundBox" type="HBoxContainer" parent="Control/PanelContainer/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer/VBoxContainer" unique_id=739130453]
+[node name="GeneralSoundBox" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer/VBoxContainer" unique_id=739130453]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Control/PanelContainer/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer/VBoxContainer/GeneralSoundBox" unique_id=1090117304]
+[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer/VBoxContainer/GeneralSoundBox" unique_id=1090117304]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "General Volume"
 horizontal_alignment = 2
 
-[node name="HSlider" type="HSlider" parent="Control/PanelContainer/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer/VBoxContainer/GeneralSoundBox" unique_id=727867237]
+[node name="HSlider" type="HSlider" parent="Control/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer/VBoxContainer/GeneralSoundBox" unique_id=727867237]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 max_value = 1.0
 step = 0.01
 
-[node name="MusicSound" type="HBoxContainer" parent="Control/PanelContainer/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer/VBoxContainer" unique_id=1438773266]
+[node name="MusicSound" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer/VBoxContainer" unique_id=1438773266]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Control/PanelContainer/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer/VBoxContainer/MusicSound" unique_id=1177881431]
+[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer/VBoxContainer/MusicSound" unique_id=1177881431]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 text = "Music Volume"
 horizontal_alignment = 2
 
-[node name="HSlider" type="HSlider" parent="Control/PanelContainer/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer/VBoxContainer/MusicSound" unique_id=1623091781]
+[node name="HSlider" type="HSlider" parent="Control/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer/VBoxContainer/MusicSound" unique_id=1623091781]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 max_value = 1.0
 step = 0.01
 
-[node name="Display" type="Panel" parent="Control/PanelContainer/MarginContainer/VBoxContainer/SettingBox" unique_id=793194055]
+[node name="Display" type="Panel" parent="Control/MarginContainer/VBoxContainer/SettingBox" unique_id=793194055]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="Control/PanelContainer/MarginContainer/VBoxContainer/SettingBox/Display" unique_id=861841744]
+[node name="MarginContainer" type="MarginContainer" parent="Control/MarginContainer/VBoxContainer/SettingBox/Display" unique_id=861841744]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -127,10 +140,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control/PanelContainer/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer" unique_id=1580707225]
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer" unique_id=1580707225]
 layout_mode = 2
 
-[node name="Resolutions" type="OptionButton" parent="Control/PanelContainer/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer" unique_id=1517561322]
+[node name="Resolutions" type="OptionButton" parent="Control/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer" unique_id=1517561322]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 selected = 0
@@ -138,7 +151,7 @@ item_count = 1
 popup/item_0/text = "Resolution"
 popup/item_0/id = 0
 
-[node name="DisplayModes" type="OptionButton" parent="Control/PanelContainer/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer" unique_id=936378894]
+[node name="DisplayModes" type="OptionButton" parent="Control/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer" unique_id=936378894]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 selected = 0
@@ -146,15 +159,31 @@ item_count = 1
 popup/item_0/text = "Display Mode"
 popup/item_0/id = 0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Control/PanelContainer/MarginContainer/VBoxContainer" unique_id=650696108]
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer" unique_id=543184178]
 layout_mode = 2
 
-[node name="SaveSettings" type="Button" parent="Control/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1796293085]
+[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer/HBoxContainer" unique_id=611564050]
+layout_mode = 2
+text = "HUD Scale: "
+
+[node name="HUDScale" type="HSlider" parent="Control/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1500958007]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.5
+max_value = 1.5
+step = 0.25
+value = 1.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer" unique_id=650696108]
+layout_mode = 2
+
+[node name="SaveSettings" type="Button" parent="Control/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1796293085]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Save Settings"
 
-[node name="ApplySettings" type="Button" parent="Control/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1953311610]
+[node name="ApplySettings" type="Button" parent="Control/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1953311610]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Apply Settings

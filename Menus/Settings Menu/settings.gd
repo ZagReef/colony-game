@@ -1,14 +1,15 @@
 extends CanvasLayer
 
-@onready var general_sound_slider = $Control/PanelContainer/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer/VBoxContainer/GeneralSoundBox/HSlider
-@onready var music_sound_slider = $Control/PanelContainer/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer/VBoxContainer/MusicSound/HSlider
+@onready var general_sound_slider = $Control/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer/VBoxContainer/GeneralSoundBox/HSlider
+@onready var music_sound_slider = $Control/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer/VBoxContainer/MusicSound/HSlider
 
-@onready var resolution_opt_button = $Control/PanelContainer/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer/Resolutions
-@onready var display_opt_button = $Control/PanelContainer/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer/DisplayModes
+@onready var resolution_opt_button = $Control/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer/Resolutions
+@onready var display_opt_button = $Control/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer/DisplayModes
+@onready var hud_scale_slider = $Control/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer/HBoxContainer/HUDScale
 
-@onready var exit_button = $Control/PanelContainer/MarginContainer/VBoxContainer/ExitButton
-@onready var save_button = $Control/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/SaveSettings
-@onready var apply_button = $Control/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/ApplySettings
+@onready var exit_button = $Control/MarginContainer/VBoxContainer/ExitButton
+@onready var save_button = $Control/MarginContainer/VBoxContainer/HBoxContainer/SaveSettings
+@onready var apply_button = $Control/MarginContainer/VBoxContainer/HBoxContainer/ApplySettings
 
 signal pressed_exit
 
@@ -42,6 +43,7 @@ func _setup_option_buttons():
 	display_opt_button.clear()
 	display_opt_button.add_item("Windowed")
 	display_opt_button.add_item("FullScreen")
+	
 
 func _update_ui_from_settings():
 	var current = SettingsManager.current_settings
@@ -51,13 +53,15 @@ func _update_ui_from_settings():
 	
 	resolution_opt_button.selected = current["resolution_index"]
 	display_opt_button.selected = current["display_mode_index"]
+	hud_scale_slider.value = current["hud_scale"]
 
 func _on_save_pressed():
 	var new_settings = {
 		"general_sound": general_sound_slider.value,
 		"music_sound": music_sound_slider.value,
 		"resolution_index": resolution_opt_button.selected,
-		"display_mode_index": display_opt_button.selected
+		"display_mode_index": display_opt_button.selected,
+		"hud_scale": hud_scale_slider.value
 	}
 	
 	SettingsManager.save_settings(new_settings)
@@ -72,6 +76,7 @@ func _on_apply_pressed():
 		"general_sound": general_sound_slider.value,
 		"music_sound": music_sound_slider.value,
 		"resolution_index": resolution_opt_button.selected,
-		"display_mode_index": display_opt_button.selected
+		"display_mode_index": display_opt_button.selected,
+		"hud_scale": hud_scale_slider.value
 	}
 	SettingsManager.apply_settings_temp(temp_settings)

@@ -6,7 +6,8 @@ var current_settings: Dictionary = {
 	"general_sound": 1.0,
 	"music_sound": 1.0,
 	"resolution_index": 1,
-	"display_mode_index": 0
+	"display_mode_index": 0,
+	"hud_scale": 1.0
 	}
 
 var temp_settings: Dictionary = {}
@@ -66,6 +67,17 @@ func apply_settings():
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 		1:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+	
+	var new_scale = Vector2(current_settings["hud_scale"], current_settings["hud_scale"])
+	
+	var hud_nodes = get_tree().get_nodes_in_group("hud_elements")
+	
+	for node in hud_nodes:
+		if node is Control:
+			auto_set_pivot_from_anchor(node)
+			node.scale = new_scale
+	
+	
 
 func apply_settings_temp(new_settings):
 	temp_settings = new_settings
@@ -88,3 +100,15 @@ func apply_settings_temp(new_settings):
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 		1:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+			
+	var new_scale = Vector2(temp_settings["hud_scale"], temp_settings["hud_scale"])
+	
+	get_tree().call_group("hud_elements", "set_scale", new_scale)
+
+func auto_set_pivot_from_anchor(node: Control):
+	if not node: return
+	
+	var anchor_center_x = (node.anchor_left + node.anchor_right) / 2
+	var anchor_center_y = (node.anchor_top + node.anchor_bottom) / 2
+	
+	node.pivot_offset = Vector2(anchor_center_x * node.size.x, anchor_center_y * node.size.y)

@@ -1,25 +1,23 @@
-[gd_scene load_steps=3 format=3 uid="uid://d1lee6x01an5n"]
+[gd_scene format=3 uid="uid://d1lee6x01an5n"]
 
 [ext_resource type="Theme" uid="uid://u313nb2pic47" path="res://Menus/In-Game UI/pawns_menu.tres" id="1_uhp28"]
 [ext_resource type="Script" uid="uid://f0ll0g3xoagb" path="res://Menus/In-Game UI/InfoMenu/info_menu.gd" id="1_y61bu"]
 
-[node name="InfoMenu" type="CanvasLayer"]
+[node name="InfoMenu" type="CanvasLayer" unique_id=1750022395]
 process_mode = 3
 visible = false
 script = ExtResource("1_y61bu")
 
-[node name="MenuPanel" type="Panel" parent="."]
+[node name="MenuPanel" type="Panel" parent="." unique_id=1184975245]
 custom_minimum_size = Vector2(400, 300)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
 theme = ExtResource("1_uhp28")
 
-[node name="MarginContainer" type="MarginContainer" parent="MenuPanel"]
+[node name="MarginContainer" type="MarginContainer" parent="MenuPanel" unique_id=1652981418 groups=["hud_elements"]]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -27,35 +25,35 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MenuPanel/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MenuPanel/MarginContainer" unique_id=1216781581]
 layout_mode = 2
 alignment = 1
 
-[node name="NewGame" type="Button" parent="MenuPanel/MarginContainer/VBoxContainer"]
+[node name="NewGame" type="Button" parent="MenuPanel/MarginContainer/VBoxContainer" unique_id=2139130055]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 text = "NEW GAME"
 
-[node name="ExitButton" type="Button" parent="MenuPanel/MarginContainer/VBoxContainer"]
+[node name="ExitButton" type="Button" parent="MenuPanel/MarginContainer/VBoxContainer" unique_id=62217239]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 text = "EXIT TO MENU"
 
-[node name="LoadButton" type="Button" parent="MenuPanel/MarginContainer/VBoxContainer"]
+[node name="LoadButton" type="Button" parent="MenuPanel/MarginContainer/VBoxContainer" unique_id=589105364]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 text = "LOAD LATEST GAME"
 
-[node name="SaveButton" type="Button" parent="MenuPanel/MarginContainer/VBoxContainer"]
+[node name="SaveButton" type="Button" parent="MenuPanel/MarginContainer/VBoxContainer" unique_id=422278983]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 text = "SAVE GAME"
 
-[node name="SettingButton" type="Button" parent="MenuPanel/MarginContainer/VBoxContainer"]
+[node name="SettingButton" type="Button" parent="MenuPanel/MarginContainer/VBoxContainer" unique_id=1698214355]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 4

@@ -1,9 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://b2cgroyl7dlrx"]
+[gd_scene format=3 uid="uid://b2cgroyl7dlrx"]
 
 [ext_resource type="Script" uid="uid://dyfueehpraktm" path="res://Menus/Save Settings Menu/save_settings.gd" id="1_u3dbm"]
 [ext_resource type="Theme" uid="uid://by88fv3cr83qy" path="res://Menus/Save Settings Menu/SaveSettings.tres" id="2_nf7x8"]
 
-[node name="SaveSettings" type="Control"]
+[node name="SaveSettings" type="Control" unique_id=2091061120 groups=["hud_elements"]]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -15,9 +15,9 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_u3dbm")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=157171166]
 
-[node name="Panel" type="Panel" parent="CanvasLayer"]
+[node name="Panel" type="Panel" parent="CanvasLayer" unique_id=1330741725]
 custom_minimum_size = Vector2(500, 300)
 anchors_preset = -1
 anchor_left = 0.289
@@ -33,7 +33,7 @@ grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Panel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Panel" unique_id=950925012]
 custom_minimum_size = Vector2(450, 250)
 layout_mode = 1
 anchors_preset = -1
@@ -47,30 +47,30 @@ offset_bottom = -0.1000061
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="SeedContainer" type="HBoxContainer" parent="CanvasLayer/Panel/VBoxContainer"]
+[node name="SeedContainer" type="HBoxContainer" parent="CanvasLayer/Panel/VBoxContainer" unique_id=1468489025]
 layout_mode = 2
 alignment = 1
 
-[node name="Label" type="Label" parent="CanvasLayer/Panel/VBoxContainer/SeedContainer"]
+[node name="Label" type="Label" parent="CanvasLayer/Panel/VBoxContainer/SeedContainer" unique_id=220725618]
 layout_mode = 2
 theme = ExtResource("2_nf7x8")
 text = "SEED: "
 
-[node name="LineEdit" type="LineEdit" parent="CanvasLayer/Panel/VBoxContainer/SeedContainer"]
+[node name="LineEdit" type="LineEdit" parent="CanvasLayer/Panel/VBoxContainer/SeedContainer" unique_id=1141070349]
 custom_minimum_size = Vector2(350, 0)
 layout_mode = 2
 placeholder_text = "Enter your seed here."
 
-[node name="PawnContainer" type="HBoxContainer" parent="CanvasLayer/Panel/VBoxContainer"]
+[node name="PawnContainer" type="HBoxContainer" parent="CanvasLayer/Panel/VBoxContainer" unique_id=1958357490]
 layout_mode = 2
 alignment = 1
 
-[node name="Label" type="Label" parent="CanvasLayer/Panel/VBoxContainer/PawnContainer"]
+[node name="Label" type="Label" parent="CanvasLayer/Panel/VBoxContainer/PawnContainer" unique_id=1178095851]
 layout_mode = 2
 theme = ExtResource("2_nf7x8")
 text = "Pawn Count:"
 
-[node name="SpinBox" type="SpinBox" parent="CanvasLayer/Panel/VBoxContainer/PawnContainer"]
+[node name="SpinBox" type="SpinBox" parent="CanvasLayer/Panel/VBoxContainer/PawnContainer" unique_id=1901433022]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 min_value = 1.0
@@ -78,16 +78,16 @@ max_value = 10.0
 value = 1.0
 rounded = true
 
-[node name="AutomataContainer" type="HBoxContainer" parent="CanvasLayer/Panel/VBoxContainer"]
+[node name="AutomataContainer" type="HBoxContainer" parent="CanvasLayer/Panel/VBoxContainer" unique_id=9696102]
 layout_mode = 2
 alignment = 1
 
-[node name="Label" type="Label" parent="CanvasLayer/Panel/VBoxContainer/AutomataContainer"]
+[node name="Label" type="Label" parent="CanvasLayer/Panel/VBoxContainer/AutomataContainer" unique_id=567343431]
 layout_mode = 2
 theme = ExtResource("2_nf7x8")
 text = "Threshold:"
 
-[node name="SpinBox" type="SpinBox" parent="CanvasLayer/Panel/VBoxContainer/AutomataContainer"]
+[node name="SpinBox" type="SpinBox" parent="CanvasLayer/Panel/VBoxContainer/AutomataContainer" unique_id=497177037]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 min_value = 5.0
@@ -95,31 +95,31 @@ max_value = 7.0
 value = 5.0
 rounded = true
 
-[node name="SeedContainer2" type="HBoxContainer" parent="CanvasLayer/Panel/VBoxContainer"]
+[node name="SeedContainer2" type="HBoxContainer" parent="CanvasLayer/Panel/VBoxContainer" unique_id=1919191626]
 layout_mode = 2
 alignment = 1
 
-[node name="Label" type="Label" parent="CanvasLayer/Panel/VBoxContainer/SeedContainer2"]
+[node name="Label" type="Label" parent="CanvasLayer/Panel/VBoxContainer/SeedContainer2" unique_id=73456551]
 layout_mode = 2
 theme = ExtResource("2_nf7x8")
 text = "Width:"
 
-[node name="Width" type="LineEdit" parent="CanvasLayer/Panel/VBoxContainer/SeedContainer2"]
+[node name="Width" type="LineEdit" parent="CanvasLayer/Panel/VBoxContainer/SeedContainer2" unique_id=1759275548]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 placeholder_text = "50-300"
 
-[node name="Label2" type="Label" parent="CanvasLayer/Panel/VBoxContainer/SeedContainer2"]
+[node name="Label2" type="Label" parent="CanvasLayer/Panel/VBoxContainer/SeedContainer2" unique_id=366648370]
 layout_mode = 2
 theme = ExtResource("2_nf7x8")
 text = "Height:"
 
-[node name="Height" type="LineEdit" parent="CanvasLayer/Panel/VBoxContainer/SeedContainer2"]
+[node name="Height" type="LineEdit" parent="CanvasLayer/Panel/VBoxContainer/SeedContainer2" unique_id=2111611713]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 placeholder_text = "50-300"
 
-[node name="CreateButton" type="Button" parent="CanvasLayer/Panel/VBoxContainer"]
+[node name="CreateButton" type="Button" parent="CanvasLayer/Panel/VBoxContainer" unique_id=719920616]
 layout_mode = 2
 size_flags_vertical = 10
 text = "Create Game

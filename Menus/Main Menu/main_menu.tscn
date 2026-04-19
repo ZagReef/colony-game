@@ -1,28 +1,29 @@
-[gd_scene load_steps=4 format=3 uid="uid://dk16eoqh77mdm"]
+[gd_scene format=3 uid="uid://dk16eoqh77mdm"]
 
 [ext_resource type="Script" uid="uid://bygegxf047x5j" path="res://Menus/Main Menu/main_menu.gd" id="1_unecm"]
 [ext_resource type="Texture2D" uid="uid://nxas177oj21" path="res://Menus/Main Menu/Main_Menu.png" id="2_taoq5"]
 [ext_resource type="Theme" uid="uid://ds3yu4xh5vbqy" path="res://Menus/Main Menu/main_menu.tres" id="3_clbkk"]
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=105378338]
 layout_mode = 3
 anchors_preset = 0
 mouse_filter = 2
 script = ExtResource("1_unecm")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=136338002]
 
-[node name="MenuPict" type="TextureRect" parent="CanvasLayer"]
+[node name="MenuPict" type="TextureRect" parent="CanvasLayer" unique_id=277272394]
 custom_minimum_size = Vector2(1152, 648)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+pivot_offset = Vector2(576, 0)
 texture = ExtResource("2_taoq5")
 expand_mode = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer" unique_id=1216337871 groups=["hud_elements"]]
 custom_minimum_size = Vector2(400, 0)
 anchors_preset = 8
 anchor_left = 0.5
@@ -35,24 +36,25 @@ offset_right = 86.0
 offset_bottom = 79.0
 grow_horizontal = 2
 grow_vertical = 2
+pivot_offset = Vector2(200, 106)
 
-[node name="NewGame" type="Button" parent="CanvasLayer/VBoxContainer"]
+[node name="NewGame" type="Button" parent="CanvasLayer/VBoxContainer" unique_id=655388111]
 layout_mode = 2
 theme = ExtResource("3_clbkk")
 text = "New Game"
 
-[node name="LoadGame" type="Button" parent="CanvasLayer/VBoxContainer"]
+[node name="LoadGame" type="Button" parent="CanvasLayer/VBoxContainer" unique_id=997514877]
 layout_mode = 2
 theme = ExtResource("3_clbkk")
 text = "Load Latest Game"
 
-[node name="Settings" type="Button" parent="CanvasLayer/VBoxContainer"]
+[node name="Settings" type="Button" parent="CanvasLayer/VBoxContainer" unique_id=1762268973]
 layout_mode = 2
 theme = ExtResource("3_clbkk")
 text = "Settings
 "
 
-[node name="Quit" type="Button" parent="CanvasLayer/VBoxContainer"]
+[node name="Quit" type="Button" parent="CanvasLayer/VBoxContainer" unique_id=1862893117]
 layout_mode = 2
 theme = ExtResource("3_clbkk")
 text = "Quit Game

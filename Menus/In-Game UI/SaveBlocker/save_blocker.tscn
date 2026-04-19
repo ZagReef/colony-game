@@ -1,13 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://dbtq3iebqilr8"]
+[gd_scene format=3 uid="uid://dbtq3iebqilr8"]
 
 [ext_resource type="Script" uid="uid://dw5mocapbyo81" path="res://Menus/In-Game UI/SaveBlocker/save_blocker.gd" id="1_67ir8"]
 [ext_resource type="Theme" uid="uid://u313nb2pic47" path="res://Menus/In-Game UI/pawns_menu.tres" id="1_kofjn"]
 
-[node name="SaveBlocker" type="CanvasLayer"]
+[node name="SaveBlocker" type="CanvasLayer" unique_id=388311787]
 visible = false
 script = ExtResource("1_67ir8")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1016727854]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -15,7 +15,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.11764706, 0.11764706, 0.11764706, 0.43137255)
 
-[node name="Label" type="Label" parent="ColorRect"]
+[node name="Label" type="Label" parent="ColorRect" unique_id=1969882657 groups=["hud_elements"]]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.35200003

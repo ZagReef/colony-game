@@ -17,7 +17,7 @@
 process_mode = 3
 script = ExtResource("1_gqk24")
 
-[node name="PawnPanel" type="Panel" parent="." unique_id=1284007452]
+[node name="PawnPanel" type="Panel" parent="." unique_id=1284007452 groups=["hud_elements"]]
 custom_minimum_size = Vector2(70, 400)
 anchors_preset = 4
 anchor_top = 0.5
@@ -68,16 +68,12 @@ horizontal_alignment = 1
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="ActionSelectionPanel" type="Panel" parent="." unique_id=988892400]
+[node name="ActionSelectionPanel" type="Panel" parent="." unique_id=988892400 groups=["hud_elements"]]
 custom_minimum_size = Vector2(800, 50)
-anchors_preset = 7
-anchor_left = 0.5
+anchors_preset = 12
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -576.0
-offset_top = -50.0
-offset_right = 576.0
 grow_horizontal = 2
 grow_vertical = 0
 size_flags_horizontal = 3
@@ -89,11 +85,14 @@ tile_texture = ExtResource("7_qe1pr")
 [node name="TabContainer" type="TabContainer" parent="ActionSelectionPanel" unique_id=996795025]
 custom_minimum_size = Vector2(100, 40)
 layout_mode = 1
-anchors_preset = 12
+anchors_preset = 7
+anchor_left = 0.5
 anchor_top = 1.0
-anchor_right = 1.0
+anchor_right = 0.5
 anchor_bottom = 1.0
-offset_top = -81.0
+offset_left = -658.5
+offset_top = -82.0
+offset_right = 658.5
 grow_horizontal = 2
 grow_vertical = 0
 theme = ExtResource("2_fq6qt")
@@ -221,7 +220,7 @@ columns = 8
 layout_mode = 2
 text = "Create Stockpile"
 
-[node name="TilePawnInfo" type="Panel" parent="." unique_id=2138325123]
+[node name="TilePawnInfo" type="Panel" parent="." unique_id=2138325123 groups=["hud_elements"]]
 custom_minimum_size = Vector2(300, 200)
 anchors_preset = 3
 anchor_left = 1.0
@@ -287,7 +286,7 @@ offset_bottom = 10.5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="StockpileInfo" type="Panel" parent="." unique_id=1300221697]
+[node name="StockpileInfo" type="Panel" parent="." unique_id=1300221697 groups=["hud_elements"]]
 custom_minimum_size = Vector2(300, 200)
 anchors_preset = 3
 anchor_left = 1.0
@@ -372,7 +371,7 @@ layout_mode = 2
 [node name="Delete" type="Button" parent="StockpileInfo/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1712224205]
 layout_mode = 2
 
-[node name="FPSCounter" type="Label" parent="." unique_id=1604943967]
+[node name="FPSCounter" type="Label" parent="." unique_id=1604943967 groups=["hud_elements"]]
 offset_right = 40.0
 offset_bottom = 23.0
 theme = ExtResource("2_fq6qt")
@@ -380,7 +379,7 @@ theme_override_colors/font_color = Color(0.10980392, 1, 0.13333334, 1)
 text = "FPS:00"
 script = ExtResource("7_drciy")
 
-[node name="TimeScaler" type="Panel" parent="." unique_id=1633344052]
+[node name="TimeScaler" type="Panel" parent="." unique_id=1633344052 groups=["hud_elements"]]
 custom_minimum_size = Vector2(200, 40)
 anchors_preset = 1
 anchor_left = 1.0
@@ -419,7 +418,7 @@ ticks_position = 3
 layout_mode = 2
 text = "Time Scale = 1X"
 
-[node name="CoordsPanel" type="Panel" parent="." unique_id=1003842099]
+[node name="CoordsPanel" type="Panel" parent="." unique_id=1003842099 groups=["hud_elements"]]
 custom_minimum_size = Vector2(100, 20)
 offset_top = 40.0
 offset_right = 100.0

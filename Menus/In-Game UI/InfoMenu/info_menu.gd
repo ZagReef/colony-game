@@ -11,6 +11,7 @@ signal pressed_exit
 signal pressed_settings
 
 func _ready():
+	self.hide()
 	new_game_button.pressed.connect(_on_new_game_pressed)
 	exit_button.pressed.connect(_on_exit_pressed)
 	load_button.pressed.connect(_on_load_pressed)
