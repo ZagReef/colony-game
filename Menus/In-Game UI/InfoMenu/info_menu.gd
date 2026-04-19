@@ -8,12 +8,14 @@ extends CanvasLayer
 
 signal pressed_exit
 
+signal pressed_settings
+
 func _ready():
 	new_game_button.pressed.connect(_on_new_game_pressed)
 	exit_button.pressed.connect(_on_exit_pressed)
 	load_button.pressed.connect(_on_load_pressed)
 	save_button.pressed.connect(_on_save_pressed)
-	#setting_button.connect(func (): get_tree.change_scene_to_file())
+	setting_button.pressed.connect(func (): pressed_settings.emit())
 
 func _on_load_pressed():
 	if Global.is_saving_game or Global.is_loading_game:

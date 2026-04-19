@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Colony Game"
-config/version="0.4.0"
+config/version="0.4.2"
 run/main_scene="uid://dk16eoqh77mdm"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="uid://w7uvcl0egjxt"
@@ -34,6 +34,8 @@ PawnsUI="*res://Menus/In-Game UI/CanvasLayer/pawns.tscn"
 InfoMenu="*res://Menus/In-Game UI/InfoMenu/info_menu.tscn"
 SaveBlocker="*res://Menus/In-Game UI/SaveBlocker/save_blocker.tscn"
 MusicManager="*res://Music Manager/music_manager.gd"
+SettingsManager="*uid://hbvloxwm3n8u"
+Settings="*uid://dhko18qslvo2c"
 
 [debug]
 

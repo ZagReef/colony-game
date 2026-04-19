@@ -20,6 +20,7 @@ signal check_stockpile_info(size: Vector2i, materials: Dictionary)
 signal check_item_info(item: Dictionary)
 
 @onready var selection_box = $ColorRect
+@onready var cam = $Camera2D
 
 @export var item_drop: PackedScene
 @export var structure_recipes: Dictionary = {}
@@ -127,13 +128,15 @@ func load_all_tiles():
 		var file_name = dir.get_next()
 		
 		while file_name != "":
-			if not dir.current_is_dir() and file_name.ends_with(".tres"):
-				var file_path = TILE_FOLDER_PATH + file_name
-				var item_data: TileStats = load(file_path)
-				
-				if item_data and item_data.item_id != "":
-					tile_resources[item_data.item_id] = item_data
-					print("Tile eklendi: ", item_data.item_id)
+			if not dir.current_is_dir():
+				var clean_name = file_name.replace(".remap", "")
+				if clean_name.ends_with(".tres"):
+					var file_path = TILE_FOLDER_PATH + file_name
+					var item_data: TileStats = load(file_path)
+					
+					if item_data and item_data.item_id != "":
+						tile_resources[item_data.item_id] = item_data
+						print("Tile eklendi: ", item_data.item_id)
 				
 				file_name = dir.get_next()
 	else:
@@ -966,7 +969,11 @@ func get_save_data() -> Dictionary:
 	return {"meta_data": {
 			"map_width": Global.map_width,
 			"map_height": Global.map_height,
-			"seed": Global.custom_seed
+			"seed": Global.custom_seed,
+			"cam_pos_x": cam.global_position.x,
+			"cam_pos_y": cam.global_position.y,
+			"cam_zoom_x": cam.zoom.x,
+			"cam_zoom_y": cam.zoom.y
 			},
 			"map_cells": map_save_array,
 			"structures": structure_save_array

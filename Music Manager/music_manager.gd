@@ -13,6 +13,7 @@ var paused_pos = 0.0
 func _ready() -> void:
 	self.process_mode = Node.PROCESS_MODE_ALWAYS
 	self.finished.connect(_on_music_finished)
+	self.bus = "Music"
 	
 	self.volume_db = -21.0
 	default_volume = self.volume_db

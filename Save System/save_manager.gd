@@ -167,3 +167,7 @@ func load_metadata():
 				Global.map_width = int(meta.get("map_width", 100)) # Değer yoksa varsayılan 100
 				Global.map_height = int(meta.get("map_height", 100))
 				Global.custom_seed = meta.get("seed", "")
+				Global.current_map.cam.global_position.x = meta.get("cam_pos_x", 0)
+				Global.current_map.cam.global_position.y = meta.get("cam_pos_y", 0)
+				Global.current_map.cam.zoom.x= meta.get("cam_zoom_x", 1)
+				Global.current_map.cam.zoom.y= meta.get("cam_zoom_y", 1)

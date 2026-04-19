@@ -1,0 +1,15 @@
+[gd_resource type="Theme" format=3 uid="uid://dwuu6eywf7qpq"]
+
+[ext_resource type="FontFile" uid="uid://dccv1hddt82js" path="res://Textures/Lora/static/Lora-Medium.ttf" id="1_2exev"]
+
+[resource]
+Button/font_sizes/font_size = 24
+Button/fonts/font = ExtResource("1_2exev")
+Label/font_sizes/font_size = 24
+Label/fonts/font = ExtResource("1_2exev")
+MarginContainer/constants/margin_bottom = 20
+MarginContainer/constants/margin_left = 20
+MarginContainer/constants/margin_right = 20
+MarginContainer/constants/margin_top = 20
+OptionButton/font_sizes/font_size = 16
+OptionButton/fonts/font = ExtResource("1_2exev")

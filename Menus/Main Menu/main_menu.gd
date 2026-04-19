@@ -8,7 +8,7 @@ extends Control
 
 func _ready():
 	play_but.pressed.connect(_on_play_pressed)
-	setting_but.pressed.connect(_on_settings_pressed)
+	setting_but.pressed.connect(func(): InfoMenu.pressed_settings.emit())
 	quit_but.pressed.connect(_on_quit_pressed)
 	load_but.pressed.connect(_on_load_game_pressed)
 
@@ -16,9 +16,6 @@ func _ready():
 func _on_play_pressed():
 	Global.is_loading_game = false
 	get_tree().change_scene_to_file("res://Menus/Save Settings Menu/save_settings.tscn")
-
-func _on_settings_pressed():
-	pass
 
 func _on_quit_pressed():
 	get_tree().quit()

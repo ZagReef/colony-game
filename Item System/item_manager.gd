@@ -19,13 +19,15 @@ func load_all_items():
 		var file_name = dir.get_next()
 		
 		while file_name != "":
-			if not dir.current_is_dir() and file_name.ends_with(".tres"):
-				var file_path = ITEM_FOLDER_PATH + file_name
-				var item_data: ItemData = load(file_path)
-				
-				if item_data and item_data.item_id != "":
-					ITEM_DB[item_data.item_id] = item_data
-					print("eşya eklendi: ", item_data.item_id)
+			if not dir.current_is_dir():
+				var clean_name = file_name.replace(".remap", "")
+				if clean_name.ends_with(".tres"):
+					var file_path = ITEM_FOLDER_PATH + file_name
+					var item_data: ItemData = load(file_path)
+					
+					if item_data and item_data.item_id != "":
+						ITEM_DB[item_data.item_id] = item_data
+						print("eşya eklendi: ", item_data.item_id)
 				
 				file_name = dir.get_next()
 	else:
