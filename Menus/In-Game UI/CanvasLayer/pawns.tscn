@@ -68,9 +68,9 @@ horizontal_alignment = 1
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="ActionSelectionPanel" type="Panel" parent="." unique_id=988892400 groups=["hud_elements"]]
+[node name="ActionSelectionPanel" type="Panel" parent="." unique_id=988892400]
 custom_minimum_size = Vector2(800, 50)
-anchors_preset = 12
+anchors_preset = -1
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -82,18 +82,14 @@ script = ExtResource("5_goss7")
 ui_icons_texture = ExtResource("6_dhdn0")
 tile_texture = ExtResource("7_qe1pr")
 
-[node name="TabContainer" type="TabContainer" parent="ActionSelectionPanel" unique_id=996795025]
+[node name="TabContainer" type="TabContainer" parent="ActionSelectionPanel" unique_id=996795025 groups=["hud_elements"]]
 custom_minimum_size = Vector2(100, 40)
 layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
+anchors_preset = 2
 anchor_top = 1.0
-anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -658.5
 offset_top = -82.0
-offset_right = 658.5
-grow_horizontal = 2
+offset_right = 1317.0
 grow_vertical = 0
 theme = ExtResource("2_fq6qt")
 current_tab = 0

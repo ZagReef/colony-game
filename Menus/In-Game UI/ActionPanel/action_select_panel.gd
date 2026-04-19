@@ -62,7 +62,7 @@ var icon_tooltips: Dictionary = {
 
 @onready var tab_container = $TabContainer
 
-func _ready():
+func _ready():	
 	for order_key in order_array.keys():
 		order_array[order_key].pressed.connect(_on_job_button_pressed.bind(order_key))
 		setup_button(order_array[order_key], order_key)

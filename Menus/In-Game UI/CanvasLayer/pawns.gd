@@ -3,6 +3,7 @@ extends CanvasLayer
 @onready var info_panel = $TilePawnInfo
 @onready var coords_panel = $CoordsPanel
 @onready var stockpile_panel = $StockpileInfo
+@onready var action_panel = $ActionSelectionPanel
 
 @onready var exclusive_panels = [info_panel, stockpile_panel]
 
