@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://6iqhhp2xhigo"]
+
+[ext_resource type="Script" uid="uid://8sq1sbmwvpq6" path="res://Menus/Performance Menu/perf_monitor.gd" id="1_0jusa"]
+[ext_resource type="Theme" uid="uid://bqbmymowfoxhf" path="res://Menus/Performance Menu/perf_monitor.tres" id="1_5dp4o"]
+
+[node name="PerfMonitor" type="CanvasLayer" unique_id=254548973]
+process_mode = 3
+script = ExtResource("1_0jusa")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1526352284]
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+theme = ExtResource("1_5dp4o")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=1357889191]
+layout_mode = 2
+
+[node name="FPSCounter" type="Label" parent="MarginContainer/HBoxContainer" unique_id=129551732]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "FPS: "
+
+[node name="GpuUsage" type="Label" parent="MarginContainer/HBoxContainer" unique_id=969914515]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "GPU:"
+
+[node name="CpuUsage" type="Label" parent="MarginContainer/HBoxContainer" unique_id=408408399]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "CPU: "
+
+[node name="FrameTime" type="Label" parent="MarginContainer/HBoxContainer" unique_id=580988419]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Frame Time:"
+
+[node name="RAMUsage" type="Label" parent="MarginContainer/HBoxContainer" unique_id=1098367725]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "RAM: "
+
+[node name="VRAMUsage" type="Label" parent="MarginContainer/HBoxContainer" unique_id=302101422]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "VRAM: "

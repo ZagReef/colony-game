@@ -4,6 +4,7 @@ extends CanvasLayer
 @onready var coords_panel = $CoordsPanel
 @onready var stockpile_panel = $StockpileInfo
 @onready var action_panel = $ActionSelectionPanel
+@onready var fps_counter = $FPSCounter
 
 @onready var exclusive_panels = [info_panel, stockpile_panel]
 

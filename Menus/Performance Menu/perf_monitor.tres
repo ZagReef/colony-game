@@ -1,0 +1,6 @@
+[gd_resource type="Theme" format=3 uid="uid://bqbmymowfoxhf"]
+
+[ext_resource type="FontFile" uid="uid://dccv1hddt82js" path="res://Textures/Lora/static/Lora-Medium.ttf" id="1_7x8a7"]
+
+[resource]
+Label/fonts/font = ExtResource("1_7x8a7")

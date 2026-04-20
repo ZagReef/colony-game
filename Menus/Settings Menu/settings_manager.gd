@@ -7,7 +7,8 @@ var current_settings: Dictionary = {
 	"music_sound": 1.0,
 	"resolution_index": 1,
 	"display_mode_index": 0,
-	"hud_scale": 1.0
+	"hud_scale": 1.0,
+	"fps_counter": true
 	}
 
 var temp_settings: Dictionary = {}
@@ -54,20 +55,19 @@ func apply_settings():
 	AudioServer.set_bus_volume_db(music_bus, linear_to_db(current_settings["music_sound"]))
 	
 	var selected_res = resolutions[int(current_settings["resolution_index"])]
-	if current_settings["display_mode_index"] == 0:
-		DisplayServer.window_set_size(selected_res)
-		
-		var screen_center = DisplayServer.screen_get_position() + DisplayServer.screen_get_size() / 2
-		var window_pos = screen_center - selected_res / 2
-		DisplayServer.window_set_position(window_pos)
-	
-	get_window().content_scale_size = selected_res
 	
 	match int(current_settings["display_mode_index"]):
 		0:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+			DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, false)
+			DisplayServer.window_set_size(selected_res)
+			var screen_center = DisplayServer.screen_get_position() + DisplayServer.screen_get_size() / 2
+			var window_pos = screen_center - selected_res / 2
+			DisplayServer.window_set_position(window_pos)
 		1:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+	
+	get_window().content_scale_size = selected_res
 	
 	var new_scale = Vector2(current_settings["hud_scale"], current_settings["hud_scale"])
 	
@@ -82,7 +82,9 @@ func apply_settings():
 		var base_height = 50.0
 		
 		PawnsUI.action_panel.custom_minimum_size.y = base_height * current_settings["hud_scale"]
-		
+	if is_instance_valid(PawnsUI.fps_counter):
+		if current_settings.has("fps_counter"):
+			PawnsUI.fps_counter.visible = current_settings["fps_counter"]
 
 func apply_settings_temp(new_settings):
 	temp_settings = new_settings
@@ -94,21 +96,20 @@ func apply_settings_temp(new_settings):
 	AudioServer.set_bus_volume_db(music_bus, linear_to_db(temp_settings["music_sound"]))
 	
 	var selected_res = resolutions[int(temp_settings["resolution_index"])]
-	if current_settings["display_mode_index"] == 0:
-		DisplayServer.window_set_size(selected_res)
-		
-		var screen_center = DisplayServer.screen_get_position() + DisplayServer.screen_get_size() / 2
-		var window_pos = screen_center - selected_res / 2
-		DisplayServer.window_set_position(window_pos)
-	
-	get_window().content_scale_size = selected_res
 	
 	match int(temp_settings["display_mode_index"]):
 		0:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+			DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, false)
+			DisplayServer.window_set_size(selected_res)
+			var screen_center = DisplayServer.screen_get_position() + DisplayServer.screen_get_size() / 2
+			var window_pos = screen_center - selected_res / 2
+			DisplayServer.window_set_position(window_pos)
 		1:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 			
+	get_window().content_scale_size = selected_res
+	
 	var new_scale = Vector2(temp_settings["hud_scale"], temp_settings["hud_scale"])
 	
 	var hud_nodes = get_tree().get_nodes_in_group("hud_elements")

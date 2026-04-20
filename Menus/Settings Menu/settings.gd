@@ -3,9 +3,10 @@ extends CanvasLayer
 @onready var general_sound_slider = $Control/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer/VBoxContainer/GeneralSoundBox/HSlider
 @onready var music_sound_slider = $Control/MarginContainer/VBoxContainer/SettingBox/Sounds/MarginContainer/VBoxContainer/MusicSound/HSlider
 
-@onready var resolution_opt_button = $Control/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer/Resolutions
-@onready var display_opt_button = $Control/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer/DisplayModes
-@onready var hud_scale_slider = $Control/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer/HBoxContainer/HUDScale
+@onready var resolution_opt_button: OptionButton = $Control/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer/Resolutions
+@onready var display_opt_button: OptionButton = $Control/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer/DisplayModes
+@onready var hud_scale_slider: HSlider = $Control/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer/HUDScaleBox/HUDScale
+@onready var fps_counter_cb: CheckBox = $Control/MarginContainer/VBoxContainer/SettingBox/Display/MarginContainer/VBoxContainer/CounterBox/FPSCheckBox
 
 @onready var exit_button = $Control/MarginContainer/VBoxContainer/ExitButton
 @onready var save_button = $Control/MarginContainer/VBoxContainer/HBoxContainer/SaveSettings
@@ -54,6 +55,7 @@ func _update_ui_from_settings():
 	resolution_opt_button.selected = current["resolution_index"]
 	display_opt_button.selected = current["display_mode_index"]
 	hud_scale_slider.value = current["hud_scale"]
+	fps_counter_cb.button_pressed = current["fps_counter"]
 
 func _on_save_pressed():
 	var new_settings = {
@@ -61,7 +63,8 @@ func _on_save_pressed():
 		"music_sound": music_sound_slider.value,
 		"resolution_index": resolution_opt_button.selected,
 		"display_mode_index": display_opt_button.selected,
-		"hud_scale": hud_scale_slider.value
+		"hud_scale": hud_scale_slider.value,
+		"fps_counter": fps_counter_cb.button_pressed
 	}
 	
 	SettingsManager.save_settings(new_settings)
@@ -77,6 +80,7 @@ func _on_apply_pressed():
 		"music_sound": music_sound_slider.value,
 		"resolution_index": resolution_opt_button.selected,
 		"display_mode_index": display_opt_button.selected,
-		"hud_scale": hud_scale_slider.value
+		"hud_scale": hud_scale_slider.value,
+		"fps_counter": fps_counter_cb.button_pressed
 	}
 	SettingsManager.apply_settings_temp(temp_settings)
